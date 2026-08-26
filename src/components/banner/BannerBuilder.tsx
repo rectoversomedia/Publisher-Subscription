@@ -222,7 +222,7 @@ function BannerPreview({ banner }: { banner: Partial<OfferBanner> }) {
                   Rp {(banner.original_price ?? 0).toLocaleString('id-ID')}
                 </span>
               )}
-              <span className={`text-xs ${tokens.muted}`}> {banner.billing_period ?? '/bulan'}</span>
+              <span className={`text-xs ${tokens.muted}`}> {banner.billing_period ?? '/month'}</span>
             </div>
           )}
         </div>
@@ -246,11 +246,11 @@ interface BannerBuilderProps {
 
 const BANNER_TYPES = Object.entries(BANNER_TYPE_LABELS).map(([value, label]) => ({ value, label }));
 const LAYOUTS: { value: BannerLayout; label: string; desc: string }[] = [
-  { value: 'modal', label: 'Modal', desc: 'Popup di tengah layar' },
-  { value: 'slide_in', label: 'Slide-in', desc: 'Banner muncul dari bawah' },
-  { value: 'inline', label: 'Inline', desc: 'Sisip di konten artikel' },
-  { value: 'banner', label: 'Banner', desc: 'Banner strip horizontal' },
-  { value: 'interstitial', label: 'Interstitial', desc: 'Fullscreen sebelum konten' },
+  { value: 'modal', label: 'Modal', desc: 'Centered popup' },
+  { value: 'slide_in', label: 'Slide-in', desc: 'Slides up from bottom' },
+  { value: 'inline', label: 'Inline', desc: 'Embedded in article' },
+  { value: 'banner', label: 'Banner', desc: 'Horizontal strip' },
+  { value: 'interstitial', label: 'Interstitial', desc: 'Fullscreen before content' },
 ];
 const THEMES: { value: BannerTheme; label: string; swatch: string }[] = [
   { value: 'dark', label: 'Dark', swatch: '#0F172A' },
@@ -288,7 +288,7 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
     headline_variant_b: '',
     body_copy: '',
     body_copy_variant_b: '',
-    cta_label: 'Langganan Sekarang',
+    cta_label: 'Subscribe Now',
     cta_label_variant_b: '',
     cta_action: 'SUBSCRIBE',
     layout: 'modal',
@@ -302,7 +302,7 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
     show_price: true,
     original_price: 64000,
     discounted_price: null,
-    billing_period: '/bulan',
+    billing_period: '/month',
     target_lifecycle: [],
     target_min_propensity: null,
     target_max_propensity: null,
@@ -349,14 +349,14 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
 
         {/* Basic Info */}
         <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
-          <h3 className="font-semibold text-slate-900 text-sm">Informasi Banner</h3>
-          <FieldGroup label="Nama Banner">
-            <Input value={banner.name ?? ''} onChange={v => set('name', v as never)} placeholder="misal: Soft Paywall Default" />
+          <h3 className="font-semibold text-slate-900 text-sm">Banner Information</h3>
+          <FieldGroup label="Banner Name">
+            <Input value={banner.name ?? ''} onChange={v => set('name', v as never)} placeholder="e.g., Soft Paywall Default" />
           </FieldGroup>
-          <FieldGroup label="Slug (ID unik)">
+          <FieldGroup label="Slug (Unique ID)">
             <Input value={banner.slug ?? ''} onChange={v => { set('slug', v as never); setSlugEdited(true); }} placeholder="soft-paywall-default" />
           </FieldGroup>
-          <FieldGroup label="Tipe Banner">
+          <FieldGroup label="Banner Type">
             <div className="flex flex-wrap gap-2">
               {BANNER_TYPES.map(bt => {
                 const colors = BANNER_TYPE_COLORS[bt.value as BannerType];
@@ -380,48 +380,48 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
             <Toggle
               value={banner.is_active ?? true}
               onChange={v => set('is_active', v)}
-              label="Banner aktif"
+              label="Active banner"
             />
           </div>
         </div>
 
         {/* Copy */}
         <Section title="Copy & Headline" icon={Type} defaultOpen>
-          <FieldGroup label="Headline Variant A *" hint="Gunakan {{free_articles_read}} untuk menampilkan jumlah artikel gratis">
-            <Input value={banner.headline ?? ''} onChange={v => set('headline', v as never)} placeholder="Anda sudah membaca {{free_articles_read}} dari 3 artikel gratis" />
+          <FieldGroup label="Headline Variant A *" hint="Use {{free_articles_read}} to show free article count">
+            <Input value={banner.headline ?? ''} onChange={v => set('headline', v as never)} placeholder="You have read {{free_articles_read}} of 3 free articles" />
           </FieldGroup>
           {banner.is_ab_test && (
             <FieldGroup label="Headline Variant B (A/B Test)">
-              <Input value={banner.headline_variant_b ?? ''} onChange={v => set('headline_variant_b', v as never)} placeholder="Headline alternatif untuk test" />
+              <Input value={banner.headline_variant_b ?? ''} onChange={v => set('headline_variant_b', v as never)} placeholder="Alternative headline for test" />
             </FieldGroup>
           )}
           <FieldGroup label="Body Copy">
-            <Textarea value={banner.body_copy ?? ''} onChange={v => set('body_copy', v as never)} placeholder="Teks penjelasan di bawah headline" rows={3} />
+            <Textarea value={banner.body_copy ?? ''} onChange={v => set('body_copy', v as never)} placeholder="Supporting text below the headline" rows={3} />
           </FieldGroup>
           {banner.is_ab_test && (
             <FieldGroup label="Body Copy Variant B">
-              <Textarea value={banner.body_copy_variant_b ?? ''} onChange={v => set('body_copy_variant_b', v as never)} placeholder="Body alternatif" rows={2} />
+              <Textarea value={banner.body_copy_variant_b ?? ''} onChange={v => set('body_copy_variant_b', v as never)} placeholder="Alternative body copy" rows={2} />
             </FieldGroup>
           )}
         </Section>
 
         {/* CTA */}
-        <Section title="Tombol CTA" icon={MousePointer}>
-          <FieldGroup label="Label Tombol Variant A">
-            <Input value={banner.cta_label ?? ''} onChange={v => set('cta_label', v as never)} placeholder="Langganan Sekarang" />
+        <Section title="CTA Button" icon={MousePointer}>
+          <FieldGroup label="Button Label Variant A">
+            <Input value={banner.cta_label ?? ''} onChange={v => set('cta_label', v as never)} placeholder="Subscribe Now" />
           </FieldGroup>
           {banner.is_ab_test && (
-            <FieldGroup label="Label CTA Variant B">
-              <Input value={banner.cta_label_variant_b ?? ''} onChange={v => set('cta_label_variant_b', v as never)} placeholder="Label alternatif" />
+            <FieldGroup label="CTA Label Variant B">
+              <Input value={banner.cta_label_variant_b ?? ''} onChange={v => set('cta_label_variant_b', v as never)} placeholder="Alternative label" />
             </FieldGroup>
           )}
-          <FieldGroup label="Action Setelah Klik">
+          <FieldGroup label="Action After Click">
             <Select value={banner.cta_action ?? 'SUBSCRIBE'} onChange={v => set('cta_action', v as BannerCTAAction)} options={CTA_ACTIONS} />
           </FieldGroup>
         </Section>
 
         {/* Visual */}
-        <Section title="Tampilan & Warna" icon={Palette}>
+        <Section title="Appearance & Colors" icon={Palette}>
           <FieldGroup label="Layout">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {LAYOUTS.map(l => (
@@ -456,7 +456,7 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
               ))}
             </div>
           </FieldGroup>
-          <FieldGroup label="Warna Accent">
+          <FieldGroup label="Accent Color">
             <ColorSwatch value={banner.accent_color ?? '#DC2626'} onChange={v => set('accent_color', v as never)} />
           </FieldGroup>
           <FieldGroup label="Icon">
@@ -475,28 +475,28 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
               ))}
             </div>
           </FieldGroup>
-          <FieldGroup label="Badge Label (opsional)">
+          <FieldGroup label="Badge Label (optional)">
             <div className="flex gap-2">
-              <Input value={banner.badge_label ?? ''} onChange={v => set('badge_label', v as never)} placeholder="misal: DISKON 30%" className="flex-1" />
+              <Input value={banner.badge_label ?? ''} onChange={v => set('badge_label', v as never)} placeholder="e.g., 30% OFF" className="flex-1" />
               <input type="color" value={banner.badge_color ?? '#DC2626'} onChange={e => set('badge_color', e.target.value as never)} className="w-10 h-10 rounded cursor-pointer border border-slate-200" />
             </div>
           </FieldGroup>
         </Section>
 
         {/* Pricing */}
-        <Section title="Harga & Penawaran" icon={TrendingUp} defaultOpen={false}>
-          <Toggle value={banner.show_price ?? true} onChange={v => set('show_price', v)} label="Tampilkan harga" />
+        <Section title="Pricing & Offer" icon={TrendingUp} defaultOpen={false}>
+          <Toggle value={banner.show_price ?? true} onChange={v => set('show_price', v)} label="Show price" />
           {banner.show_price && (
             <div className="grid grid-cols-2 gap-3">
-              <FieldGroup label="Harga Asli (Rp)">
+              <FieldGroup label="Original Price (Rp)">
                 <Input type="number" value={String(banner.original_price ?? '')} onChange={v => set('original_price', parseInt(v) as never)} placeholder="64000" />
               </FieldGroup>
-              <FieldGroup label="Harga Diskon (Rp)">
+              <FieldGroup label="Discounted Price (Rp)">
                 <Input type="number" value={String(banner.discounted_price ?? '')} onChange={v => set('discounted_price', v ? parseInt(v) as never : null as never)} placeholder="44800" />
               </FieldGroup>
               <div className="col-span-2">
-                <FieldGroup label="Label Period">
-                  <Input value={banner.billing_period ?? '/bulan'} onChange={v => set('billing_period', v as never)} placeholder="/bulan" />
+                <FieldGroup label="Period Label">
+                  <Input value={banner.billing_period ?? '/month'} onChange={v => set('billing_period', v as never)} placeholder="/month" />
                 </FieldGroup>
               </div>
             </div>
@@ -505,7 +505,7 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
 
         {/* Targeting */}
         <Section title="Targeting" icon={Target} defaultOpen={false}>
-          <FieldGroup label="Lifecycle Stage" hint="Kosongkan untuk semua stage">
+          <FieldGroup label="Lifecycle Stage" hint="Leave empty to target all stages">
             <ChipSelect
               value={banner.target_lifecycle ?? []}
               onChange={v => set('target_lifecycle', v as never)}
@@ -535,9 +535,9 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
 
         {/* A/B Test */}
         <Section title="A/B Testing" icon={BarChart2} defaultOpen={false}>
-          <Toggle value={banner.is_ab_test ?? false} onChange={v => set('is_ab_test', v)} label="Aktifkan A/B Test" />
+          <Toggle value={banner.is_ab_test ?? false} onChange={v => set('is_ab_test', v)} label="Enable A/B Test" />
           {banner.is_ab_test && (
-            <FieldGroup label="Traffic ke Variant B (%)" hint="50% = split sama rata">
+            <FieldGroup label="Traffic to Variant B (%)" hint="50% = equal split">
               <div className="flex items-center gap-3">
                 <input
                   type="range"
@@ -557,12 +557,12 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
         </Section>
 
         {/* Schedule & Cap */}
-        <Section title="Jadwal & Frequency Cap" icon={Clock} defaultOpen={false}>
+        <Section title="Schedule & Frequency Cap" icon={Clock} defaultOpen={false}>
           <div className="grid grid-cols-2 gap-3">
-            <FieldGroup label="Mulai">
+            <FieldGroup label="Start">
               <Input type="datetime-local" value={banner.starts_at ? banner.starts_at.slice(0, 16) : ''} onChange={v => set('starts_at', v ? new Date(v).toISOString() as never : null as never)} />
             </FieldGroup>
-            <FieldGroup label="Berakhir">
+            <FieldGroup label="End">
               <Input type="datetime-local" value={banner.ends_at ? banner.ends_at.slice(0, 16) : ''} onChange={v => set('ends_at', v ? new Date(v).toISOString() as never : null as never)} />
             </FieldGroup>
           </div>
@@ -584,7 +584,7 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
               />
               <span className="text-sm font-bold text-slate-700 w-8 text-right">{banner.priority ?? 50}</span>
             </div>
-            <p className="text-xs text-slate-400">Banner dengan priority lebih tinggi muncul duluan saat multiple banners match</p>
+            <p className="text-xs text-slate-400">Higher priority banners appear first when multiple banners match</p>
           </FieldGroup>
         </Section>
 
@@ -602,7 +602,7 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
             {saving ? <RotateCcw className="w-4 h-4 animate-spin" /> :
              saved ? <Check className="w-4 h-4" /> :
              <Save className="w-4 h-4" />}
-            {saving ? 'Menyimpan...' : saved ? 'Tersimpan!' : 'Simpan Banner'}
+            {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Banner'}
           </button>
           <button
             type="button"
@@ -641,18 +641,18 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">A/B Test</span>
-                <span className={`font-medium ${banner.is_ab_test ? 'text-blue-600' : 'text-slate-400'}`}>{banner.is_ab_test ? `Ya (${banner.variant_allocation_percentage ?? 50}% → B)` : 'Tidak'}</span>
+                <span className={`font-medium ${banner.is_ab_test ? 'text-blue-600' : 'text-slate-400'}`}>{banner.is_ab_test ? `Yes (${banner.variant_allocation_percentage ?? 50}% → B)` : 'No'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Active</span>
-                <span className={`font-medium ${banner.is_active ? 'text-emerald-600' : 'text-red-500'}`}>{banner.is_active ? 'Ya' : 'Tidak'}</span>
+                <span className={`font-medium ${banner.is_active ? 'text-emerald-600' : 'text-red-500'}`}>{banner.is_active ? 'Yes' : 'No'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Target</span>
                 <span className="font-medium text-slate-700">
                   {banner.target_lifecycle?.length
                     ? banner.target_lifecycle.join(', ')
-                    : 'Semua stage'}
+                    : 'All stages'}
                 </span>
               </div>
             </div>

@@ -212,7 +212,7 @@ function SlideInBanner({
             <PriceDisplay
               original={banner.original_price}
               discounted={banner.discounted_price}
-              period={banner.billing_period ?? '/bulan'}
+              period={banner.billing_period ?? '/month'}
               theme={banner.theme}
             />
           </div>
@@ -310,7 +310,7 @@ function ModalBanner({
               <PriceDisplay
                 original={banner.original_price}
                 discounted={banner.discounted_price}
-                period={banner.billing_period ?? '/bulan'}
+                period={banner.billing_period ?? '/month'}
                 theme={banner.theme}
               />
             </div>
@@ -328,7 +328,7 @@ function ModalBanner({
               onClick={onDismiss}
               className={`text-xs ${tokens.muted} hover:${tokens.text} text-center transition-colors py-1`}
             >
-              {banner.cta_action === 'DISMISS' ? '' : 'Tidak sekarang'}
+              {banner.cta_action === 'DISMISS' ? '' : 'Not now'}
             </button>
           </div>
         </div>

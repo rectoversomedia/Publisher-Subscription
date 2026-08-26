@@ -41,8 +41,8 @@ export default function NewBannerPage() {
           <ArrowLeft className="w-4 h-4 text-slate-600" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Banner Baru</h1>
-          <p className="text-sm text-slate-500 mt-1">Buat offer banner Tempo+ baru</p>
+          <h1 className="text-2xl font-bold text-slate-900">Create New Banner</h1>
+          <p className="text-sm text-slate-500 mt-1">Create a new Tempo+ offer banner</p>
         </div>
       </div>
 

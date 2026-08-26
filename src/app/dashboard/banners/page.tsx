@@ -79,7 +79,7 @@ function BannerRow({ banner, onDelete }: {
             <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
               banner.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
             }`}>
-              {banner.is_active ? 'Aktif' : 'Nonaktif'}
+              {banner.is_active ? 'Active' : 'Inactive'}
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1 line-clamp-1">{banner.headline}</p>
@@ -111,7 +111,7 @@ function BannerRow({ banner, onDelete }: {
                 )}
               </>
             ) : (
-              <span className="text-xs text-slate-400">Belum ada data</span>
+              <span className="text-xs text-slate-400">No data yet</span>
             )}
           </div>
         </div>
@@ -164,7 +164,7 @@ export default function BannersPage() {
   useEffect(() => { fetchBanners(); }, [fetchBanners]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Hapus banner ini?')) return;
+    if (!confirm('Delete this banner?')) return;
     setDeletingId(id);
     try {
       await fetch(`/api/v1/banners/${id}`, { method: 'DELETE' });
@@ -186,8 +186,8 @@ export default function BannersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Banner Manager</h1>
-          <p className="text-sm text-slate-500 mt-1">Kelola semua offer banner Tempo+</p>
+          <h1 className="text-2xl font-bold text-slate-900">Offer Banner Manager</h1>
+          <p className="text-sm text-slate-500 mt-1">Manage all Tempo+ offer banners</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -200,7 +200,7 @@ export default function BannersPage() {
             href="/dashboard/banners/new"
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700"
           >
-            <Plus className="w-4 h-4" /> Banner Baru
+            <Plus className="w-4 h-4" /> New Banner
           </Link>
         </div>
       </div>
@@ -222,16 +222,16 @@ export default function BannersPage() {
               <LayoutGrid className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="text-lg font-bold">{activeCount} Banner Aktif</div>
-              <div className="text-xs text-blue-200">{banners.length} total banner</div>
+              <div className="text-lg font-bold">{activeCount} Active Banners</div>
+              <div className="text-xs text-blue-200">{banners.length} total banners</div>
             </div>
           </div>
           <Link
             href="/dashboard/banners/new"
             className="flex items-center gap-2 px-4 py-2 bg-white text-blue-700 rounded-lg text-sm font-bold hover:bg-blue-50"
           >
-            <Plus className="w-4 h-4" /> Buat Banner
-          </Link>
+            <Plus className="w-4 h-4" /> Create Banner
+          </button>
         </div>
       </div>
 
@@ -246,7 +246,7 @@ export default function BannersPage() {
                 filter === f ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-50'
               }`}
             >
-              {f === 'all' ? 'Semua' : f === 'active' ? 'Aktif' : 'Nonaktif'}
+              {f === 'all' ? 'All' : f === 'active' ? 'Active' : 'Inactive'}
             </button>
           ))}
         </div>
@@ -255,7 +255,7 @@ export default function BannersPage() {
           onChange={e => setTypeFilter(e.target.value)}
           className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-700"
         >
-          <option value="all">Semua Tipe</option>
+          <option value="all">All Types</option>
           {Object.entries(BANNER_TYPE_LABELS).map(([v, l]) => (
             <option key={v} value={v}>{l}</option>
           ))}
@@ -280,13 +280,13 @@ export default function BannersPage() {
       ) : banners.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
           <LayoutGrid className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <h3 className="text-slate-600 font-semibold mb-1">Belum ada banner</h3>
-          <p className="text-slate-400 text-sm mb-4">Buat banner pertama untuk mulai monetisasi pembaca</p>
+          <h3 className="text-slate-600 font-semibold mb-1">No banners yet</h3>
+          <p className="text-slate-400 text-sm mb-4">Create your first banner to start monetizing readers</p>
           <Link
             href="/dashboard/banners/new"
             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold"
           >
-            <Plus className="w-4 h-4" /> Buat Banner Baru
+            <Plus className="w-4 h-4" /> Create First Banner
           </Link>
         </div>
       ) : (

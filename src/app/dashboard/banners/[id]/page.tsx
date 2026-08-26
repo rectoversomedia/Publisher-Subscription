@@ -89,7 +89,7 @@ export default function EditBannerPage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Yakin hapus banner ini? Tindakan ini tidak bisa dibatalkan.')) return;
+    if (!confirm('Delete this banner? This action cannot be undone.')) return;
     await fetch(`/api/v1/banners/${id}`, { method: 'DELETE' });
     router.push('/dashboard/banners');
   };
@@ -132,7 +132,7 @@ export default function EditBannerPage() {
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                 banner.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
               }`}>
-                {banner.is_active ? 'Aktif' : 'Nonaktif'}
+                {banner.is_active ? 'Active' : 'Inactive'}
               </span>
             </div>
             <p className="text-sm text-slate-500 mt-0.5">{banner.headline}</p>
