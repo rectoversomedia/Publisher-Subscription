@@ -144,7 +144,9 @@ export default function ReaderDetailPage() {
           <ArrowLeft className="w-4 h-4 text-slate-600" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Reader Profile</h1>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {reader.name ?? reader.email ?? 'Reader Profile'}
+          </h1>
           <p className="text-sm text-slate-500 font-mono">{id?.substring(0, 16)}…</p>
         </div>
       </div>
@@ -155,20 +157,26 @@ export default function ReaderDetailPage() {
           {/* Identity Card */}
           <div className="bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
-                <User className="w-5 h-5 text-slate-500" />
+              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                <User className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <div className="text-sm font-semibold text-slate-900">Reader Identity</div>
-                <div className="text-xs text-slate-500">
-                  {reader.external_user_id ?? reader.anonymous_id ?? id?.substring(0, 12)}
+                <div className="text-sm font-bold text-slate-900">
+                  {reader.name ?? reader.email ?? reader.external_user_id ?? reader.anonymous_id ??
+                    `Reader ${id?.substring(0, 8)}`}
                 </div>
+                {reader.email && (
+                  <div className="text-xs text-slate-500">{reader.email}</div>
+                )}
+                {reader.anonymous_id && !reader.name && !reader.email && (
+                  <div className="text-xs text-slate-400">Anon #{reader.anonymous_id.slice(-6)}</div>
+                )}
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Identity Status</span>
-                <span className="font-medium">{String(reader.identity_status ?? '').toLowerCase()}</span>
+                <span className="font-medium capitalize">{String(reader.identity_status ?? '').toLowerCase()}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Subscription</span>

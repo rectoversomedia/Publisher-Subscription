@@ -18,10 +18,29 @@ interface Reader {
   id: string;
   anonymous_id: string | null;
   external_user_id: string | null;
+  email_hash: string | null;
+  name: string | null;
+  email: string | null;
   identity_status: string;
   subscription_status: string;
   last_seen_at: string;
   features: ReaderFeature | null;
+}
+
+function getReaderName(reader: Reader): string {
+  if (reader.name) return reader.name;
+  if (reader.email) return reader.email;
+  if (reader.identity_status === 'REGISTERED' || reader.identity_status === 'KNOWN') return 'Known Reader';
+  if (reader.anonymous_id) return `Anon #${reader.anonymous_id.slice(-6)}`;
+  return 'Unknown';
+}
+
+function getIdentityLabel(reader: Reader): string {
+  if (reader.name) return reader.name;
+  if (reader.email) return reader.email;
+  if (reader.identity_status === 'REGISTERED' || reader.identity_status === 'KNOWN') return 'Known';
+  if (reader.anonymous_id) return `Anon #${reader.anonymous_id.slice(-6)}`;
+  return 'Unknown';
 }
 
 function getScoreColor(score: number, type: 'propensity' | 'churn' | 'engagement' | 'price'): string {
@@ -101,6 +120,8 @@ function ReadersContent() {
   const filteredReaders = search
     ? readers.filter((r) =>
         r.id.includes(search) ||
+        r.name?.toLowerCase().includes(search.toLowerCase()) ||
+        r.email?.toLowerCase().includes(search.toLowerCase()) ||
         r.anonymous_id?.includes(search) ||
         r.external_user_id?.includes(search)
       )
@@ -144,7 +165,7 @@ function ReadersContent() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Search by reader ID, anonymous ID..."
+            placeholder="Search by name, email, reader ID..."
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -179,7 +200,7 @@ function ReadersContent() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/50">
-                {['Reader ID', 'Identity', 'Subscription', 'Engagement', 'Propensity', 'Price Sens.', 'Churn Risk', 'Est. LTV', 'Last Seen', 'Recommended Action'].map((h) => (
+                {['Name / Identity', 'Subscription', 'Engagement', 'Propensity', 'Price Sens.', 'Churn Risk', 'Est. LTV', 'Last Seen', 'Action'].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">
                     {h}
                   </th>
@@ -205,13 +226,17 @@ function ReadersContent() {
                   >
                     <td className="px-4 py-3 font-mono text-xs text-slate-600">{reader.id.substring(0, 12)}…</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                        reader.identity_status === 'REGISTERED' || reader.identity_status === 'KNOWN'
-                          ? 'bg-blue-50 text-blue-700 border border-blue-100'
-                          : 'bg-slate-50 text-slate-600 border border-slate-100'
-                      }`}>
-                        {reader.identity_status.toLowerCase()}
-                      </span>
+                      <div className="font-medium text-slate-900 text-sm">{getReaderName(reader)}</div>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                          reader.identity_status === 'REGISTERED' || reader.identity_status === 'KNOWN'
+                            ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                            : 'bg-slate-50 text-slate-500 border border-slate-100'
+                        }`}>
+                          {reader.identity_status.toLowerCase()}
+                        </span>
+                        {reader.email && <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{reader.email}</span>}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${

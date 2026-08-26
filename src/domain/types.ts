@@ -51,6 +51,9 @@ export interface Reader {
   external_user_id: string | null;
   anonymous_id: string | null;
   email_hash: string | null;
+  // Personal info (populated on register/login)
+  name: string | null;
+  email: string | null;
   identity_status: IdentityStatus;
   subscription_status: SubscriptionStatus;
   current_plan_id: string | null;

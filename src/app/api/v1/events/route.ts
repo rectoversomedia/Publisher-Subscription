@@ -144,10 +144,30 @@ async function processEvent(event: IngestEvent): Promise<void> {
   }
 
   if (resolvedReaderId) {
-    await supabaseAdmin
-      .from('readers')
-      .update({ last_seen_at: new Date().toISOString() })
-      .eq('id', resolvedReaderId);
+    // Build update payload — start with last_seen_at
+    const updatePayload: Record<string, unknown> = { last_seen_at: new Date().toISOString() };
+
+    // Capture name/email on register, login, or newsletter_signup events
+    const personalEvents = ['register', 'login', 'newsletter_signup', 'subscription_success'];
+    if (personalEvents.includes(event.event)) {
+      const name = (event.properties?.name as string | undefined) ?? (event.properties?.user_name as string | undefined);
+      const email = (event.properties?.email as string | undefined) ?? (event.properties?.user_email as string | undefined);
+      if (name) updatePayload.name = name;
+      if (email) updatePayload.email = email;
+      // If email is captured, upgrade identity status
+      if (email && resolvedReaderId) {
+        const { data: existing } = await supabaseAdmin
+          .from('readers')
+          .select('identity_status, email')
+          .eq('id', resolvedReaderId)
+          .single();
+        if (existing && !existing.email) {
+          updatePayload.identity_status = existing.identity_status === 'ANONYMOUS' ? 'REGISTERED' : existing.identity_status;
+        }
+      }
+    }
+
+    await supabaseAdmin.from('readers').update(updatePayload).eq('id', resolvedReaderId);
 
     await recalculateReaderFeatures(resolvedReaderId, event.event === 'article_view' && isPremium);
   }
