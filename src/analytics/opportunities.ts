@@ -1,54 +1,86 @@
 // ============================================================
-// Opportunity Detection Engine
+// Opportunity Detection Engine — uses direct Supabase REST API
 // ============================================================
 
-import { supabaseAdmin } from '@/lib/supabase';
-import type { Opportunity } from '@/domain/types';
+const SB_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-export async function detectOpportunities(): Promise<Opportunity[]> {
-  const opportunities: Opportunity[] = [];
+async function sbRpc(sql: string) {
+  const res = await fetch(`${SB_URL}/rest/v1/rpc/exec_sql`, {
+    method: 'POST',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ p_sql: sql }),
+  });
+  return res.json();
+}
+
+async function sbQuery(table: string, params: string = '') {
+  const url = `${SB_URL}/rest/v1/${table}?${params}`;
+  const res = await fetch(url, {
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
+async function sbInsert(table: string, data: unknown) {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal',
+    },
+    body: JSON.stringify(data),
+  });
+  return res.ok;
+}
+
+export async function detectOpportunities() {
+  const opportunities = [];
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
   // 1. High propensity readers receiving generic treatment
-  const { data: genericHighProp } = await supabaseAdmin
-    .from('decisions')
-    .select('reader_id, selected_action')
-    .in('selected_action', ['ALLOW_FREE', 'SHOW_NEWSLETTER_GATE'])
-    .gte('timestamp', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
-    .limit(5000);
+  const genericHighProp = await sbQuery(
+    'decisions',
+    `selected_action=in.(ALLOW_FREE,SHOW_NEWSLETTER_GATE)&timestamp=gte.${sevenDaysAgo}&select=reader_id`
+  ) as Array<{reader_id: string}>;
 
-  if (genericHighProp && genericHighProp.length > 100) {
-    const { count } = await supabaseAdmin
-      .from('reader_features')
-      .select('*', { count: 'exact', head: true })
-      .gte('subscription_propensity', 60);
+  const hpCount = await (async () => {
+    const data = await sbQuery('reader_features', 'subscription_propensity=gte.60&select=id&limit=100000') as unknown[];
+    return data.length;
+  })();
 
+  if (genericHighProp.length > 100) {
     opportunities.push({
       id: `opp_high_prop_generic_${Date.now()}`,
       type: 'high_propensity_generic_offer',
       title: 'High-propensity readers receiving generic treatment',
-      description: `${count ?? 0} readers with high subscription propensity are receiving free access or newsletter gates instead of subscription offers. This represents significant lost revenue opportunity.`,
-      severity: count && count > 500 ? 'HIGH' : 'MEDIUM',
+      description: `${hpCount} readers with high subscription propensity are receiving free access instead of subscription offers.`,
+      severity: hpCount > 500 ? 'HIGH' : 'MEDIUM',
       status: 'DETECTED',
-      estimated_audience: count ?? 0,
-      estimated_incremental_revenue: (count ?? 0) * 290000 * 0.03,
+      estimated_audience: hpCount,
+      estimated_incremental_revenue: hpCount * 290000 * 0.03,
       recommended_action: 'Test personalized monthly vs annual offer for high-propensity readers',
-      supporting_metrics: {
-        generic_decisions_7d: genericHighProp.length,
-      },
+      supporting_metrics: { generic_decisions_7d: genericHighProp.length },
       detected_at: new Date().toISOString(),
       resolved_at: null,
     });
   }
 
   // 2. High churn risk population
-  const { data: atRiskFeatures } = await supabaseAdmin
-    .from('reader_features')
-    .select('reader_id, predicted_ltv')
-    .gte('churn_risk', 75);
-
-  const atRiskReaderIds = new Set(atRiskFeatures?.map((r) => r.reader_id) ?? []);
-  const revenueAtRisk = atRiskFeatures?.reduce((s, r) => s + (r.predicted_ltv ?? 0), 0) ?? 0;
-  const atRiskCount = atRiskReaderIds.size;
+  const atRiskData = await sbQuery('reader_features', 'churn_risk=gte.75&select=predicted_ltv&limit=10000') as Array<{predicted_ltv: number}>;
+  const atRiskCount = atRiskData.length;
+  const revenueAtRisk = atRiskData.reduce((s, r) => s + Number(r.predicted_ltv ?? 0), 0);
 
   if (atRiskCount > 0) {
     opportunities.push({
@@ -68,16 +100,15 @@ export async function detectOpportunities(): Promise<Opportunity[]> {
   }
 
   // 3. Checkout abandonment spike
-  const { data: checkoutEvents } = await supabaseAdmin
-    .from('events')
-    .select('event_name, reader_id')
-    .in('event_name', ['checkout_start', 'checkout_abandon', 'subscription_success'])
-    .gte('timestamp', new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString());
+  const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+  const checkoutEvents = await sbQuery(
+    'events',
+    `event_name=in.(checkout_start,checkout_abandon,subscription_success)&timestamp=gte.${threeDaysAgo}&select=event_name`
+  ) as Array<{event_name: string}>;
 
-  if (checkoutEvents) {
-    const starts = checkoutEvents.filter((e) => e.event_name === 'checkout_start').length;
-    const abandons = checkoutEvents.filter((e) => e.event_name === 'checkout_abandon').length;
-
+  if (checkoutEvents.length > 0) {
+    const starts = checkoutEvents.filter(e => e.event_name === 'checkout_start').length;
+    const abandons = checkoutEvents.filter(e => e.event_name === 'checkout_abandon').length;
     if (starts > 0) {
       const abandonmentRate = abandons / starts;
       if (abandonmentRate > 0.5) {
@@ -85,7 +116,7 @@ export async function detectOpportunities(): Promise<Opportunity[]> {
           id: `opp_abandonment_${Date.now()}`,
           type: 'checkout_abandonment_spike',
           title: 'High checkout abandonment rate',
-          description: `Checkout abandonment rate is ${(abandonmentRate * 100).toFixed(0)}% over the last 3 days. ${starts} checkouts started, ${abandons} abandoned.`,
+          description: `Checkout abandonment rate is ${(abandonmentRate * 100).toFixed(0)}% over the last 3 days.`,
           severity: abandonmentRate > 0.7 ? 'HIGH' : 'MEDIUM',
           status: 'DETECTED',
           estimated_audience: abandons,
@@ -101,31 +132,25 @@ export async function detectOpportunities(): Promise<Opportunity[]> {
 
   // Persist new opportunities
   if (opportunities.length > 0) {
-    const existing = await supabaseAdmin
-      .from('opportunities')
-      .select('type, detected_at')
-      .gte('detected_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+    const recentOpp = await sbQuery(
+      'opportunities',
+      `detected_at=gte.${new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()}&select=type`
+    ) as Array<{type: string}>;
 
-    const existingTypes = new Set(
-      (existing.data ?? []).map((o) => o.type)
-    );
-
-    const newOnes = opportunities.filter((o) => !existingTypes.has(o.type));
+    const existingTypes = new Set(recentOpp.map(o => o.type));
+    const newOnes = opportunities.filter(o => !existingTypes.has(o.type));
     if (newOnes.length > 0) {
-      await supabaseAdmin.from('opportunities').insert(newOnes);
+      await sbInsert('opportunities', newOnes);
     }
   }
 
   return opportunities;
 }
 
-export async function getActiveOpportunities(): Promise<Opportunity[]> {
-  const { data } = await supabaseAdmin
-    .from('opportunities')
-    .select('*')
-    .in('status', ['DETECTED', 'INVESTIGATING'])
-    .order('detected_at', { ascending: false })
-    .limit(20);
-
-  return data as unknown as Opportunity[] ?? [];
+export async function getActiveOpportunities() {
+  const data = await sbQuery(
+    'opportunities',
+    `status=in.(DETECTED,INVESTIGATING)&order=detected_at.desc&limit=20`
+  );
+  return data;
 }

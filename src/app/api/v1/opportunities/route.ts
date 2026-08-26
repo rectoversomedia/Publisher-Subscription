@@ -14,11 +14,11 @@ export async function GET() {
       data: opportunities,
       summary: {
         total: opportunities.length,
-        critical: opportunities.filter((o) => o.severity === 'CRITICAL').length,
-        high: opportunities.filter((o) => o.severity === 'HIGH').length,
-        medium: opportunities.filter((o) => o.severity === 'MEDIUM').length,
-        low: opportunities.filter((o) => o.severity === 'LOW').length,
-        total_estimated_revenue: opportunities.reduce((sum, o) => sum + o.estimated_incremental_revenue, 0),
+        critical: opportunities.filter((o: { severity: string }) => o.severity === 'CRITICAL').length,
+        high: opportunities.filter((o: { severity: string }) => o.severity === 'HIGH').length,
+        medium: opportunities.filter((o: { severity: string }) => o.severity === 'MEDIUM').length,
+        low: opportunities.filter((o: { severity: string }) => o.severity === 'LOW').length,
+        total_estimated_revenue: opportunities.reduce((sum: number, o: { estimated_incremental_revenue: number }) => sum + o.estimated_incremental_revenue, 0),
       },
     });
   } catch (error) {

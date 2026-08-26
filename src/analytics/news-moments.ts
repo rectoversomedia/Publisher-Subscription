@@ -1,59 +1,80 @@
 // ============================================================
-// News Moment Detection
+// News Moment Detection — uses direct Supabase REST API
 // ============================================================
 
-import { supabaseAdmin } from '@/lib/supabase';
-import type { NewsMoment } from '@/domain/types';
+const SB_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-export async function detectNewsMoments(): Promise<NewsMoment[]> {
-  const moments: NewsMoment[] = [];
+async function sbQuery(table: string, params: string = '') {
+  const url = `${SB_URL}/rest/v1/${table}?${params}`;
+  const res = await fetch(url, {
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
+async function sbInsert(table: string, data: unknown) {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal',
+    },
+    body: JSON.stringify(data),
+  });
+  return res.ok;
+}
+
+interface Article { id: string; topic: string; category: string; }
+interface Event { reader_id: string; article_id: string; }
+
+export async function detectNewsMoments() {
+  const moments: Array<Record<string, unknown>> = [];
   const now = new Date();
-  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
-  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-  // Get traffic by topic in last hour
-  const { data: recentEvents } = await supabaseAdmin
-    .from('events')
-    .select('reader_id, article_id, events(article_id)')
-    .eq('event_name', 'article_view')
-    .gte('timestamp', oneHourAgo.toISOString());
-
-  // Get baseline by article
-  const { data: baselineEvents } = await supabaseAdmin
-    .from('events')
-    .select('article_id')
-    .eq('event_name', 'article_view')
-    .gte('timestamp', sevenDaysAgo.toISOString())
-    .lt('timestamp', oneHourAgo.toISOString());
-
-  // Get article topics
-  const { data: articles } = await supabaseAdmin
-    .from('articles')
-    .select('id, topic, category');
-
+  // Get all articles
+  const articles = await sbQuery('articles', 'select=id,topic,category') as Article[];
   if (!articles || articles.length === 0) return [];
 
-  // Calculate per-article baselines
-  const baselineByArticle = new Map<string, number>();
-  for (const event of baselineEvents ?? []) {
-    if (event.article_id) {
-      baselineByArticle.set(
-        event.article_id,
-        (baselineByArticle.get(event.article_id) ?? 0) + 1
-      );
+  const articleMap = new Map(articles.map(a => [a.id, a]));
+
+  // Get recent article views (last hour)
+  const recentEvents = await sbQuery(
+    'events',
+    `event_name=eq.article_view&timestamp=gte.${oneHourAgo}&select=reader_id,article_id`
+  ) as Event[];
+
+  // Get baseline article views (last 7 days, excluding last hour)
+  const baselineEvents = await sbQuery(
+    'events',
+    `event_name=eq.article_view&timestamp=gte.${sevenDaysAgo}&timestamp=lt.${oneHourAgo}&select=article_id`
+  ) as Array<{article_id: string}>;
+
+  // Calculate per-topic baselines and recent traffic
+  const baselineByTopic = new Map<string, number>();
+  const recentByTopic = new Map<string, number>();
+  const readerSetByTopic = new Map<string, Set<string>>();
+
+  for (const event of baselineEvents) {
+    const article = articleMap.get(event.article_id);
+    if (article) {
+      baselineByTopic.set(article.topic, (baselineByTopic.get(article.topic) ?? 0) + 1);
     }
   }
 
-  // Calculate recent traffic per topic
-  const recentByTopic = new Map<string, number>();
-  const recentByCategory = new Map<string, number>();
-  const readerSetByTopic = new Map<string, Set<string>>();
-
-  for (const event of recentEvents ?? []) {
-    const article = articles.find((a) => a.id === event.article_id);
+  for (const event of recentEvents) {
+    const article = articleMap.get(event.article_id);
     if (article) {
       recentByTopic.set(article.topic, (recentByTopic.get(article.topic) ?? 0) + 1);
-      recentByCategory.set(article.category, (recentByCategory.get(article.category) ?? 0) + 1);
       if (event.reader_id) {
         if (!readerSetByTopic.has(article.topic)) {
           readerSetByTopic.set(article.topic, new Set());
@@ -65,33 +86,36 @@ export async function detectNewsMoments(): Promise<NewsMoment[]> {
 
   // Detect anomalies (3x+ baseline)
   for (const article of articles) {
-    const baseline = baselineByArticle.get(article.id) ?? 0;
+    const baseline = baselineByTopic.get(article.topic) ?? 0;
     const baselinePerHour = baseline / (7 * 24);
     const currentTraffic = recentByTopic.get(article.topic) ?? 0;
 
     if (baselinePerHour > 0 && currentTraffic > baselinePerHour * 3) {
       const lift = currentTraffic / Math.max(1, baselinePerHour);
+      const topic = article.topic;
 
-      // Get reader quality
-      const { data: readerFeatures } = await supabaseAdmin
-        .from('reader_features')
-        .select('subscription_propensity')
-        .in('reader_id', Array.from(readerSetByTopic.get(article.topic) ?? []));
-
-      const highPropReaders = readerFeatures?.filter(
-        (r) => (r.subscription_propensity ?? 0) >= 60
-      ).length ?? 0;
+      // Get reader quality for this topic
+      const readerIds = Array.from(readerSetByTopic.get(topic) ?? []);
+      let highPropReaders = 0;
+      if (readerIds.length > 0) {
+        const idsParam = readerIds.map(id => encodeURIComponent(id)).join(',');
+        const features = await sbQuery(
+          'reader_features',
+          `reader_id=in.(${idsParam})&subscription_propensity=gte.60&select=id`
+        );
+        highPropReaders = Array.isArray(features) ? features.length : 0;
+      }
 
       moments.push({
         id: `nm_${article.id}_${Date.now()}`,
-        topic: article.topic,
+        topic,
         category: article.category,
         article_id: article.id,
         baseline_traffic: Math.round(baselinePerHour),
         current_traffic: currentTraffic,
         traffic_lift_percentage: lift * 100 - 100,
         new_readers: 0,
-        returning_readers: readerSetByTopic.get(article.topic)?.size ?? 0,
+        returning_readers: readerSetByTopic.get(topic)?.size ?? 0,
         high_propensity_readers: highPropReaders,
         estimated_incremental_revenue: highPropReaders * 290000 * 0.03,
         severity: lift > 5 ? 'HIGH' : lift > 3 ? 'MEDIUM' : 'LOW',
@@ -102,21 +126,17 @@ export async function detectNewsMoments(): Promise<NewsMoment[]> {
     }
   }
 
-  // Persist new moments
   if (moments.length > 0) {
-    await supabaseAdmin.from('news_moments').insert(moments);
+    await sbInsert('news_moments', moments);
   }
 
   return moments;
 }
 
-export async function getActiveNewsMoments(): Promise<NewsMoment[]> {
-  const { data } = await supabaseAdmin
-    .from('news_moments')
-    .select('*')
-    .eq('status', 'ACTIVE')
-    .order('traffic_lift_percentage', { ascending: false })
-    .limit(10);
-
-  return data as NewsMoment[] ?? [];
+export async function getActiveNewsMoments() {
+  const data = await sbQuery(
+    'news_moments',
+    'status=eq.ACTIVE&order=traffic_lift_percentage.desc&limit=10'
+  );
+  return data;
 }
