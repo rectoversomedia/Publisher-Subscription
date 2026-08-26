@@ -72,7 +72,7 @@ export default function OpportunityDetailPage() {
     LOW: { bg: 'bg-slate-50', text: 'text-slate-600', icon: CheckCircle },
   };
 
-  const sev = severityColors[opportunity.severity] ?? severityColors.LOW;
+  const sev = severityColors[opportunity.severity] ?? severityColors.LOW!;
   const SeverityIcon = sev.icon;
 
   return (

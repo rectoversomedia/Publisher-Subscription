@@ -73,7 +73,7 @@ const ANALYTICS_QUERIES: Record<string, () => Promise<{ result: unknown; summary
     const res = await fetch(`${SB_URL}/rest/v1/reader_features?subscription_propensity=gte.60&select=predicted_ltv`, {
       headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` },
     });
-    const features: Array<{ predicted_ltv: number }> = await res.json() ?? [];
+    const features: Array<{ reader_id: string; predicted_ltv: number }> = await res.json() ?? [];
     const ids = features.map(f => encodeURIComponent(f.reader_id)).join(',');
     if (!ids) return { result: { total: 0 }, summary: 'No high-propensity readers found' };
     const readersRes = await fetch(`${SB_URL}/rest/v1/readers?id=in.(${ids})&subscription_status=eq.NONE&select=id`, {

@@ -2,6 +2,7 @@
 // Uses direct Supabase REST API to avoid connection pool issues
 import { NextRequest, NextResponse } from 'next/server';
 import { explainDecision } from '@/decision';
+import type { RevenueAction, ReasonCode, ReaderFeature } from '@/domain/types';
 
 const SB_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -85,16 +86,15 @@ export async function GET(
     let decisionExplanation = null;
 
     if (latestDecision && features && features.length > 0) {
-      const featureData = features[0];
+      const featureData = features[0] as unknown as ReaderFeature;
       decisionExplanation = {
         ...latestDecision,
         explanation: explainDecision(
           {
             decision_id: latestDecision.id as string,
-            action: latestDecision.selected_action as string,
-            offer: latestDecision.selected_offer_id as string | null,
+            action: latestDecision.selected_action as RevenueAction,
             confidence: (latestDecision.confidence as number) ?? 0.5,
-            reason_codes: (latestDecision.reason_codes as string[]) ?? [],
+            reason_codes: (latestDecision.reason_codes as unknown as ReasonCode[]) ?? [],
             decision_version: (latestDecision.decision_version as string) ?? 'rules-v1',
           },
           featureData
