@@ -20,20 +20,6 @@ async function sbQuery(table: string, params: string = '') {
   return res.json();
 }
 
-async function sbRpc(sql: string) {
-  const res = await fetch(`${SB_URL}/rest/v1/rpc/exec_sql`, {
-    method: 'POST',
-    headers: {
-      'apikey': SB_KEY,
-      'Authorization': `Bearer ${SB_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal',
-    },
-    body: JSON.stringify({ p_sql: sql }),
-  });
-  return res.ok;
-}
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

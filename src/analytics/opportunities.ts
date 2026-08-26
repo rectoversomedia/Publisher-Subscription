@@ -5,19 +5,6 @@
 const SB_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-async function sbRpc(sql: string) {
-  const res = await fetch(`${SB_URL}/rest/v1/rpc/exec_sql`, {
-    method: 'POST',
-    headers: {
-      'apikey': SB_KEY,
-      'Authorization': `Bearer ${SB_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ p_sql: sql }),
-  });
-  return res.json();
-}
-
 async function sbQuery(table: string, params: string = '') {
   const url = `${SB_URL}/rest/v1/${table}?${params}`;
   const res = await fetch(url, {

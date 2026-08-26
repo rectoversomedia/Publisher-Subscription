@@ -32,12 +32,26 @@ async function sbCount(table: string, params: string = '') {
   return count ? parseInt(count) : 0;
 }
 
+// Fetch distinct reader_ids from events for a time range (workaround for no DISTINCT COUNT in PostgREST)
+async function sbDistinctReaders(since: string): Promise<number> {
+  const url = `${SB_URL}/rest/v1/events?timestamp=gte.${since}&select=reader_id`;
+  const res = await fetch(url, {
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+    },
+  });
+  if (!res.ok) return 0;
+  const rows = (await res.json()) as Array<{ reader_id: string | null }>;
+  const unique = new Set(rows.map(r => r.reader_id).filter(Boolean));
+  return unique.size;
+}
+
 export async function getDashboardKPIs() {
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
   const [
-    totalReaders,
     newSubs30d,
     activeSubs,
     knownReaders,
@@ -47,7 +61,6 @@ export async function getDashboardKPIs() {
     highPropNonSubs,
     ltvRows,
   ] = await Promise.all([
-    sbCount('readers', ''),
     sbCount('readers', `subscription_status=eq.ACTIVE&subscription_started_at=gte.${thirtyDaysAgo}`),
     sbCount('readers', 'subscription_status=eq.ACTIVE'),
     sbCount('readers', 'identity_status=neq.ANONYMOUS'),
@@ -58,11 +71,15 @@ export async function getDashboardKPIs() {
     sbQuery('reader_features', `predicted_ltv=gt.0&select=predicted_ltv&limit=1000`),
   ]);
 
+  // Count readers with at least one event in the last 30 days (corrected active_readers_30d)
+  const activeReaders30d = await sbDistinctReaders(thirtyDaysAgo);
+
   const totalRevenue30d = (conversionsData as Array<{revenue: number}>)
     .reduce((sum, c) => sum + (c.revenue ?? 0), 0);
   const totalConversions30d = (conversionsData as Array<unknown>).length;
   const subscriptionConversion = knownReaders > 0 ? activeSubs / knownReaders : 0;
-  const revenuePer1000 = totalReaders > 0 ? (totalRevenue30d / totalReaders) * 1000 : 0;
+  // Use 30-day active readers as denominator (not all-time totalReaders)
+  const revenuePer1000 = activeReaders30d > 0 ? (totalRevenue30d / activeReaders30d) * 1000 : 0;
   const revenueOpportunity = (highPropNonSubs as Array<{predicted_ltv: number}>)
     .reduce((sum, r) => sum + Number(r.predicted_ltv ?? 0), 0);
   const nonZeroLtv = (ltvRows as Array<{predicted_ltv: number}>)
@@ -78,7 +95,7 @@ export async function getDashboardKPIs() {
     high_propensity_audience: highPropensity,
     revenue_opportunity: revenueOpportunity,
     subscribers_at_risk: atRisk,
-    active_readers_30d: totalReaders,
+    active_readers_30d: activeReaders30d,
     new_subscribers_30d: newSubs30d,
     churned_subscribers_30d: 0,
     total_conversions_30d: totalConversions30d,
@@ -90,15 +107,16 @@ export async function getDashboardKPIs() {
 export async function getSubscriptionFunnel() {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
+  // Count distinct readers with events in the last 30 days (not event rows)
+  const uniqueReaders = await sbDistinctReaders(thirtyDaysAgo);
+
   const [
-    uniqueReaders,
     knownReaders,
     paywallExposed,
     offerClicks,
     checkoutStarts,
     subscriptions,
   ] = await Promise.all([
-    sbCount('events', `timestamp=gte.${thirtyDaysAgo}`),
     sbCount('readers', 'identity_status=neq.ANONYMOUS'),
     sbCount('events', `event_name=eq.paywall_view&timestamp=gte.${thirtyDaysAgo}`),
     sbCount('events', `event_name=eq.subscription_offer_click&timestamp=gte.${thirtyDaysAgo}`),
@@ -204,3 +222,73 @@ export async function getActiveExperiments() {
   const data = await sbQuery('experiments', `status=in.(RUNNING,PAUSED)&select=id,name,status,primary_metric,traffic_percentage&order=created_at.desc&limit=10`) as Array<Record<string, unknown>>;
   return data;
 }
+
+export async function getContentAttribution(days: number = 30) {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+
+  const data = await sbQuery(
+    'conversions',
+    `conversion_type=eq.subscription&occurred_at=gte.${since}&select=revenue,article_id,attribution_source,occurred_at`
+  ) as Array<{ revenue: number; article_id: string | null; attribution_source: string | null; occurred_at: string }>;
+
+  if (data.length === 0) {
+    return {
+      total_conversions: 0,
+      total_revenue: 0,
+      by_category: [],
+      by_attribution_source: {},
+      avg_time_to_convert_days: null,
+    };
+  }
+
+  // Group by article category (via article join)
+  const articleIds = data
+    .map((d) => d.article_id)
+    .filter(Boolean) as string[];
+
+  let categoryMap: Record<string, { conversions: number; revenue: number }> = {};
+
+  if (articleIds.length > 0) {
+    const uniqueIds = [...new Set(articleIds)];
+    const idsParam = uniqueIds.map((id) => encodeURIComponent(id)).join(',');
+    const articlesData = await sbQuery(
+      'articles',
+      `id=in.(${idsParam})&select=id,category`
+    ) as Array<{ id: string; category: string | null }>;
+
+    const articleCategoryMap = new Map(articlesData.map((a) => [a.id, a.category ?? 'Unknown']));
+
+    for (const conv of data) {
+      if (!conv.article_id) continue;
+      const cat = articleCategoryMap.get(conv.article_id) ?? 'Unknown';
+      if (!categoryMap[cat]) categoryMap[cat] = { conversions: 0, revenue: 0 };
+      categoryMap[cat].conversions += 1;
+      categoryMap[cat].revenue += conv.revenue ?? 0;
+    }
+  }
+
+  const byCategory = Object.entries(categoryMap)
+    .map(([category, stats]) => ({
+      category,
+      conversions: stats.conversions,
+      revenue: stats.revenue,
+      avg_revenue: stats.conversions > 0 ? stats.revenue / stats.conversions : 0,
+    }))
+    .sort((a, b) => b.revenue - a.revenue);
+
+  // Group by attribution source
+  const bySource: Record<string, number> = {};
+  for (const conv of data) {
+    const src = conv.attribution_source ?? 'direct';
+    bySource[src] = (bySource[src] ?? 0) + (conv.revenue ?? 0);
+  }
+
+  return {
+    total_conversions: data.length,
+    total_revenue: data.reduce((s, d) => s + (d.revenue ?? 0), 0),
+    by_category: byCategory,
+    by_attribution_source: bySource,
+    avg_time_to_convert_days: null, // requires first-touch attribution join
+  };
+}
+

@@ -3,7 +3,7 @@
 // Score: 0-100
 // ============================================================
 
-import type { ReaderFeature, ScoringWeights } from '@/domain/types';
+import type { ReaderFeature, ScoringWeights, LifecycleStage } from '@/domain/types';
 
 const DEFAULT_WEIGHTS: ScoringWeights = {
   engagement_recency: 20,
@@ -41,11 +41,10 @@ export function calculateEngagementScore(
 
   // Consistency: 10% — returning vs one-time visitor
   const sessions7d = features.sessions_7d ?? 0;
-  const sessions30d = features.sessions_30d ?? 1;
-  const expectedWeekly = sessions30d / 4;
-  const consistencyScore = expectedWeekly > 0
-    ? Math.min(100, (sessions7d / expectedWeekly) * 100)
-    : 0;
+  const sessions30d = features.sessions_30d ?? 0;
+  // Require at least 4 sessions in 30d to avoid inflated scores for one-time visitors
+  const expectedWeekly = Math.max(1, sessions30d / 4);
+  const consistencyScore = Math.min(100, (sessions7d / expectedWeekly) * 100);
 
   const score = (
     (recencyScore * w.engagement_recency) +
@@ -256,6 +255,43 @@ export function calculateTopicAffinity(inputs: TopicAffinityInput[]): Map<string
 }
 
 // ============================================================
+// Lifecycle Stage Calculator
+// Derives reader lifecycle stage from behavioral signals
+// ============================================================
+
+export function calculateLifecycleStage(
+  features: Partial<ReaderFeature>,
+  subscriptionStatus: string,
+  churnRisk: number
+): LifecycleStage {
+  // Subscriber lifecycle
+  if (subscriptionStatus === 'ACTIVE') {
+    if (churnRisk >= 70) return 'AT_RISK';
+    return 'SUBSCRIBED';
+  }
+
+  // Lapsed subscriber lifecycle
+  if (subscriptionStatus === 'EXPIRED' || subscriptionStatus === 'CANCELLED') {
+    if ((features.engagement_score ?? 0) > 50) return 'WINBACK';
+    return 'LAPSED';
+  }
+
+  // Non-subscriber lifecycle — derive from behavioral signals
+  const sessions30d = features.sessions_30d ?? 0;
+  const articles30d = features.articles_30d ?? 0;
+  const paywallViews30d = features.paywall_views_30d ?? 0;
+  const offerClicks30d = features.offer_clicks_30d ?? 0;
+  const propensity = features.subscription_propensity ?? 0;
+
+  if (sessions30d === 0) return 'NEW';
+  if (sessions30d <= 2) return 'CASUAL';
+  if (paywallViews30d >= 3 || offerClicks30d >= 1) return 'CONVERTING';
+  if (propensity >= 60) return 'HIGH_INTENT';
+  if (articles30d >= 5) return 'ENGAGED';
+  return 'CASUAL';
+}
+
+// ============================================================
 // Full Feature Recalculation
 // ============================================================
 
@@ -266,7 +302,8 @@ export function recalculateAllScores(
     churn: ChurnSignals;
     price: PriceSensitivitySignals;
     ltv: LTvSignals;
-  }
+  },
+  subscriptionStatus: string = 'NONE'
 ): Partial<ReaderFeature> {
   const engagement = calculateEngagementScore(features);
   const propensity = calculateSubscriptionPropensity(signals.propensity, features);
@@ -274,9 +311,18 @@ export function recalculateAllScores(
   const churnRisk = calculateChurnRisk(signals.churn, features);
   const ltv = calculateEstimatedLTV({ ...signals.ltv, engagement_score: engagement, subscription_propensity: propensity, churn_risk: churnRisk });
 
-  // Content loyalty = engagement * topic breadth
-  const topicBreadth = features.registrations ?? 0;
+  // Content loyalty = engagement * topic breadth (distinct topics engaged)
+  const topicBreadth = features.topic_affinity_count ?? 0;
   const contentLoyalty = Math.round((engagement * Math.min(100, topicBreadth * 5)) / 100);
+
+  // Lifecycle stage derived from all other signals
+  const lifecycleStage = calculateLifecycleStage(
+    { ...features, engagement_score: engagement, subscription_propensity: propensity },
+    subscriptionStatus,
+    churnRisk
+  );
+
+  const now = new Date().toISOString();
 
   return {
     ...features,
@@ -286,5 +332,10 @@ export function recalculateAllScores(
     content_loyalty: contentLoyalty,
     churn_risk: churnRisk,
     predicted_ltv: ltv,
+    lifecycle_stage: lifecycleStage,
+    lifecycle_stage_changed_at: features.lifecycle_stage !== lifecycleStage ? now : (features.lifecycle_stage_changed_at ?? now),
+    // Metering fields default to 0 / 30-day reset if not set
+    free_articles_read: features.free_articles_read ?? 0,
+    paywall_meter_reset_at: features.paywall_meter_reset_at ?? now,
   };
 }

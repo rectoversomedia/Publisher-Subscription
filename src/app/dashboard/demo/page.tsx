@@ -2,312 +2,243 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Play, Pause, RotateCcw, Zap, Brain, Target, RefreshCw, TrendingUp, CheckCircle, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Play, Pause, RotateCcw, Zap, Brain, CheckCircle, X, ChevronRight, BookOpen, Clock, TrendingUp, Target, User } from 'lucide-react';
 
-// ── Demo Reader Scenarios ────────────────────────────────────
+// ── 6-Day Subscription Journey: Andi the Tempo Reader ────────
 
-const DEMO_READERS = [
+const JOURNEY_STEPS = [
   {
-    id: 'demo_casual',
-    name: 'Casual Visitor',
-    description: 'New anonymous visitor from Google',
-    avatar: 'A',
-    features: {
-      engagement_score: 15,
-      subscription_propensity: 18,
-      price_sensitivity: 85,
-      content_loyalty: 5,
-      churn_risk: 0,
-      predicted_ltv: 24000,
-    },
-    topic_affinity: { Politics: 12, Lifestyle: 45, Sports: 38 },
-    subscription_status: 'NONE',
-    identity_status: 'ANONYMOUS',
-    days_since_last_visit: 0,
-    sessions_7d: 1,
-    sessions_30d: 1,
-    articles_30d: 2,
-    premium_articles_30d: 0,
-    expectedAction: 'ALLOW_FREE',
-    expectedConfidence: 0.9,
+    day: 1,
+    label: 'Kunjungan Pertama',
+    description: 'Andi menemukan Tempo dari Google, baca artikel gratis',
+    action: 'ALLOW_FREE',
+    confidence: 0.9,
+    reasonCodes: ['NEW_READER', 'LOW_ENGAGEMENT'],
+    meterPosition: [0, 3],
+    lifecycleStage: 'NEW',
+    events: ['session_start', 'page_view', 'article_view'],
+    whatHappens: 'Revenue Brain mendeteksi pembaca baru. Meter artikel gratis = 0/3. Decision: ALLOW_FREE — beri akses gratis untuk bangun kesan pertama.',
+    pitch: 'Selamat datang! Baca gratis 3 artikel premium pertama Anda.',
   },
   {
-    id: 'demo_engaged',
-    name: 'Engaged Reader',
-    description: 'Returning reader with high engagement',
-    avatar: 'B',
-    features: {
-      engagement_score: 72,
-      subscription_propensity: 78,
-      price_sensitivity: 68,
-      content_loyalty: 55,
-      churn_risk: 0,
-      predicted_ltv: 387000,
-    },
-    topic_affinity: { Politics: 68, Investigation: 84, Economy: 52 },
-    subscription_status: 'NONE',
-    identity_status: 'REGISTERED',
-    days_since_last_visit: 2,
-    sessions_7d: 5,
-    sessions_30d: 18,
-    articles_30d: 31,
-    premium_articles_30d: 22,
-    expectedAction: 'SHOW_MONTHLY',
-    expectedConfidence: 0.82,
+    day: 3,
+    label: 'Kembali & Terlibat',
+    description: 'Andi kembali, baca 2 artikel lagi',
+    action: 'ALLOW_FREE',
+    confidence: 0.88,
+    reasonCodes: ['LOW_SUBSCRIPTION_PROPENSITY', 'MEDIUM_SUBSCRIPTION_PROPENSITY'],
+    meterPosition: [2, 3],
+    lifecycleStage: 'CASUAL',
+    events: ['session_start', 'article_view', 'article_view', 'article_complete'],
+    whatHappens: 'Engagement meningkat. Meter = 2/3. Andi masih dalam mode eksplorasi — belum siap subscribe tapi sudah menunjukkan minat. Decision: ALLOW_FREE.',
+    pitch: 'Senang Anda kembali. Masih 1 artikel gratis tersisa.',
   },
   {
-    id: 'demo_high_intent',
-    name: 'High Intent Reader',
-    description: 'Investigative journalism loyalist',
-    avatar: 'C',
-    features: {
-      engagement_score: 91,
-      subscription_propensity: 93,
-      price_sensitivity: 21,
-      content_loyalty: 88,
-      churn_risk: 0,
-      predicted_ltv: 487000,
-    },
-    topic_affinity: { Investigation: 94, Politics: 89, Business: 51 },
-    subscription_status: 'NONE',
-    identity_status: 'REGISTERED',
-    days_since_last_visit: 1,
-    sessions_7d: 12,
-    sessions_30d: 38,
-    articles_30d: 67,
-    premium_articles_30d: 58,
-    expectedAction: 'SHOW_ANNUAL',
-    expectedConfidence: 0.88,
+    day: 5,
+    label: 'Artikel Premium Terakhir',
+    description: 'Andi baca investigative report — artikel premium',
+    action: 'SHOW_SOFT_PAYWALL',
+    confidence: 0.88,
+    reasonCodes: ['METER_NEARLY_EXHAUSTED', 'PREMIUM_ARTICLE'],
+    meterPosition: [3, 3],
+    lifecycleStage: 'HIGH_INTENT',
+    events: ['session_start', 'article_view', 'scroll_50', 'paywall_view'],
+    whatHappens: 'Meter = 3/3 — batas tercapai. Andi membaca investigative content yang punya conversion rate tertinggi. Revenue Brain: SHOW_SOFT_PAYWALL. Ini momen kritis!',
+    pitch: '"Anda sudah membaca 3 artikel gratis. Subscribe Tempo+ Rp 64.000/bulan untuk akses tak terbatas ke seluruh investigative report."',
   },
   {
-    id: 'demo_former',
-    name: 'Former Subscriber',
-    description: 'Expired subscriber re-engaging',
-    avatar: 'D',
-    features: {
-      engagement_score: 65,
-      subscription_propensity: 55,
-      price_sensitivity: 72,
-      content_loyalty: 62,
-      churn_risk: 0,
-      predicted_ltv: 220000,
-    },
-    topic_affinity: { Politics: 78, Opinion: 61 },
-    subscription_status: 'EXPIRED',
-    identity_status: 'KNOWN',
-    days_since_last_visit: 3,
-    sessions_7d: 4,
-    sessions_30d: 12,
-    articles_30d: 24,
-    premium_articles_30d: 18,
-    expectedAction: 'SHOW_WINBACK',
-    expectedConfidence: 0.78,
+    day: 5,
+    label: 'Andi Klik "Langganan"',
+    description: 'Soft paywall muncul, Andi tertarik tapi belum checkout',
+    action: 'SHOW_MONTHLY',
+    confidence: 0.82,
+    reasonCodes: ['LIFECYCLE_HIGH_INTENT', 'HIGH_SUBSCRIPTION_PROPENSITY', 'INVESTIGATIVE_CONTENT'],
+    meterPosition: [3, 3],
+    lifecycleStage: 'HIGH_INTENT',
+    events: ['paywall_click', 'subscription_offer_view'],
+    whatHappens: 'Andi klik soft paywall, melihat offer Tempo+ Monthly. Revenue Brain mendeteksi investigative content affinity + high propensity → SHOW_MONTHLY dengan confidence 82%.',
+    pitch: '"Tempo+ Monthly — Rp 64.000/bulan. Akses semua investigative report, analisis, dan konten eksklusif tanpa batas."',
   },
   {
-    id: 'demo_at_risk',
-    name: 'At-Risk Subscriber',
-    description: 'Active subscriber with declining engagement',
-    avatar: 'E',
-    features: {
-      engagement_score: 28,
-      subscription_propensity: 82,
-      price_sensitivity: 35,
-      content_loyalty: 70,
-      churn_risk: 82,
-      predicted_ltv: 312000,
-    },
-    topic_affinity: { Politics: 85, Investigation: 72 },
-    subscription_status: 'ACTIVE',
-    identity_status: 'KNOWN',
-    days_since_last_visit: 8,
-    sessions_7d: 1,
-    sessions_30d: 8,
-    articles_30d: 12,
-    premium_articles_30d: 10,
-    expectedAction: 'SHOW_SAVE_OFFER',
-    expectedConfidence: 0.85,
+    day: 6,
+    label: 'Checkout Dimulai',
+    description: 'Andi mulai checkout tapi ragu di halaman payment',
+    action: 'SHOW_SAVE_OFFER',
+    confidence: 0.78,
+    reasonCodes: ['RECENT_CHECKOUT_ABANDONMENT', 'HIGH_SUBSCRIPTION_PROPENSITY'],
+    meterPosition: [3, 3],
+    lifecycleStage: 'CONVERTING',
+    events: ['checkout_start', 'paywall_view'],
+    whatHappens: 'Andi mulai checkout tapi ragu di halaman payment. Revenue Brain mendeteksi checkout abandon risk → SHOW_SAVE_OFFER sebagai intervensi last-chance sebelum drop-off.',
+    pitch: '"Tunggu! Kami kasih diskon 30% bulan pertama — hanya Rp 44.800. Jangan sampai kehilangan akses ke konten yang sudah Anda andalkan."',
+  },
+  {
+    day: 6,
+    label: 'Andi Subscribe!',
+    description: 'Andi berhasil subscribe Tempo+ Monthly',
+    action: 'NO_ACTION',
+    confidence: 1.0,
+    reasonCodes: ['ACTIVE_SUBSCRIBER'],
+    meterPosition: null,
+    lifecycleStage: 'SUBSCRIBED',
+    events: ['subscription_success', 'conversion_recorded'],
+    whatHappens: 'Conversion tercatat! Revenue Brain melakukan attribution — konversi ini attribution ke Investigative content, session terakhir dari paywall click. Andi sekarang SUBSCRIBED.',
+    pitch: 'Selamat! Andi sekarang subscriber Tempo+. Revenue Brain berhasil mengkonversi pembaca engaged → subscriber.',
   },
 ];
 
-// ── Article Content ────────────────────────────────────────
+const METERING_BG = {
+  0: { bg: 'bg-slate-50',  border: 'border-slate-200', text: 'text-slate-600' },
+  1: { bg: 'bg-blue-50',   border: 'border-blue-200',   text: 'text-blue-600' },
+  2: { bg: 'bg-amber-50',  border: 'border-amber-200',  text: 'text-amber-600' },
+  3: { bg: 'bg-red-50',    border: 'border-red-200',    text: 'text-red-600' },
+};
 
-const ARTICLE = {
+const LIFECYCLE_COLORS: Record<string, { bg: string; text: string }> = {
+  NEW:        { bg: 'bg-slate-100', text: 'text-slate-600' },
+  CASUAL:     { bg: 'bg-blue-50',  text: 'text-blue-600'  },
+  HIGH_INTENT:{ bg: 'bg-amber-50',  text: 'text-amber-600'  },
+  CONVERTING: { bg: 'bg-orange-50',text: 'text-orange-600' },
+  SUBSCRIBED: { bg: 'bg-emerald-50',text:'text-emerald-600' },
+};
+
+const ACTION_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  ALLOW_FREE:     { bg: 'bg-slate-50',   text: 'text-slate-700',  border: 'border-slate-200' },
+  SHOW_SOFT_PAYWALL: { bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200' },
+  SHOW_MONTHLY:   { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+  SHOW_SAVE_OFFER:{ bg: 'bg-red-50',    text: 'text-red-700',    border: 'border-red-200' },
+  NO_ACTION:      { bg: 'bg-slate-50',   text: 'text-slate-500',  border: 'border-slate-200' },
+};
+
+const ACTION_LABELS: Record<string, string> = {
+  ALLOW_FREE: 'Free Access',
+  SHOW_SOFT_PAYWALL: 'Soft Paywall',
+  SHOW_MONTHLY: 'Monthly Subscription',
+  SHOW_SAVE_OFFER: 'Save Offer',
+  NO_ACTION: 'No Action (Subscribed)',
+};
+
+// ── Demo Article ──────────────────────────────────────────────
+
+const DEMO_ARTICLE = {
   title: 'Investigasi: compounds Korupsi dalam Proyek Infrastruktur Negara',
   category: 'Investigasi',
   author: 'Tim Investigasi Tempo',
-  is_premium: true,
-  read_time: '12 min read',
-  content: `Surat dari dokumen yang diperoleh Tempo menunjukkan bahwa sebagian besar anggaran proyek dialihkan ke rekening pribadi melalui jaringan perusahaan cangkang. Menurut sumber yang dekat dengan investigasi, setidaknya tiga pejabat senior terlibat dalam pengalihan dana tersebut.
-
-"Ini adalah salah satu kasus korupsi terbesar yang pernah kami dokumentasikan," kata seorang investigator yang menolak disebutkan namanya. "Jaringan ini sudah beroperasi selama hampir satu dekade."
-
-Para ahli mengatakan bahwa regulasi yang lemah dan kurangnya pengawasan dari lembaga penegak hukum memungkinkan praktik ini terus berlangsung. Meskipun beberapa upaya telah dilakukan untuk memberantas korupsi, hasilnya masih jauh dari memadai.
-
-Dalam dokumen yang kami miliki, terlihat jelas bagaimana dana publik dialirkan melalui serangkaian transaksi yang dirancang untuk menyamarkan asalnya. Setiap transaksi tampak sah di atas kertas, tetapi ketika ditelusuri secara keseluruhan, pola yang mencurigakan menjadi sangat jelas.
-
-Pihak berwenang telah diberitahu tentang temuan ini, tetapi hingga saat ini belum ada tindakan yang diambil. Tempo akan terus memantau situasi ini dan memberikan pembaruan seiring berjalannya waktu.`,
+  readTime: '12 min',
+  isPremium: true,
 };
 
-// ── Helper Functions ────────────────────────────────────────
+// ── Score Bars ───────────────────────────────────────────────
 
-function ScoreBar({ label, value, max = 100, color }: { label: string; value: number; max?: number; color?: string }) {
-  const pct = Math.min(100, (value / max) * 100);
+function ScoreBar({ label, value, color = 'blue' }: { label: string; value: number; color?: string }) {
   const colors: Record<string, string> = {
-    blue: 'bg-blue-500',
-    emerald: 'bg-emerald-500',
-    amber: 'bg-amber-500',
-    red: 'bg-red-500',
-    purple: 'bg-purple-500',
+    blue: 'bg-blue-500', emerald: 'bg-emerald-500',
+    amber: 'bg-amber-500', red: 'bg-red-500', purple: 'bg-purple-500',
   };
   return (
     <div className="space-y-1">
       <div className="flex justify-between text-xs">
-        <span className="text-slate-600">{label}</span>
-        <span className="font-semibold text-slate-800">{value}</span>
+        <span className="text-white/60">{label}</span>
+        <span className="font-semibold text-white">{value}</span>
       </div>
-      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-        <div className={`h-full ${colors[color ?? 'blue']} rounded-full transition-all duration-700`} style={{ width: `${pct}%` }} />
+      <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+        <div className={`h-full ${colors[color]} rounded-full transition-all duration-700`}
+          style={{ width: `${Math.min(100, value)}%` }} />
       </div>
     </div>
   );
 }
 
-function fmt(value: number): string {
-  return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
+// ── Meter Display ────────────────────────────────────────────
+
+function MeterDisplay({ current, limit, compact = false }: { current: number; limit: number; compact?: boolean }) {
+  const pct = Math.round((current / limit) * 100);
+  const color = current >= limit ? 'red' : current === limit - 1 ? 'amber' : 'blue';
+  const colors: Record<string, string> = { red: 'bg-red-500', amber: 'bg-amber-500', blue: 'bg-blue-500' };
+  const dotColors: Record<string, string> = { red: 'bg-red-400', amber: 'bg-amber-400', blue: 'bg-blue-400' };
+
+  return (
+    <div className={`${compact ? 'flex items-center gap-2' : 'bg-white/5 rounded-xl p-3'}`}>
+      <div className="text-xs text-white/40 mb-1">{compact ? 'Meter' : 'Free Article Meter'}</div>
+      <div className="flex items-center gap-1.5">
+        {Array.from({ length: limit }).map((_, i) => (
+          <div
+            key={i}
+            className={`w-3 h-3 rounded-full border transition-all ${
+              i < current
+                ? `${colors[color]} border-transparent`
+                : 'bg-white/10 border-white/20'
+            }`}
+          />
+        ))}
+        <span className="text-xs font-semibold text-white ml-1">{current}/{limit}</span>
+      </div>
+      {!compact && (
+        <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
+          <div className={`h-full ${colors[color]} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+        </div>
+      )}
+    </div>
+  );
 }
 
-const ACTION_LABELS: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  ALLOW_FREE: { label: 'Free Access', color: 'text-slate-700', bg: 'bg-slate-50', border: 'border-slate-200' },
-  SHOW_REGISTRATION: { label: 'Registration Wall', color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-200' },
-  SHOW_NEWSLETTER_GATE: { label: 'Newsletter Gate', color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-200' },
-  SHOW_MONTHLY: { label: 'Monthly Subscription', color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
-  SHOW_ANNUAL: { label: 'Annual Subscription', color: 'text-emerald-800', bg: 'bg-emerald-100', border: 'border-emerald-300' },
-  SHOW_TRIAL: { label: 'Free Trial', color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200' },
-  SHOW_WINBACK: { label: 'Winback Offer', color: 'text-orange-700', bg: 'bg-orange-50', border: 'border-orange-200' },
-  SHOW_SAVE_OFFER: { label: 'Save Offer', color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-200' },
-  NO_ACTION: { label: 'No Action', color: 'text-slate-500', bg: 'bg-slate-100', border: 'border-slate-200' },
-};
-
-const REASON_EXPLANATIONS: Record<string, string[]> = {
-  ALLOW_FREE: ['New reader', 'Low subscription propensity'],
-  SHOW_REGISTRATION: ['Medium propensity', 'Registered reader'],
-  SHOW_MONTHLY: ['High subscription propensity', 'Medium price sensitivity', 'High engagement'],
-  SHOW_ANNUAL: ['Very high subscription propensity', 'Low price sensitivity', 'Investigative content loyalty', 'Strong engagement'],
-  SHOW_WINBACK: ['Former subscriber', 'Returning with high engagement', 'Re-engagement signal'],
-  SHOW_SAVE_OFFER: ['Active subscriber', 'High churn risk', 'Declining engagement'],
-  SHOW_TRIAL: ['High propensity', 'High price sensitivity', 'Reduce friction'],
-};
-
-// ── Main Demo Component ──────────────────────────────────────
+// ── Main Demo Component ────────────────────────────────────────
 
 export default function DemoPage() {
-  const router = useRouter();
-  const [activeReader, setActiveReader] = useState(DEMO_READERS[2]!); // Start with high-intent
-  const [events, setEvents] = useState<string[]>([]);
-  const [simulating, setSimulating] = useState(false);
-  const [scoreHistory, setScoreHistory] = useState<number[]>([]);
-  const [readProgress, setReadProgress] = useState(0);
-  const [sessionId] = useState(() => `demo_${Date.now()}`);
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [showConversion, setShowConversion] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const emitEvent = useCallback(async (eventName: string, properties: Record<string, unknown> = {}) => {
-    try {
-      await fetch('/api/v1/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event_name: eventName,
-          reader_id: activeReader.id,
-          session_id: sessionId,
-          article_id: 'demo_article_001',
-          properties,
-        }),
-      });
-    } catch {
-      // non-blocking — demo continues even if event emission fails
-    }
-  }, [activeReader.id, sessionId]);
+  const step = JOURNEY_STEPS[activeStep]!;
+  const prevStep = activeStep > 0 ? JOURNEY_STEPS[activeStep - 1] : null;
+  const isLast = activeStep === JOURNEY_STEPS.length - 1;
+  const meterCurrent = step.meterPosition?.[0] ?? 0;
+  const meterLimit = step.meterPosition?.[1] ?? 3;
 
-  const actionConfig = ACTION_LABELS[activeReader.expectedAction] ?? ACTION_LABELS['ALLOW_FREE']!;
-  const reasons = REASON_EXPLANATIONS[activeReader.expectedAction] ?? [];
+  const playJourney = useCallback(() => {
+    setPlaying(true);
+    setShowResult(false);
+  }, []);
 
-  const simulateReader = useCallback(() => {
-    if (!simulating) return;
-    const eventSequence: Array<() => void> = [
-      () => { emitEvent('session_start', { source: 'demo' }); setEvents((prev) => [...prev.slice(-6), 'Session Start']); },
-      () => { emitEvent('page_view', { url: '/demo', referrer: 'google' }); setEvents((prev) => [...prev.slice(-6), 'Page View']); },
-      () => { setReadProgress(15); emitEvent('article_view', { article_id: 'demo_article_001', category: 'Investigasi', is_premium: true }); setEvents((prev) => [...prev.slice(-6), 'Article View']); },
-      () => { setReadProgress(35); emitEvent('scroll_depth', { depth: 25 }); setEvents((prev) => [...prev.slice(-6), 'Read 25%']); },
-      () => { setReadProgress(55); emitEvent('scroll_depth', { depth: 50 }); setEvents((prev) => [...prev.slice(-6), 'Read 50%']); },
-      () => { setReadProgress(75); emitEvent('scroll_depth', { depth: 75 }); setEvents((prev) => [...prev.slice(-6), 'Read 75%']); },
-      () => {
-        setReadProgress(100);
-        emitEvent('article_completed', { article_id: 'demo_article_001' });
-        emitEvent('decision_requested', {
-          reader_id: activeReader.id,
-          action: activeReader.expectedAction,
-          confidence: activeReader.expectedConfidence,
-        });
-        setEvents((prev) => [...prev.slice(-6), 'Revenue Brain Decision']);
-      },
-      () => {
-        emitEvent('decision_made', {
-          action: activeReader.expectedAction,
-          confidence: activeReader.expectedConfidence,
-          execution_mode: 'DEMO',
-        });
-        setLoggedIn(true);
-        setEvents((prev) => [...prev.slice(-6), 'Treatment Shown']);
-      },
-      () => {
-        if (activeReader.expectedAction.includes('MONTHLY') || activeReader.expectedAction.includes('ANNUAL')) {
-          emitEvent('conversion_started', { offer_type: activeReader.expectedAction });
-          setShowConversion(true);
-        }
-        setSimulating(false);
-        setEvents((prev) => [...prev.slice(-6), 'Demo Complete ✓']);
-      },
-    ];
+  const pauseJourney = useCallback(() => {
+    setPlaying(false);
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
 
-    let step = 0;
-    const interval = setInterval(() => {
-      if (step < eventSequence.length) {
-        eventSequence[step]?.();
-        step++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 1400);
-
-    return () => clearInterval(interval);
-  }, [simulating, emitEvent, activeReader]);
+  const resetJourney = useCallback(() => {
+    setPlaying(false);
+    setActiveStep(0);
+    setShowResult(false);
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
 
   useEffect(() => {
-    if (simulating) {
-      const cleanup = simulateReader();
-      return cleanup;
+    if (!playing) {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      return;
     }
-  }, [simulating, simulateReader]);
+    if (activeStep >= JOURNEY_STEPS.length - 1) {
+      setPlaying(false);
+      setShowResult(true);
+      return;
+    }
+    timerRef.current = setTimeout(() => {
+      setActiveStep(prev => prev + 1);
+    }, 3200);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [playing, activeStep]);
 
-  const resetDemo = () => {
-    setActiveReader(DEMO_READERS[2]!);
-    setEvents([]);
-    setSimulating(false);
-    setScoreHistory([]);
-    setReadProgress(0);
-    setLoggedIn(false);
-    setShowConversion(false);
-  };
+  const lifecycleColors = LIFECYCLE_COLORS[step.lifecycleStage] ?? LIFECYCLE_COLORS.NEW;
+  const actionColors = ACTION_COLORS[step.action] ?? ACTION_COLORS.ALLOW_FREE;
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Live Executive Demo</h1>
-          <p className="text-sm text-slate-500 mt-1">Experience Tempo Reader Revenue Brain in action</p>
+          <h1 className="text-2xl font-bold text-slate-900">Demo: 6-Hari Journey ke Subscription</h1>
+          <p className="text-sm text-slate-500 mt-1">Ikuti perjalanan "Andi" — dari pembaca baru → subscriber Tempo+</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full">
@@ -317,320 +248,279 @@ export default function DemoPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-        {/* Left: Reader Selector + Scores */}
-        <div className="space-y-4">
-          {/* Reader Selector */}
+      {/* Day Progress Timeline */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold text-slate-900 text-sm">6-Hari Subscription Journey</h2>
+          <span className="text-xs text-slate-400">Revenue Brain decisions</span>
+        </div>
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          {JOURNEY_STEPS.map((s, i) => {
+            const lc = LIFECYCLE_COLORS[s.lifecycleStage] ?? LIFECYCLE_COLORS.NEW;
+            const isActive = i === activeStep;
+            const isDone = i < activeStep;
+            return (
+              <button
+                key={i}
+                onClick={() => { setActiveStep(i); setPlaying(false); setShowResult(false); }}
+                className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all cursor-pointer ${
+                  isActive ? 'bg-blue-50 border-2 border-blue-400 ring-2 ring-blue-100' :
+                  isDone ? 'bg-emerald-50 border border-emerald-200' :
+                  'bg-slate-50 border border-slate-200 hover:bg-slate-100'
+                }`}
+              >
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                  isActive ? 'bg-blue-600 text-white' :
+                  isDone ? 'bg-emerald-500 text-white' :
+                  'bg-slate-200 text-slate-600'
+                }`}>
+                  {isDone ? <CheckCircle className="w-4 h-4" /> : i + 1}
+                </div>
+                <span className="text-xs font-medium text-slate-700">Day {s.day}</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${lc!.bg} ${lc!.text} font-medium`}>
+                  {s.lifecycleStage}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+        {/* Left: Step Detail */}
+        <div className="xl:col-span-2 space-y-4">
+          {/* Step Card */}
           <div className="bg-white rounded-xl border border-slate-200 p-5">
-            <h2 className="font-semibold text-slate-900 text-sm mb-4">Select Demo Reader</h2>
-            <div className="space-y-2">
-              {DEMO_READERS.map((reader) => (
-                <button
-                  key={reader.id}
-                  onClick={() => {
-                    setActiveReader(reader);
-                    setEvents([]);
-                    setSimulating(false);
-                    setReadProgress(0);
-                    setLoggedIn(false);
-                    setShowConversion(false);
-                  }}
-                  className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${
-                    activeReader.id === reader.id
-                      ? 'bg-blue-50 border border-blue-200'
-                      : 'bg-slate-50 border border-transparent hover:bg-slate-100'
-                  }`}
-                >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
-                    activeReader.id === reader.id
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-200 text-slate-600'
-                  }`}>
-                    {reader.avatar}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-slate-900 truncate">{reader.name}</div>
-                    <div className="text-xs text-slate-500">{reader.description}</div>
-                  </div>
-                  <div className="flex flex-col items-end gap-1">
-                    <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
-                      reader.expectedAction === 'SHOW_ANNUAL' ? 'bg-emerald-100 text-emerald-700' :
-                      reader.expectedAction === 'SHOW_MONTHLY' ? 'bg-blue-100 text-blue-700' :
-                      'bg-slate-100 text-slate-600'
-                    }`}>
-                      {reader.expectedAction.replace('SHOW_', '')}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
+                  isLast ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'
+                }`}>
+                  <Clock className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs text-slate-400">Day {step.day}</div>
+                  <div className="font-semibold text-slate-900 text-sm">{step.label}</div>
+                </div>
+              </div>
+              <span className={`text-[10px] px-2 py-1 rounded-full font-semibold ${lifecycleColors!.bg} ${lifecycleColors!.text}`}>
+                {step.lifecycleStage}
+              </span>
+            </div>
+            <p className="text-sm text-slate-600 leading-relaxed">{step.description}</p>
+          </div>
+
+          {/* Revenue Brain Decision */}
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl border border-slate-700 p-5 text-white">
+            <div className="flex items-center gap-2 mb-4">
+              <Brain className="w-5 h-5 text-blue-400" />
+              <span className="font-semibold text-sm">Revenue Brain Decision</span>
+            </div>
+
+            <div className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold border mb-4 ${actionColors!.bg} ${actionColors!.text} ${actionColors!.border}`}>
+              {ACTION_LABELS[step.action] ?? step.action}
+            </div>
+
+            <div className="flex items-center gap-2 mb-4 text-xs text-white/60">
+              <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-full bg-blue-500 rounded-full" style={{ width: `${step.confidence * 100}%` }} />
+              </div>
+              <span className="font-semibold text-white">{Math.round(step.confidence * 100)}% confidence</span>
+            </div>
+
+            {step.meterPosition && (
+              <MeterDisplay current={meterCurrent} limit={meterLimit} />
+            )}
+
+            {!step.meterPosition && (
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-center">
+                <CheckCircle className="w-5 h-5 text-emerald-400 mx-auto mb-1" />
+                <span className="text-sm font-semibold text-emerald-300">Subscription Active!</span>
+              </div>
+            )}
+
+            <div className="mt-4 pt-4 border-t border-white/10">
+              <div className="text-xs text-white/40 uppercase tracking-wide font-semibold mb-2">Reason Codes</div>
+              <div className="flex flex-wrap gap-1.5">
+                {step.reasonCodes.map((code) => (
+                  <span key={code} className="text-[10px] px-2 py-1 bg-white/10 rounded-full text-white/70">
+                    {code.replace(/_/g, ' ')}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="flex gap-2">
+            {!playing && !isLast ? (
+              <button onClick={playJourney} className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700">
+                <Play className="w-4 h-4" /> Play Journey
+              </button>
+            ) : playing ? (
+              <button onClick={pauseJourney} className="flex-1 flex items-center justify-center gap-2 py-3 bg-amber-500 text-white rounded-xl text-sm font-semibold hover:bg-amber-600">
+                <Pause className="w-4 h-4" /> Pause
+              </button>
+            ) : null}
+            <button onClick={resetJourney} className="flex items-center justify-center gap-1.5 py-3 px-4 border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50">
+              <RotateCcw className="w-4 h-4" /> Reset
+            </button>
+          </div>
+
+          {/* Navigation arrows */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => { if (activeStep > 0) setActiveStep(prev => prev - 1); }}
+              disabled={activeStep === 0}
+              className="flex-1 flex items-center justify-center gap-1 py-2 border border-slate-200 rounded-xl text-sm text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              ← Previous
+            </button>
+            <button
+              onClick={() => { if (!isLast) setActiveStep(prev => prev + 1); }}
+              disabled={isLast}
+              className="flex-1 flex items-center justify-center gap-1 py-2 border border-slate-200 rounded-xl text-sm text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+
+        {/* Center: Article + Paywall */}
+        <div className="xl:col-span-3 space-y-4">
+          {/* Article Preview */}
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="px-6 pt-5 pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xs font-semibold text-red-600 uppercase tracking-wider">{DEMO_ARTICLE.category}</span>
+                <span className="text-xs text-slate-400">·</span>
+                <span className="text-xs text-slate-500">{DEMO_ARTICLE.readTime}</span>
+                <span className="text-xs text-slate-400">·</span>
+                <span className="text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">PREMIUM</span>
+                {step.meterPosition && (
+                  <>
+                    <span className="text-xs text-slate-400">·</span>
+                    <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${
+                      (METERING_BG as Record<number, {bg: string; text: string}>)[meterCurrent]?.bg ?? 'bg-slate-50'
+                    } ${(METERING_BG as Record<number, {bg: string; text: string}>)[meterCurrent]?.text ?? 'text-slate-600'}`}>
+                      {meterCurrent}/3 free
                     </span>
+                  </>
+                )}
+              </div>
+              <h1 className="text-lg font-bold text-slate-900 leading-tight">{DEMO_ARTICLE.title}</h1>
+              <div className="flex items-center gap-2 mt-2">
+                <div className="w-6 h-6 rounded-full bg-slate-200" />
+                <span className="text-sm text-slate-600">{DEMO_ARTICLE.author}</span>
+              </div>
+            </div>
+            <div className="px-6 py-4">
+              <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                <p>Surat dari dokumen yang diperoleh Tempo menunjukkan bahwa sebagian besar anggaran proyek dialihkan ke rekening pribadi melalui jaringan perusahaan cangkang...</p>
+                <p>"Ini adalah salah satu kasus korupsi terbesar yang pernah kami dokumentasikan," kata seorang investigator yang menolak disebutkan namanya...</p>
+              </div>
+            </div>
+
+            {/* Paywall Treatment for steps 2+ */}
+            {activeStep >= 2 && (
+              <div className="mx-6 mb-5 bg-gradient-to-br from-slate-50 to-blue-50 border border-blue-100 rounded-xl p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Target className="w-5 h-5 text-blue-600" />
+                  <span className="text-sm font-semibold text-blue-900">Tempo+ Offer</span>
+                </div>
+            <div className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-bold border mb-3 ${actionColors!.bg} ${actionColors!.text} ${actionColors!.border}`}>
+                  {ACTION_LABELS[step.action] ?? step.action}
+                </div>
+                {step.action !== 'ALLOW_FREE' && step.action !== 'NO_ACTION' && (
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="text-xs text-slate-500 flex items-center gap-1">
+                      <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Akses tak terbatas investigative report
+                    </div>
+                    <div className="text-xs text-slate-500 flex items-center gap-1">
+                      <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Tanpa batas waktu
+                    </div>
                   </div>
-                </button>
+                )}
+                {step.action === 'SHOW_SAVE_OFFER' && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-3">
+                    <span className="text-sm font-bold text-red-700">Diskon 30% bulan pertama — Rp 44.800!</span>
+                  </div>
+                )}
+                {step.action === 'SHOW_MONTHLY' && (
+                  <div className="text-base font-bold text-slate-900 mb-1">Rp 64.000<span className="text-sm font-normal text-slate-500">/bulan</span></div>
+                )}
+                {step.action === 'ALLOW_FREE' && (
+                  <div className="text-sm text-slate-600">
+                    Masih <span className="font-bold text-blue-600">{3 - (step.meterPosition?.[0] ?? 0)}</span> artikel gratis tersisa.
+                  </div>
+                )}
+                <div className="text-xs text-blue-700 bg-blue-100 rounded-lg px-3 py-2 italic">
+                  "{step.pitch}"
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Event Log */}
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <h3 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <Zap className="w-4 h-4 text-blue-500" />
+              Event Log — Day {step.day}
+            </h3>
+            <div className="space-y-1.5">
+              {step.events.map((event, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 rounded-lg px-3 py-2">
+                  <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                    event.includes('subscription') || event.includes('conversion') ? 'bg-emerald-500' :
+                    event.includes('paywall') ? 'bg-amber-500' :
+                    event.includes('checkout') ? 'bg-red-500' :
+                    'bg-blue-400'
+                  }`} />
+                  <code className="font-mono text-slate-700">{event}</code>
+                </div>
               ))}
             </div>
           </div>
 
-          {/* Revenue Brain Scores */}
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl border border-slate-700 p-5 text-white">
-            <div className="flex items-center gap-2 mb-4">
-              <Brain className="w-4 h-4 text-blue-400" />
-              <span className="font-semibold text-sm">Revenue Brain Scores</span>
-            </div>
-            <div className="space-y-3 mb-4">
-              <ScoreBar label="Engagement" value={activeReader.features.engagement_score} color="blue" />
-              <ScoreBar label="Subscription Propensity" value={activeReader.features.subscription_propensity} color="emerald" />
-              <ScoreBar label="Price Sensitivity" value={activeReader.features.price_sensitivity} color="amber" />
-              <ScoreBar label="Content Loyalty" value={activeReader.features.content_loyalty} color="purple" />
-              {activeReader.subscription_status === 'ACTIVE' && (
-                <ScoreBar label="Churn Risk" value={activeReader.features.churn_risk} color="red" />
-              )}
-            </div>
-            <div className="pt-3 border-t border-white/10">
-              <div className="text-xs text-white/50">Estimated LTV</div>
-              <div className="text-lg font-bold text-white">{fmt(activeReader.features.predicted_ltv)}</div>
-            </div>
-          </div>
-
-          {/* Simulate Button */}
-          <button
-            onClick={() => setSimulating(!simulating)}
-            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-colors ${
-              simulating
-                ? 'bg-amber-500 text-white hover:bg-amber-600'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
-            }`}
-          >
-            {simulating ? (
-              <><Pause className="w-4 h-4" /> Pause Simulation</>
-            ) : (
-              <><Play className="w-4 h-4" /> Simulate Reader Journey</>
-            )}
-          </button>
-
-          <button onClick={resetDemo} className="w-full flex items-center justify-center gap-2 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50">
-            <RotateCcw className="w-4 h-4" /> Reset Demo
-          </button>
-        </div>
-
-        {/* Center: Article Preview + Treatment */}
-        <div className="xl:col-span-2 space-y-4">
-          {/* Article Preview */}
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            {/* Article Header */}
-            <div className="px-6 pt-6 pb-4 border-b border-slate-100">
+          {/* Attribution Result */}
+          {showResult && (
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs font-semibold text-tempo-red uppercase tracking-wider">{ARTICLE.category}</span>
-                <span className="text-xs text-slate-400">·</span>
-                <span className="text-xs text-slate-500">{ARTICLE.read_time}</span>
-                {ARTICLE.is_premium && (
-                  <>
-                    <span className="text-xs text-slate-400">·</span>
-                    <span className="text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">PREMIUM</span>
-                  </>
-                )}
+                <CheckCircle className="w-6 h-6 text-emerald-600" />
+                <h3 className="font-bold text-emerald-900 text-lg">Konversi Berhasil!</h3>
               </div>
-              <h1 className="text-xl font-bold text-slate-900 leading-tight">{ARTICLE.title}</h1>
-              <div className="flex items-center gap-2 mt-3">
-                <div className="w-6 h-6 rounded-full bg-slate-200" />
-                <span className="text-sm text-slate-600">{ARTICLE.author}</span>
-              </div>
-            </div>
-
-            {/* Reading Progress */}
-            <div className="h-0.5 bg-slate-100">
-              <div
-                className="h-full bg-blue-500 transition-all duration-500"
-                style={{ width: `${readProgress}%` }}
-              />
-            </div>
-
-            {/* Article Body */}
-            <div className="px-6 py-5">
-              <div className="text-sm text-slate-700 leading-relaxed space-y-4">
-                {ARTICLE.content.split('\n\n').map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-              </div>
-            </div>
-
-            {/* Paywall Treatment */}
-            {readProgress > 60 && (
-              <div className="mx-6 mb-6 bg-gradient-to-br from-slate-50 to-blue-50 border border-blue-100 rounded-xl p-5 animate-fade-in">
-                <div className="flex items-center gap-3 mb-3">
-                  <Target className="w-5 h-5 text-blue-600" />
-                  <span className="text-sm font-semibold text-blue-900">Tempo Reader Revenue Brain Decision</span>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="bg-white/80 rounded-lg p-3">
+                  <div className="text-xs text-emerald-600 mb-1">Attribution Source</div>
+                  <div className="font-semibold text-slate-900 text-sm">{DEMO_ARTICLE.category} Content</div>
                 </div>
-
-                <div className="flex items-center gap-4 mb-4">
-                  <div className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold border ${actionConfig.bg} ${actionConfig.color} ${actionConfig.border}`}>
-                    {actionConfig.label}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                    <div className="w-16 h-1 bg-slate-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-500 rounded-full" style={{ width: `${activeReader.expectedConfidence * 100}%` }} />
-                    </div>
-                    {Math.round(activeReader.expectedConfidence * 100)}% confidence
-                  </div>
+                <div className="bg-white/80 rounded-lg p-3">
+                  <div className="text-xs text-emerald-600 mb-1">Revenue</div>
+                  <div className="font-semibold text-slate-900 text-sm">Rp 64.000/bulan</div>
                 </div>
-
-                {reasons.length > 0 && (
-                  <div className="space-y-1.5">
-                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Why this decision?</div>
-                    {reasons.map((reason) => (
-                      <div key={reason} className="flex items-center gap-2 text-sm text-slate-700">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
-                        {reason}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Subscription Conversion Panel */}
-            {showConversion && (
-              <div className="mx-6 mb-6 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-xl p-5">
-                <div className="flex items-center gap-3 mb-4">
-                  <CheckCircle className="w-5 h-5 text-emerald-600" />
-                  <span className="text-sm font-semibold text-emerald-900">Reader Converted!</span>
-                  <span className="text-xs text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">Live event emitted</span>
+                <div className="bg-white/80 rounded-lg p-3">
+                  <div className="text-xs text-emerald-600 mb-1">Lifecycle</div>
+                  <div className="font-semibold text-slate-900 text-sm">SUBSCRIBED</div>
                 </div>
-                <p className="text-sm text-emerald-800 mb-4">
-                  The <strong>{activeReader.name}</strong> selected {actionConfig.label}.
-                  A <code>conversion_started</code> event was sent to the events API.
-                </p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => router.push('/dashboard/decisions')}
-                    className="text-xs px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
-                  >
-                    View Decisions →
-                  </button>
-                  <button
-                    onClick={() => router.push('/dashboard/readers')}
-                    className="text-xs px-3 py-1.5 bg-white text-emerald-700 border border-emerald-200 rounded-lg hover:bg-emerald-50"
-                  >
-                    View Readers →
-                  </button>
+                <div className="bg-white/80 rounded-lg p-3">
+                  <div className="text-xs text-emerald-600 mb-1">Days to Convert</div>
+                  <div className="font-semibold text-slate-900 text-sm">6 days</div>
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* Event Timeline */}
-          {events.length > 0 && (
-            <div className="bg-white rounded-xl border border-slate-200 p-5">
-              <h3 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                <Zap className="w-4 h-4 text-blue-500" />
-                Live Reader Journey
-              </h3>
-              <div className="space-y-2">
-                {events.map((event, i) => (
-                  <div key={i} className="flex items-center gap-3 text-sm animate-fade-in">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                      i === events.length - 1
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-slate-100 text-slate-500'
-                    }`}>
-                      {i + 1}
-                    </div>
-                    <span className={i === events.length - 1 ? 'font-medium text-slate-900' : 'text-slate-500'}>
-                      {event}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm text-emerald-800 leading-relaxed">
+                Revenue Brain successfully converted Andi from <strong>NEW</strong> → <strong>SUBSCRIBED</strong> in 6 days.
+                The key trigger was the investigative content paywall on Day 5, with save-offer intervention on Day 6 preventing checkout abandonment.
+              </p>
             </div>
           )}
-        </div>
 
-        {/* Right: Decision Summary */}
-        <div className="space-y-4">
-          {/* Decision Result */}
-          <div className="bg-white rounded-xl border border-slate-200 p-5">
-            <h2 className="font-semibold text-slate-900 text-sm mb-4">Decision Result</h2>
-
-            <div className={`inline-flex items-center px-4 py-2.5 rounded-xl text-base font-bold border-2 mb-4 ${actionConfig.bg} ${actionConfig.color} ${actionConfig.border}`}>
-              {actionConfig.label}
-            </div>
-
-            <div className="space-y-3 mb-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Confidence</span>
-                <span className="font-semibold text-slate-900">{Math.round(activeReader.expectedConfidence * 100)}%</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Reader Segment</span>
-                <span className="font-medium text-slate-700">{activeReader.name}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Status</span>
-                <span className={`font-medium ${
-                  activeReader.subscription_status === 'ACTIVE' ? 'text-emerald-600' :
-                  activeReader.subscription_status === 'EXPIRED' ? 'text-red-600' :
-                  'text-slate-600'
-                }`}>
-                  {activeReader.subscription_status === 'NONE' ? 'Non-subscriber' :
-                   activeReader.subscription_status === 'ACTIVE' ? 'Active subscriber' :
-                   activeReader.subscription_status === 'EXPIRED' ? 'Former subscriber' :
-                   activeReader.subscription_status.toLowerCase()}
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-slate-100">
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Why This Decision?</div>
-              <div className="space-y-1.5">
-                {reasons.map((reason) => (
-                  <div key={reason} className="flex items-start gap-2 text-sm text-slate-600">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />
-                    {reason}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Topic Affinity */}
-          <div className="bg-white rounded-xl border border-slate-200 p-5">
-            <h2 className="font-semibold text-slate-900 text-sm mb-4">Topic Affinity</h2>
-            <div className="space-y-3">
-              {Object.entries(activeReader.topic_affinity)
-                .sort(([, a], [, b]) => b - a)
-                .map(([topic, score]) => (
-                  <div key={topic}>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-slate-700 font-medium">{topic}</span>
-                      <span className="text-slate-500">{score}</span>
-                    </div>
-                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
-                        style={{ width: `${score}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
-
-          {/* Key Insight */}
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-5 text-white">
-            <TrendingUp className="w-5 h-5 mb-2 text-blue-200" />
-            <div className="text-sm font-semibold mb-1">Revenue Insight</div>
-            <div className="text-xs text-blue-200 leading-relaxed">
-              {activeReader.id === 'demo_high_intent' && (
-                'This reader has very high investigative content affinity and low price sensitivity. Annual subscription recommended to maximize LTV.'
-              )}
-              {activeReader.id === 'demo_engaged' && (
-                'Medium-high propensity with price sensitivity. Monthly intro offer reduces friction and captures value immediately.'
-              )}
-              {activeReader.id === 'demo_casual' && (
-                'Low propensity, high price sensitivity. Free access builds engagement before any monetization attempt.'
-              )}
-              {activeReader.id === 'demo_former' && (
-                'Former subscriber with re-engagement signals. Winback offer leverages existing brand affinity.'
-              )}
-              {activeReader.id === 'demo_at_risk' && (
-                'Active subscriber with declining engagement. Save offer prevents churn before renewal date.'
-              )}
-            </div>
+          {/* What Happens Now */}
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
+            <h3 className="text-sm font-semibold text-slate-900 mb-2 flex items-center gap-2">
+              <User className="w-4 h-4 text-slate-500" />
+              Apa yang Terjadi?
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed">{step.whatHappens}</p>
           </div>
         </div>
       </div>

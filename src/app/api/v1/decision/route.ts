@@ -18,6 +18,13 @@ const DecisionRequestSchema = z.object({
   }),
 });
 
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error(`timeout_${ms}ms`)), ms)
+  );
+  return Promise.race([promise, timeout]);
+}
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
@@ -34,8 +41,8 @@ export async function POST(request: NextRequest) {
 
     const { reader_id, context } = parsed.data;
 
-    // Get reader with features
-    const { data: reader, error: readerError } = await supabaseAdmin
+    // Get reader with features (3s timeout)
+    const readerQuery = supabaseAdmin
       .from('readers')
       .select(`
         *,
@@ -44,18 +51,22 @@ export async function POST(request: NextRequest) {
       `)
       .eq('id', reader_id)
       .single();
+    const readerResult = await withTimeout(Promise.resolve(readerQuery), 3000);
+    const { data: reader, error: readerError } = readerResult;
 
     if (readerError || !reader) {
       return NextResponse.json({ error: 'Reader not found' }, { status: 404 });
     }
 
-    // Get system config
-    const { data: config } = await supabaseAdmin
+    // Get system config (3s timeout)
+    const configQuery = supabaseAdmin
       .from('system_config')
       .select('key, value')
       .in('key', ['execution_mode', 'traffic_rollout']);
+    const configResult = await withTimeout(Promise.resolve(configQuery), 3000);
+    const { data: config } = configResult;
 
-    const executionMode = (config?.find((c) => c.key === 'execution_mode')?.value as string) ?? 'LIVE';
+    const executionMode = (config?.find((c: { key: string; value: unknown }) => c.key === 'execution_mode')?.value as string) ?? 'LIVE';
 
     // Make decision
     const result = await makeDecision(reader, context as DecisionContext, { executionMode });
@@ -74,6 +85,13 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Decision error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    // Safe fallback for shadow mode — never surface 500 to callers
+    return NextResponse.json({
+      action: 'ALLOW_FREE',
+      confidence: 0.1,
+      reason_codes: ['SYSTEM_UNAVAILABLE'],
+      latency_ms: Date.now() - startTime,
+      execution_mode: 'SHADOW',
+    });
   }
 }

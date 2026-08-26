@@ -46,6 +46,27 @@ async function processEvent(event: IngestEvent): Promise<void> {
 
   const articleId = event.properties?.article_id as string | undefined;
 
+  // Fetch article context for denormalization (category, topic) + premium check
+  let articleCategory: string | null = null;
+  let articleTopic: string | null = null;
+  let contentType: string | null = null;
+  let isPremium = false;
+
+  if (articleId) {
+    const { data: article } = await supabaseAdmin
+      .from('articles')
+      .select('category, topic, is_premium')
+      .eq('id', articleId)
+      .single();
+    if (article) {
+      articleCategory = article.category ?? null;
+      articleTopic = article.topic ?? null;
+      contentType = article.category ?? null; // category as content_type for now
+      isPremium = article.is_premium ?? false;
+    }
+  }
+
+  // ── Insert event with denormalized article context ──────────────
   await supabaseAdmin.from('events').insert({
     event_id: eventId,
     reader_id: resolvedReaderId,
@@ -53,10 +74,74 @@ async function processEvent(event: IngestEvent): Promise<void> {
     session_id: event.session_id,
     event_name: event.event,
     article_id: articleId,
+    article_category: articleCategory,
+    article_topic: articleTopic,
+    content_type: contentType,
     timestamp: timestamp.toISOString(),
     source: (event.properties?.source as string) ?? 'web',
     metadata: event.properties ?? {},
   });
+
+  // ── Track premium article views for metering ─────────────────────
+  if (resolvedReaderId && articleId && isPremium) {
+    const { data: feat } = await supabaseAdmin
+      .from('reader_features')
+      .select('free_articles_read, paywall_meter_reset_at')
+      .eq('reader_id', resolvedReaderId)
+      .single();
+
+    const now = new Date();
+    const resetAt = feat?.paywall_meter_reset_at ? new Date(feat.paywall_meter_reset_at) : null;
+    const shouldReset = !resetAt || now >= resetAt;
+
+    await supabaseAdmin
+      .from('reader_features')
+      .upsert({
+        reader_id: resolvedReaderId,
+        free_articles_read: shouldReset ? 1 : ((feat?.free_articles_read ?? 0) + 1),
+        paywall_meter_reset_at: shouldReset
+          ? new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString()
+          : feat?.paywall_meter_reset_at,
+      }, { onConflict: 'reader_id' });
+  }
+
+  // ── Backfill conversion attribution on subscription_success ───────
+  if (resolvedReaderId && event.event === 'subscription_success') {
+    const convArticleId = event.properties?.article_id as string | undefined;
+    const convSessionId = event.properties?.session_id as string | undefined;
+    const convRevenue = (event.properties?.revenue as number) ?? 0;
+
+    // Upsert conversion record if one doesn't exist for this reader+session
+    const { data: existingConv } = await supabaseAdmin
+      .from('conversions')
+      .select('id')
+      .eq('reader_id', resolvedReaderId)
+      .is('article_id', null)
+      .order('occurred_at', { ascending: false })
+      .limit(1);
+
+    if (existingConv?.[0]) {
+      await supabaseAdmin
+        .from('conversions')
+        .update({
+          article_id: convArticleId ?? null,
+          attribution_source: 'paywall',
+          session_id: convSessionId ?? null,
+        })
+        .eq('id', existingConv[0].id);
+    } else {
+      // No existing conversion — create one
+      await supabaseAdmin.from('conversions').insert({
+        reader_id: resolvedReaderId,
+        conversion_type: 'subscription',
+        revenue: convRevenue,
+        article_id: convArticleId ?? null,
+        attribution_source: 'paywall',
+        session_id: convSessionId ?? event.session_id,
+        occurred_at: timestamp.toISOString(),
+      });
+    }
+  }
 
   if (resolvedReaderId) {
     await supabaseAdmin
@@ -64,11 +149,11 @@ async function processEvent(event: IngestEvent): Promise<void> {
       .update({ last_seen_at: new Date().toISOString() })
       .eq('id', resolvedReaderId);
 
-    await recalculateReaderFeatures(resolvedReaderId);
+    await recalculateReaderFeatures(resolvedReaderId, event.event === 'article_view' && isPremium);
   }
 }
 
-async function recalculateReaderFeatures(readerId: string): Promise<void> {
+async function recalculateReaderFeatures(readerId: string, isPremiumArticleView: boolean = false): Promise<void> {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
@@ -111,6 +196,12 @@ async function recalculateReaderFeatures(readerId: string): Promise<void> {
 
   if (!reader) return;
 
+  // Count distinct topics the reader has affinity toward
+  const { count: topicAffinityCount } = await supabaseAdmin
+    .from('reader_topic_affinity')
+    .select('id', { count: 'exact', head: true })
+    .eq('reader_id', readerId);
+
   const lastSeen = new Date(reader.last_seen_at);
   const daysSinceLastVisit = Math.round((Date.now() - lastSeen.getTime()) / (24 * 60 * 60 * 1000));
 
@@ -131,6 +222,7 @@ async function recalculateReaderFeatures(readerId: string): Promise<void> {
     days_since_last_visit: daysSinceLastVisit,
     newsletter_signups: newsletterSignups,
     registrations,
+    topic_affinity_count: topicAffinityCount ?? 0,
     former_subscriber: reader.subscription_status === 'EXPIRED',
     is_suspected_bot: sessions30d > 200 || articleViews30d > 500,
   };
@@ -175,7 +267,7 @@ async function recalculateReaderFeatures(readerId: string): Promise<void> {
       churn_risk: 0,
       is_annual: false,
     },
-  });
+  }, reader.subscription_status);
 
   await supabaseAdmin
     .from('reader_features')

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, Activity, Brain, Clock, User, FlaskConical, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Activity, Brain, Clock, User, FlaskConical, ChevronRight, Zap, BookOpen, TrendingUp, AlertTriangle } from 'lucide-react';
 
 interface DecisionDetail {
   id: string;
@@ -25,6 +25,15 @@ interface DecisionDetail {
     subscription_status: string;
     identity_status: string;
   };
+  reader_features?: {
+    lifecycle_stage?: string;
+    free_articles_read?: number;
+    paywall_meter_reset_at?: string;
+    engagement_score?: number;
+    subscription_propensity?: number;
+    churn_risk?: number;
+  };
+  context?: Record<string, unknown>;
 }
 
 function timeAgo(dateStr: string): string {
@@ -86,10 +95,25 @@ export default function DecisionDetailPage() {
     if (!id) return;
     fetch(`/api/v1/decisions?limit=200`)
       .then((r) => r.json())
-      .then((d) => {
+      .then(async (d) => {
         const found = (d.data ?? []).find((dec: DecisionDetail) => dec.id === id);
-        if (found) setDecision(found);
-        else setError('Decision not found');
+        if (found) {
+          setDecision(found);
+          // Also load reader features for lifecycle/metering display
+          if (found.reader_id) {
+            try {
+              const featRes = await fetch(`/api/v1/readers/${found.reader_id}`);
+              if (featRes.ok) {
+                const featData = await featRes.json();
+                if (featData.features) {
+                  setDecision(prev => prev ? { ...prev, reader_features: featData.features } : prev);
+                }
+              }
+            } catch { /* non-critical */ }
+          }
+        } else {
+          setError('Decision not found');
+        }
         setLoading(false);
       })
       .catch(() => { setError('Failed to load'); setLoading(false); });
@@ -179,20 +203,221 @@ export default function DecisionDetailPage() {
         </div>
       </div>
 
-      {/* Score Snapshot */}
-      {decision.score_snapshot && Object.keys(decision.score_snapshot).length > 0 && (
+      {/* Lifecycle Stage + Metering */}
+      {decision.reader_features && (
         <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="font-semibold text-slate-900 mb-4">Score Snapshot at Decision Time</h2>
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-            {Object.entries(decision.score_snapshot).map(([key, value]) => (
-              <div key={key} className="text-center">
-                <div className="text-2xl font-bold text-slate-900">{typeof value === 'number' ? Math.round(value) : value}</div>
-                <div className="text-xs text-slate-500 mt-1 capitalize">{key.replace(/_/g, ' ')}</div>
+          <h2 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <BookOpen className="w-4 h-4" />
+            Lifecycle Stage & Metering
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Lifecycle Stage */}
+            <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg ${
+                decision.reader_features.lifecycle_stage === 'SUBSCRIBED' ? 'bg-emerald-100 text-emerald-600' :
+                decision.reader_features.lifecycle_stage === 'AT_RISK' ? 'bg-red-100 text-red-600' :
+                decision.reader_features.lifecycle_stage === 'HIGH_INTENT' ? 'bg-amber-100 text-amber-600' :
+                decision.reader_features.lifecycle_stage === 'CONVERTING' ? 'bg-orange-100 text-orange-600' :
+                decision.reader_features.lifecycle_stage === 'WINBACK' ? 'bg-purple-100 text-purple-600' :
+                'bg-blue-100 text-blue-600'
+              }`}>
+                <Zap className="w-5 h-5" />
               </div>
-            ))}
+              <div>
+                <div className="text-xs text-slate-500">Lifecycle Stage</div>
+                <div className="text-sm font-bold text-slate-900">
+                  {decision.reader_features.lifecycle_stage ?? 'Unknown'}
+                </div>
+              </div>
+            </div>
+
+            {/* Meter Position */}
+            <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                <BookOpen className="w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <div className="text-xs text-slate-500 mb-1">Free Article Meter</div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        (decision.reader_features.free_articles_read ?? 0) >= 3
+                          ? 'bg-red-500'
+                          : (decision.reader_features.free_articles_read ?? 0) >= 2
+                          ? 'bg-amber-500'
+                          : 'bg-blue-500'
+                      }`}
+                      style={{ width: `${Math.min(100, ((decision.reader_features.free_articles_read ?? 0) / 3) * 100)}%` }}
+                    />
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700">
+                    {decision.reader_features.free_articles_read ?? 0}/3
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Risk Signals */}
+            <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                (decision.reader_features.churn_risk ?? 0) >= 70 ? 'bg-red-100 text-red-600' :
+                (decision.reader_features.churn_risk ?? 0) >= 40 ? 'bg-amber-100 text-amber-600' :
+                'bg-emerald-100 text-emerald-600'
+              }`}>
+                <TrendingUp className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs text-slate-500">Risk Signal</div>
+                <div className={`text-sm font-bold ${
+                  (decision.reader_features.churn_risk ?? 0) >= 70 ? 'text-red-600' :
+                  (decision.reader_features.churn_risk ?? 0) >= 40 ? 'text-amber-600' :
+                  'text-emerald-600'
+                }`}>
+                  {(decision.reader_features.churn_risk ?? 0) >= 70 ? 'High Risk' :
+                   (decision.reader_features.churn_risk ?? 0) >= 40 ? 'Medium Risk' :
+                   'Low Risk'}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
+
+      {/* Business Explanation */}
+      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl border border-slate-700 p-6 text-white">
+        <div className="flex items-center gap-2 mb-5">
+          <Brain className="w-5 h-5 text-blue-400" />
+          <h2 className="font-semibold text-white">Business Explanation</h2>
+        </div>
+
+        {/* Summary */}
+        <div className="mb-5">
+          <div className="text-xs text-white/40 uppercase tracking-wide font-semibold mb-2">Summary</div>
+          <p className="text-sm text-white/90 leading-relaxed">
+            {decision.selected_action === 'SHOW_HARD_PAYWALL' && (decision.reader_features?.free_articles_read ?? 0) >= 3 && (
+              `Pembaca sudah membaca ${decision.reader_features?.free_articles_read ?? 0} dari 3 artikel gratis. Batas article limit sudah tercapai — pembaca harus subscribe ke Tempo+ untuk akses artikel premium.`
+            )}
+            {decision.selected_action === 'SHOW_SOFT_PAYWALL' && (
+              `Pembaca sudah membaca ${decision.reader_features?.free_articles_read ?? 0} dari 3 artikel gratis. Tampilkan soft paywall sebagai peringatan —文章的 berikutnya akan kena hard paywall.`
+            )}
+            {decision.selected_action === 'SHOW_MONTHLY' && (
+              `Pembaca di tahap ${decision.reader_features?.lifecycle_stage ?? 'ENGAGED'} dengan subscription propensity tinggi. Tawarkan Tempo+ Monthly — Rp 64.000/bulan — pitch akses tak terbatas ke seluruh konten premium.`
+            )}
+            {decision.selected_action === 'SHOW_ANNUAL' && (
+              `Pembaca sangat engaged dan sudah siap untuk komitmen jangka panjang. Tawarkan Tempo+ Annual — paket terbaik untuk pembaca setia investigative journalism.`
+            )}
+            {decision.selected_action === 'SHOW_SAVE_OFFER' && (
+              `Pembaca aktif dengan churn risk ${decision.reader_features?.churn_risk ?? 0}. Tan-pa intervensi, churn dalam 14 hari sangat mungkin. Kirim save offer SEKARANG.`
+            )}
+            {decision.selected_action === 'SHOW_WINBACK' && (
+              `Mantan pelanggan Tempo+ terdeteksi dengan engagement tinggi. Mereka sudah tahu value produk — winback offer memiliki conversion rate lebih tinggi dari acquisition baru.`
+            )}
+            {decision.selected_action === 'ALLOW_FREE' && (
+              `Pembaca masih di tahap awal journey (${decision.reader_features?.lifecycle_stage ?? 'NEW'}). Biarkan gratis sambil terus membangun engagement sebelum monetize.`
+            )}
+            {decision.selected_action === 'NO_ACTION' && (
+              `Pembaca sudah aktif subscribe Tempo+. Tidak perlu intervensi — fokus ke churn prevention jika churn risk meningkat.`
+            )}
+            {['SHOW_REGISTRATION', 'SHOW_NEWSLETTER_GATE', 'SHOW_TRIAL', 'SHOW_DAY_PASS', 'SHOW_BUNDLE', 'SHOW_VIP', 'SHOW_RENEWAL', 'SHOW_RETENTION_CONTENT'].includes(decision.selected_action) && (
+              `Revenue Brain merekomendasikan ${decision.selected_action.replace(/_/g, ' ').toLowerCase()} untuk pembaca di tahap ${decision.reader_features?.lifecycle_stage ?? 'UNKNOWN'}.`
+            )}
+          </p>
+        </div>
+
+        {/* Why Now + What to Say */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+          <div className="bg-white/5 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Zap className="w-4 h-4 text-amber-400" />
+              <div className="text-xs text-white/40 uppercase tracking-wide font-semibold">Why Now?</div>
+            </div>
+            <p className="text-sm text-white/80 leading-relaxed">
+              {decision.reason_codes?.includes('METER_EXHAUSTED') && (
+                `Batas artikel gratis sudah tercapai. Momen kritis untuk lock conversion sebelum mereka pergi.`
+              )}
+              {decision.reason_codes?.includes('METER_NEARLY_EXHAUSTED') && (
+                `Artikel terakhir gratis — next akan kena hard paywall. Jendela terakhir untuk soft conversion.`
+              )}
+              {decision.reason_codes?.includes('LIFECYCLE_CONVERTING') && (
+                `Pembaca sudah berinteraksi paywall berkali-kali tanpa convert. Momentum harus ditangkap SEKARANG.`
+              )}
+              {decision.reason_codes?.includes('HIGH_CHURN_RISK') && (
+                `Churn risk meningkat. Tanpa save offer, kemungkinan churn dalam 30 hari sangat tinggi.`
+              )}
+              {decision.reason_codes?.includes('FORMER_SUBSCRIBER') && (
+                `Mantan pelanggan terdeteksi. Mereka sudah tahu value Tempo+ — winback effort paling efektif untuk segmen ini.`
+              )}
+              {!decision.reason_codes?.some(c => ['METER_EXHAUSTED', 'METER_NEARLY_EXHAUSTED', 'LIFECYCLE_CONVERTING', 'HIGH_CHURN_RISK', 'FORMER_SUBSCRIBER'].includes(c)) && (
+                `Berdasarkan lifecycle stage + engagement score, waktu yang tepat untuk action ini.`
+              )}
+            </p>
+          </div>
+
+          <div className="bg-white/5 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              <div className="text-xs text-white/40 uppercase tracking-wide font-semibold">What to Say</div>
+            </div>
+            <p className="text-sm text-white/80 leading-relaxed italic">
+              {decision.selected_action === 'SHOW_MONTHLY' && (
+                `"Dengan Rp 64.000/bulan, Anda dapat akses seluruh investigative report dan analisis mendalam Tempo+ tanpa batas."`
+              )}
+              {decision.selected_action === 'SHOW_ANNUAL' && (
+                `"Paket annual adalah pilihan terbaik untuk pembaca setia. Hemat 2 bulan — akses tak terbatas ke seluruh arsip."`
+              )}
+              {decision.selected_action === 'SHOW_TRIAL' && (
+                `"Coba Tempo+ gratis 7 hari. Tidak ada kartu kredit. Rasakan sendiri investigative journalism yang bikin beda."`
+              )}
+              {decision.selected_action === 'SHOW_SAVE_OFFER' && (
+                `"Kami sengaja tawarkan harga khusus untuk Anda — diskon 30% bulan pertama. Jangan sampai kehilangan akses."`
+              )}
+              {decision.selected_action === 'SHOW_WINBACK' && (
+                `"Kami rindu Anda. Kembali ke Tempo+ dengan harga khusus former subscriber — Rp 49.000/bulan."`
+              )}
+              {decision.selected_action === 'SHOW_SOFT_PAYWALL' && (
+                `"Anda sudah membaca 3 artikel gratis. Subscribe Tempo+ untuk akses tak terbatas."`
+              )}
+              {decision.selected_action === 'SHOW_HARD_PAYWALL' && (
+                `"Artikel ini eksklusif untuk subscriber Tempo+. Subscribe sekarang untuk akses penuh."`
+              )}
+              {decision.selected_action === 'ALLOW_FREE' && (
+                `Berikan pengalaman membaca terbaik — bangun trust sebelum monetize.`
+              )}
+              {['SHOW_REGISTRATION', 'SHOW_NEWSLETTER_GATE', 'NO_ACTION'].includes(decision.selected_action) && (
+                `Tidak perlu pitch khusus — fokus ke pengalaman pembaca.`
+              )}
+              {['SHOW_DAY_PASS', 'SHOW_BUNDLE', 'SHOW_VIP', 'SHOW_RENEWAL', 'SHOW_RETENTION_CONTENT'].includes(decision.selected_action) && (
+                `Sesuaikan pitch sesuai offer yang dipilih oleh Revenue Brain.`
+              )}
+            </p>
+          </div>
+        </div>
+
+        {/* Risk Alert */}
+        {decision.reason_codes?.includes('HIGH_CHURN_RISK') || (decision.reader_features?.churn_risk ?? 0) >= 70 ? (
+          <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+            <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <div className="text-sm font-semibold text-red-300 mb-1">Risk Alert</div>
+              <p className="text-sm text-red-200/80 leading-relaxed">
+                {decision.selected_action === 'NO_ACTION' ? (
+                  `CRITICAL: Subscriber aktif dengan churn risk ${decision.reader_features?.churn_risk}% TIDAK diintervensi. Tanpa save offer, churn dalam 14 hari sangat mungkin terjadi.`
+                ) : (
+                  `Churn risk ${decision.reader_features?.churn_risk}% — deploy save offer dalam 48 jam atau risk kehilangan subscriber ini.`
+                )}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-start gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
+            <TrendingUp className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-emerald-200/80 leading-relaxed">
+              Decision sudah dimoderasi oleh lifecycle stage dan propensity score. Risk minimal — pembaca di path yang tepat.
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Reader & Experiment */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
