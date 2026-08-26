@@ -16,16 +16,8 @@ interface ContentMetric {
   articles?: { title: string; topic: string; category: string };
 }
 
-function formatRupiah(value: number): string {
-  if (value >= 1_000_000_000) return `Rp ${(value / 1_000_000_000).toFixed(2)}M`;
-  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}jt`;
-  return `Rp ${value.toLocaleString('id-ID')}`;
-}
-
-function formatNumber(value: number): string {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-  return value.toLocaleString('id-ID');
+function fmt(value: number): string {
+  return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
 const classificationColors: Record<string, string> = {
@@ -87,11 +79,11 @@ export default function ContentPage() {
                     <div className="text-sm font-medium text-slate-800 truncate">{m.articles?.title ?? m.article_id.substring(0, 16)}…</div>
                   </td>
                   <td className="px-4 py-3 text-xs text-slate-500">{m.articles?.topic ?? '—'}</td>
-                  <td className="px-4 py-3 text-sm font-medium text-slate-700">{formatNumber(m.pageviews)}</td>
-                  <td className="px-4 py-3 text-sm text-slate-700">{formatNumber(m.subscriber_readers)}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-slate-700">{fmt(m.pageviews)}</td>
+                  <td className="px-4 py-3 text-sm text-slate-700">{fmt(m.subscriber_readers)}</td>
                   <td className="px-4 py-3 text-sm text-emerald-700 font-medium">{m.direct_subscriptions}</td>
-                  <td className="px-4 py-3 text-sm font-medium text-slate-900">{formatRupiah(m.revenue)}</td>
-                  <td className="px-4 py-3 text-sm text-slate-700">{formatRupiah(m.estimated_ltv_generated)}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-slate-900">{fmt(m.revenue)}</td>
+                  <td className="px-4 py-3 text-sm text-slate-700">{fmt(m.estimated_ltv_generated)}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${classificationColors[m.classification] ?? classificationColors.TRAFFIC_CONTENT}`}>
                       {m.classification?.replace(/_/g, ' ') ?? 'TRAFFIC'}

@@ -66,12 +66,12 @@ async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null
 export async function GET() {
   try {
     const [kpis, funnel, segments, recentDecisions, attribution, activeExperiments] = await Promise.all([
-      withTimeout(getDashboardKPIs(), 5000),
-      withTimeout(getSubscriptionFunnel(), 5000),
-      withTimeout(getReaderSegments(), 5000),
-      withTimeout(getRecentDecisions(10), 5000),
-      withTimeout(getRevenueAttribution(30), 5000),
-      withTimeout(getActiveExperiments(), 5000),
+      withTimeout(getDashboardKPIs(), 12000),
+      withTimeout(getSubscriptionFunnel(), 8000),
+      withTimeout(getReaderSegments(), 8000),
+      withTimeout(getRecentDecisions(10), 8000),
+      withTimeout(getRevenueAttribution(30), 8000),
+      withTimeout(getActiveExperiments(), 8000),
     ]);
 
     const usingMock = kpis === null;

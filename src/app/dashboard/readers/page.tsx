@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { Suspense, useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { Search, Filter, ChevronLeft, ChevronRight, Users, TrendingUp, AlertTriangle, DollarSign } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ReaderFeature {
   engagement_score: number;
@@ -47,31 +48,39 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-function formatRupiah(value: number): string {
-  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}jt`;
-  if (value >= 1_000) return `Rp ${(value / 1_000).toFixed(0)}rb`;
-  return `Rp ${value.toLocaleString('id-ID')}`;
+function fmt(value: number): string {
+  return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
-export default function ReadersPage() {
+function buildReadersUrl(status: string, propensity: string, searchTerm: string, pageNum: number) {
+  const params = new URLSearchParams();
+  if (status) params.set('status', status);
+  if (propensity) params.set('propensity', propensity);
+  if (searchTerm) params.set('search', searchTerm);
+  if (pageNum > 1) params.set('page', String(pageNum));
+  const qs = params.toString();
+  return `/dashboard/readers${qs ? `?${qs}` : ''}`;
+}
+
+function ReadersContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [readers, setReaders] = useState<Reader[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [search, setSearch] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
-  const [filterPropensity, setFilterPropensity] = useState('');
+  const [search, setSearch] = useState(searchParams.get('search') ?? '');
+  const [filterStatus, setFilterStatus] = useState(searchParams.get('status') ?? '');
+  const [filterPropensity, setFilterPropensity] = useState(searchParams.get('propensity') ?? '');
 
   const limit = 25;
 
   const fetchReaders = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: String(limit),
-      });
+      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
       if (filterStatus) params.set('subscription_status', filterStatus);
       if (filterPropensity) params.set('propensity_min', filterPropensity);
 
@@ -97,12 +106,35 @@ export default function ReadersPage() {
       )
     : readers;
 
+  const goToPage = (newPage: number) => {
+    setPage(newPage);
+    router.push(buildReadersUrl(filterStatus, filterPropensity, search, newPage));
+  };
+
+  const handleStatusChange = (val: string) => {
+    setFilterStatus(val);
+    setPage(1);
+    router.push(buildReadersUrl(val, filterPropensity, search, 1));
+  };
+
+  const handlePropensityChange = (val: string) => {
+    setFilterPropensity(val);
+    setPage(1);
+    router.push(buildReadersUrl(filterStatus, val, search, 1));
+  };
+
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    setPage(1);
+    router.replace(buildReadersUrl(filterStatus, filterPropensity, val, 1));
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Reader Explorer</h1>
         <p className="text-sm text-slate-500 mt-1">
-          {total.toLocaleString('id-ID')} total readers · Click any reader for full profile and decision history
+          {fmt(total)} total readers · Filters sync to URL for deep-linking
         </p>
       </div>
 
@@ -114,13 +146,13 @@ export default function ReadersPage() {
             type="text"
             placeholder="Search by reader ID, anonymous ID..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <select
           value={filterStatus}
-          onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
+          onChange={(e) => handleStatusChange(e.target.value)}
           className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All Status</option>
@@ -131,7 +163,7 @@ export default function ReadersPage() {
         </select>
         <select
           value={filterPropensity}
-          onChange={(e) => { setFilterPropensity(e.target.value); setPage(1); }}
+          onChange={(e) => handlePropensityChange(e.target.value)}
           className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All Propensity</option>
@@ -165,7 +197,6 @@ export default function ReadersPage() {
                 ))
               ) : filteredReaders.map((reader) => {
                 const f = reader.features;
-                const displayId = reader.external_user_id ?? reader.anonymous_id ?? reader.id.substring(0, 8);
                 return (
                   <tr
                     key={reader.id}
@@ -198,9 +229,7 @@ export default function ReadersPage() {
                         <div className="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                           <div className="h-full bg-blue-500 rounded-full" style={{ width: `${f?.engagement_score ?? 0}%` }} />
                         </div>
-                        <span className={`text-xs font-medium w-8 ${getScoreColor(f?.engagement_score ?? 0, 'engagement').split(' ').slice(0, 2).join(' ')}`}>
-                          {formatScore(f?.engagement_score ?? 0)}
-                        </span>
+                        <span className="text-xs font-medium w-8">{formatScore(f?.engagement_score ?? 0)}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3">
@@ -218,7 +247,7 @@ export default function ReadersPage() {
                         <span className="text-slate-300">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-xs font-medium text-slate-700">{f?.predicted_ltv ? formatRupiah(f.predicted_ltv) : '—'}</td>
+                    <td className="px-4 py-3 text-xs font-medium text-slate-700">{f?.predicted_ltv ? fmt(f.predicted_ltv) : '—'}</td>
                     <td className="px-4 py-3 text-xs text-slate-500">{timeAgo(reader.last_seen_at)}</td>
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100">
@@ -241,11 +270,11 @@ export default function ReadersPage() {
         {/* Pagination */}
         <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 bg-slate-50/50">
           <span className="text-xs text-slate-500">
-            Showing {((page - 1) * limit) + 1}–{Math.min(page * limit, total)} of {total.toLocaleString('id-ID')}
+            Showing {((page - 1) * limit) + 1}–{Math.min(page * limit, total)} of {fmt(total)}
           </span>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              onClick={() => goToPage(Math.max(1, page - 1))}
               disabled={page <= 1}
               className="p-1.5 border border-slate-200 rounded hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
             >
@@ -253,7 +282,7 @@ export default function ReadersPage() {
             </button>
             <span className="text-xs text-slate-600">Page {page} of {totalPages}</span>
             <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              onClick={() => goToPage(Math.min(totalPages, page + 1))}
               disabled={page >= totalPages}
               className="p-1.5 border border-slate-200 rounded hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
             >
@@ -263,5 +292,13 @@ export default function ReadersPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ReadersPage() {
+  return (
+    <Suspense fallback={<div className="py-20 text-center text-slate-400">Loading readers…</div>}>
+      <ReadersContent />
+    </Suspense>
   );
 }

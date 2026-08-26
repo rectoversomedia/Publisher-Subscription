@@ -49,9 +49,7 @@ const ANALYTICS_FUNCTIONS: Record<string, { query: string; description: string; 
     description: 'Total estimated revenue opportunity',
     format: (d) => {
       const val = (d as { total: number }).total ?? 0;
-      if (val >= 1_000_000_000) return `Rp ${(val / 1_000_000_000).toFixed(2)}B`;
-      if (val >= 1_000_000) return `Rp ${(val / 1_000_000).toFixed(0)}jt`;
-      return `Rp ${val.toLocaleString('id-ID')}`;
+      return val.toLocaleString('en-US', { maximumFractionDigits: 0 });
     },
   },
 };

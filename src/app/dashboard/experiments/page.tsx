@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FlaskConical, Play, Pause, Plus, TrendingUp, Users, Target, ArrowUpRight } from 'lucide-react';
+import { FlaskConical, Play, Pause, Plus, TrendingUp, Users, Target, X } from 'lucide-react';
 
 interface Experiment {
   id: string;
@@ -34,9 +34,8 @@ interface ExperimentResult {
   is_significant?: boolean;
 }
 
-function formatRupiah(value: number): string {
-  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}M`;
-  return `Rp ${value.toLocaleString('id-ID')}`;
+function fmt(value: number): string {
+  return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
 function timeAgo(dateStr: string): string {
@@ -49,6 +48,16 @@ function timeAgo(dateStr: string): string {
 export default function ExperimentsPage() {
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCreate, setShowCreate] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [form, setForm] = useState({
+    name: '',
+    hypothesis: '',
+    primary_metric: 'conversion_rate',
+    traffic_percentage: '50',
+    control_name: 'Control',
+    variant_name: 'Variant A',
+  });
 
   const fetchExperiments = async () => {
     const res = await fetch('/api/v1/experiments?include_variants=true');
@@ -64,6 +73,35 @@ export default function ExperimentsPage() {
     fetchExperiments();
   };
 
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim()) return;
+    setCreating(true);
+    try {
+      const res = await fetch('/api/v1/experiments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          hypothesis: form.hypothesis,
+          primary_metric: form.primary_metric,
+          traffic_percentage: parseInt(form.traffic_percentage),
+          variants: [
+            { name: form.control_name || 'Control', allocation_percentage: 50 },
+            { name: form.variant_name || 'Variant A', allocation_percentage: 50 },
+          ],
+        }),
+      });
+      if (res.ok) {
+        setShowCreate(false);
+        setForm({ name: '', hypothesis: '', primary_metric: 'conversion_rate', traffic_percentage: '50', control_name: 'Control', variant_name: 'Variant A' });
+        fetchExperiments();
+      }
+    } finally {
+      setCreating(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -71,7 +109,7 @@ export default function ExperimentsPage() {
           <h1 className="text-2xl font-bold text-slate-900">Experiments</h1>
           <p className="text-sm text-slate-500 mt-1">A/B/n testing framework for revenue optimization</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+        <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
           <Plus className="w-4 h-4" />
           New Experiment
         </button>
@@ -159,6 +197,101 @@ export default function ExperimentsPage() {
           </div>
         )}
       </div>
+
+      {/* Create Experiment Modal */}
+      {showCreate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <FlaskConical className="w-4 h-4 text-blue-600" />
+                </div>
+                <h2 className="text-lg font-bold text-slate-900">New Experiment</h2>
+              </div>
+              <button onClick={() => setShowCreate(false)} className="p-1 hover:bg-slate-100 rounded">
+                <X className="w-5 h-5 text-slate-400" />
+              </button>
+            </div>
+            <form onSubmit={handleCreate} className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Experiment Name *</label>
+                <input
+                  required
+                  value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  placeholder="e.g. Monthly vs Annual Paywall Test"
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Hypothesis</label>
+                <input
+                  value={form.hypothesis}
+                  onChange={(e) => setForm((f) => ({ ...f, hypothesis: e.target.value }))}
+                  placeholder="e.g. Showing annual plan will increase LTV vs monthly"
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Primary Metric</label>
+                  <select
+                    value={form.primary_metric}
+                    onChange={(e) => setForm((f) => ({ ...f, primary_metric: e.target.value }))}
+                    className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="conversion_rate">Conversion Rate</option>
+                    <option value="revenue">Revenue</option>
+                    <option value="arpu">ARPU</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Traffic %</label>
+                  <input
+                    type="number"
+                    min="5"
+                    max="100"
+                    value={form.traffic_percentage}
+                    onChange={(e) => setForm((f) => ({ ...f, traffic_percentage: e.target.value }))}
+                    className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Control Name</label>
+                  <input
+                    value={form.control_name}
+                    onChange={(e) => setForm((f) => ({ ...f, control_name: e.target.value }))}
+                    className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Variant Name</label>
+                  <input
+                    value={form.variant_name}
+                    onChange={(e) => setForm((f) => ({ ...f, variant_name: e.target.value }))}
+                    className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50">
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating || !form.name.trim()}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {creating ? 'Creating…' : 'Create Experiment'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

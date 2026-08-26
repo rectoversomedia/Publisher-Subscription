@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Radar, AlertTriangle, Zap, TrendingUp, CheckCircle, Clock, ArrowUpRight } from 'lucide-react';
+import Link from 'next/link';
+import { Radar, AlertTriangle, Zap, TrendingUp, ArrowRight } from 'lucide-react';
 
 interface Opportunity {
   id: string;
@@ -17,16 +18,8 @@ interface Opportunity {
   detected_at: string;
 }
 
-function formatRupiah(value: number): string {
-  if (value >= 1_000_000_000) return `Rp ${(value / 1_000_000_000).toFixed(1)}M`;
-  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(0)}jt`;
-  return `Rp ${(value / 1_000).toFixed(0)}rb`;
-}
-
-function formatNumber(value: number): string {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-  return value.toLocaleString('id-ID');
+function fmt(value: number): string {
+  return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
 function timeAgo(dateStr: string): string {
@@ -71,7 +64,7 @@ export default function OpportunitiesPage() {
           { label: 'Critical', value: summary.critical ?? 0, color: 'text-red-600' },
           { label: 'High', value: summary.high ?? 0, color: 'text-amber-600' },
           { label: 'Medium', value: summary.medium ?? 0, color: 'text-blue-600' },
-          { label: 'Est. Revenue', value: formatRupiah(summary.total_estimated_revenue ?? 0), color: 'text-emerald-600' },
+          { label: 'Est. Revenue', value: fmt(summary.total_estimated_revenue ?? 0), color: 'text-emerald-600' },
         ].map(({ label, value, color }) => (
           <div key={label} className="bg-white rounded-xl border border-slate-200 p-4">
             <div className={`text-xl font-bold ${color}`}>{String(value)}</div>
@@ -110,7 +103,7 @@ export default function OpportunitiesPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-bold text-slate-900">{formatRupiah(opp.estimated_incremental_revenue)}</div>
+                    <div className="text-lg font-bold text-slate-900">{fmt(opp.estimated_incremental_revenue)}</div>
                     <div className="text-xs text-slate-500">estimated revenue</div>
                   </div>
                 </div>
@@ -122,7 +115,7 @@ export default function OpportunitiesPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 text-sm">
                     <div className="text-slate-500">
-                      Audience: <span className="font-medium text-slate-700">{formatNumber(opp.estimated_audience)}</span>
+                      Audience: <span className="font-medium text-slate-700">{fmt(opp.estimated_audience)}</span>
                     </div>
                     {opp.recommended_action && (
                       <div className="text-slate-500">
@@ -130,14 +123,12 @@ export default function OpportunitiesPage() {
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button className="text-xs px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 font-medium">
-                      Investigate
-                    </button>
-                    <button className="text-xs px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 font-medium">
-                      Take Action
-                    </button>
-                  </div>
+                  <Link
+                    href={`/dashboard/opportunities/${opp.id}`}
+                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 font-medium"
+                  >
+                    View Details <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
               </div>
             </div>

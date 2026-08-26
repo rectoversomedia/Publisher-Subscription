@@ -1,8 +1,50 @@
-// GET/POST /api/v1/experiments — Experiment Management
+// GET /api/v1/experiments — Experiment Management
+// Uses direct Supabase REST API to avoid connection pool issues
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { supabaseAdmin } from '@/lib/supabase';
 import { calculateExperimentResults, startExperiment, pauseExperiment, completeExperiment } from '@/experiment';
+
+const SB_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+async function sbQuery(table: string, params: string = '') {
+  const url = `${SB_URL}/rest/v1/${table}${params ? `?${params}` : ''}`;
+  const res = await fetch(url, {
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
+async function sbInsert(table: string, data: unknown) {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return res;
+}
+
+async function sbUpdate(table: string, id: string, data: unknown) {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return res;
+}
 
 const CreateExperimentSchema = z.object({
   name: z.string().min(1),
@@ -24,34 +66,29 @@ const CreateExperimentSchema = z.object({
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const status = searchParams.get('status');
-  const includeVariants = searchParams.get('include_variants') === 'true';
 
   try {
-    let query = supabaseAdmin
-      .from('experiments')
-      .select(includeVariants ? '*' : '*')
-      .order('created_at', { ascending: false });
-
+    let params = 'select=*&order=created_at.desc';
     if (status) {
-      query = query.eq('status', status);
+      params += `&status=eq.${status}`;
     }
 
-    const { data: experiments, error } = await query;
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    const experiments = await sbQuery('experiments', params) as Array<Record<string, unknown>>;
 
     // Calculate results for each running experiment
-    const results = await Promise.all(
-      (experiments ?? []).map(async (exp: Record<string, unknown>) => {
-        if (exp.status !== 'RUNNING') return exp;
-        const metrics = await calculateExperimentResults(exp.id as string);
-        return { ...exp, results: metrics };
+    const enriched = await Promise.all(
+      experiments.map(async (exp) => {
+        if (exp.status !== 'RUNNING') return { ...exp, results: null };
+        try {
+          const results = await calculateExperimentResults(exp.id as string);
+          return { ...exp, results };
+        } catch {
+          return { ...exp, results: null };
+        }
       })
     );
 
-    return NextResponse.json({ data: results });
+    return NextResponse.json({ data: enriched });
   } catch (error) {
     console.error('Experiments list error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -73,21 +110,33 @@ export async function POST(request: NextRequest) {
     const { variants, ...experimentData } = parsed.data;
 
     // Create experiment
-    const { data: experiment, error: expError } = await supabaseAdmin
-      .from('experiments')
-      .insert({
+    const expRes = await fetch(`${SB_URL}/rest/v1/experiments`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation',
+      },
+      body: JSON.stringify({
         name: experimentData.name,
-        hypothesis: experimentData.hypothesis,
-        description: experimentData.description,
+        hypothesis: experimentData.hypothesis ?? null,
+        description: experimentData.description ?? null,
         primary_metric: experimentData.primary_metric,
         guardrail_metrics: experimentData.guardrail_metrics,
         audience_definition: experimentData.audience_definition,
         traffic_percentage: experimentData.traffic_percentage,
-      })
-      .select()
-      .single();
+      }),
+    });
 
-    if (expError || !experiment) {
+    if (!expRes.ok) {
+      return NextResponse.json({ error: 'Failed to create experiment' }, { status: 500 });
+    }
+
+    const experiments = await expRes.json();
+    const experiment = Array.isArray(experiments) ? experiments[0] : experiments;
+
+    if (!experiment?.id) {
       return NextResponse.json({ error: 'Failed to create experiment' }, { status: 500 });
     }
 
@@ -96,33 +145,32 @@ export async function POST(request: NextRequest) {
       experiment_id: experiment.id,
       name: v.name,
       allocation_percentage: v.allocation_percentage,
-      action: v.action,
-      offer_id: v.offer_id,
+      action: v.action ?? null,
+      offer_id: v.offer_id ?? null,
       configuration: v.configuration,
     }));
 
-    const { data: createdVariants, error: varError } = await supabaseAdmin
-      .from('experiment_variants')
-      .insert(variantInserts)
-      .select();
+    const varRes = await sbInsert('experiment_variants', variantInserts);
 
-    if (varError) {
+    if (!varRes.ok) {
       // Rollback experiment
-      await supabaseAdmin.from('experiments').delete().eq('id', experiment.id);
+      await fetch(`${SB_URL}/rest/v1/experiments?id=eq.${experiment.id}`, {
+        method: 'DELETE',
+        headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` },
+      });
       return NextResponse.json({ error: 'Failed to create variants' }, { status: 500 });
     }
 
-    return NextResponse.json({
-      experiment,
-      variants: createdVariants,
-    }, { status: 201 });
+    const createdVariants = await varRes.json();
+
+    return NextResponse.json({ experiment, variants: createdVariants }, { status: 201 });
   } catch (error) {
     console.error('Create experiment error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
-// PATCH /api/v1/experiments — Update experiment
+// PATCH /api/v1/experiments — Update experiment (start/pause/complete)
 export async function PATCH(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
@@ -143,16 +191,12 @@ export async function PATCH(request: NextRequest) {
       case 'complete':
         await completeExperiment(id);
         return NextResponse.json({ status: 'completed' });
-      default:
+      default: {
         const body = await request.json();
-        const { data, error } = await supabaseAdmin
-          .from('experiments')
-          .update(body)
-          .eq('id', id)
-          .select()
-          .single();
-        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-        return NextResponse.json(data);
+        const updateRes = await sbUpdate('experiments', id, body);
+        if (!updateRes.ok) return NextResponse.json({ error: 'Update failed' }, { status: 500 });
+        return NextResponse.json({ status: 'updated' });
+      }
     }
   } catch (error) {
     console.error('Update experiment error:', error);

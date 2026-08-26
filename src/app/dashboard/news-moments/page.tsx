@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Newspaper, TrendingUp, Users, DollarSign, Zap, AlertTriangle } from 'lucide-react';
+import Link from 'next/link';
+import { Newspaper, TrendingUp, Users, Zap, ArrowRight } from 'lucide-react';
 
 interface NewsMoment {
   id: string;
@@ -19,9 +20,8 @@ interface NewsMoment {
   detected_at: string;
 }
 
-function formatRupiah(value: number): string {
-  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(0)}jt`;
-  return `Rp ${value.toLocaleString('id-ID')}`;
+function fmt(value: number): string {
+  return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
 function timeAgo(dateStr: string): string {
@@ -93,12 +93,12 @@ export default function NewsMomentsPage() {
                 ['Current', moment.current_traffic, '/hour'],
                 ['High-Propensity', moment.high_propensity_readers, 'readers'],
                 ['Returning', moment.returning_readers, 'readers'],
-                ['Est. Revenue', formatRupiah(moment.estimated_incremental_revenue), ''],
+                ['Est. Revenue', fmt(moment.estimated_incremental_revenue), ''],
               ].map(([label, value, unit]) => (
                 <div key={String(label)}>
                   <div className="text-xs text-slate-500">{String(label)}</div>
                   <div className="text-sm font-semibold text-slate-900">
-                    {typeof value === 'number' && value >= 1000 ? `${(value / 1000).toFixed(1)}K` : String(value)}{unit}
+                    {typeof value === 'number' ? fmt(value) : String(value)}{unit}
                   </div>
                 </div>
               ))}
@@ -107,9 +107,12 @@ export default function NewsMomentsPage() {
             <div className="mt-4 pt-4 border-t border-slate-100">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-600">Recommended: Activate contextual subscription treatment for high-propensity readers in this topic</span>
-                <button className="text-xs px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 font-medium">
-                  Activate Treatment
-                </button>
+                <Link
+                  href={`/dashboard/news-moments/${moment.id}`}
+                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 font-medium"
+                >
+                  View Details <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             </div>
           </div>

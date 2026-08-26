@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import {
   TrendingUp, Users, DollarSign, Target, AlertTriangle,
-  Activity, FlaskConical, BarChart3, Newspaper, ArrowUpRight,
+  Activity, FlaskConical, BarChart3, ArrowUpRight,
   ArrowDownRight, Zap, RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
@@ -76,22 +76,14 @@ interface DashboardData {
 }
 
 // ── Formatters ───────────────────────────────────────────────
+// Plain integer with comma separators — no k/M/Rp/jt/rb suffixes
 
-function formatRupiah(value: number): string {
-  if (value >= 1_000_000_000) return `Rp ${(value / 1_000_000_000).toFixed(2)}M`;
-  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}jt`;
-  if (value >= 1_000) return `Rp ${(value / 1_000).toFixed(0)}rb`;
-  return `Rp ${value.toLocaleString('id-ID')}`;
+function fmt(value: number): string {
+  return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
-function formatPercent(value: number): string {
+function fmtPct(value: number): string {
   return `${(value * 100).toFixed(2)}%`;
-}
-
-function formatNumber(value: number): string {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-  return value.toLocaleString('id-ID');
 }
 
 function timeAgo(dateStr: string): string {
@@ -158,7 +150,7 @@ function FunnelStep({ label, value, max, rate }: { label: string; value: number;
           style={{ width: `${pct}%` }}
         />
       </div>
-      <div className="w-20 text-xs font-medium text-slate-700">{formatNumber(value)}</div>
+      <div className="w-20 text-xs font-medium text-slate-700">{fmt(value)}</div>
       {rate !== undefined && (
         <div className="w-16 text-xs text-slate-500">{rate.toFixed(1)}%</div>
       )}
@@ -178,7 +170,7 @@ export default function DashboardPage() {
     try {
       setLoading(true);
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
+      const timeout = setTimeout(() => controller.abort(), 20000);
       const res = await fetch('/api/dashboard', { signal: controller.signal });
       clearTimeout(timeout);
       if (!res.ok) throw new Error('Failed to fetch dashboard data');
@@ -199,7 +191,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 30000); // Refresh every 30s
+    const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -279,28 +271,28 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="Reader Revenue (30d)"
-          value={formatRupiah(kpis.total_revenue_30d)}
-          subtitle={`${kpis.total_conversions_30d} conversions`}
+          value={fmt(kpis.total_revenue_30d)}
+          subtitle={`${fmt(kpis.total_conversions_30d)} conversions`}
           icon={DollarSign}
           color="emerald"
         />
         <KPICard
           title="Conversion Rate"
-          value={formatPercent(kpis.subscription_conversion)}
-          subtitle={`${kpis.new_subscribers_30d} new subscribers`}
+          value={fmtPct(kpis.subscription_conversion)}
+          subtitle={`${fmt(kpis.new_subscribers_30d)} new subscribers`}
           icon={Target}
           color="blue"
         />
         <KPICard
           title="Revenue / 1K Readers"
-          value={formatRupiah(kpis.revenue_per_1000_readers)}
-          subtitle={`${formatNumber(kpis.active_readers_30d)} active readers`}
+          value={fmt(kpis.revenue_per_1000_readers)}
+          subtitle={`${fmt(kpis.active_readers_30d)} active readers`}
           icon={TrendingUp}
           color="purple"
         />
         <KPICard
           title="Avg. Estimated LTV"
-          value={formatRupiah(kpis.avg_ltv)}
+          value={fmt(kpis.avg_ltv)}
           subtitle="Heuristic estimate"
           icon={BarChart3}
           color="slate"
@@ -311,22 +303,22 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="High-Propensity Audience"
-          value={formatNumber(kpis.high_propensity_audience)}
-          subtitle="Propensity ≥ 60"
+          value={fmt(kpis.high_propensity_audience)}
+          subtitle="Propensity >= 60"
           icon={Zap}
           color="amber"
         />
         <KPICard
           title="Revenue Opportunity"
-          value={formatRupiah(kpis.revenue_opportunity)}
+          value={fmt(kpis.revenue_opportunity)}
           subtitle="Estimated at scale"
           icon={Activity}
           color="emerald"
         />
         <KPICard
           title="Subscribers at Risk"
-          value={formatNumber(kpis.subscribers_at_risk)}
-          subtitle="Churn risk ≥ 75"
+          value={fmt(kpis.subscribers_at_risk)}
+          subtitle="Churn risk >= 75"
           icon={AlertTriangle}
           color="red"
         />
@@ -381,12 +373,12 @@ export default function DashboardPage() {
             <div>
               <div className="flex justify-between text-sm mb-1.5">
                 <span className="text-slate-600">Direct subscriptions</span>
-                <span className="font-medium text-slate-900">{formatRupiah(revenue_attribution.direct_revenue)}</span>
+                <span className="font-medium text-slate-900">{fmt(revenue_attribution.direct_revenue)}</span>
               </div>
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-emerald-500 rounded-full"
-                  style={{ width: `${(revenue_attribution.direct_percentage) * 100}%` }}
+                  style={{ width: `${revenue_attribution.direct_percentage * 100}%` }}
                 />
               </div>
               <div className="text-xs text-slate-500 mt-1">{(revenue_attribution.direct_percentage * 100).toFixed(1)}% of revenue</div>
@@ -394,12 +386,12 @@ export default function DashboardPage() {
             <div>
               <div className="flex justify-between text-sm mb-1.5">
                 <span className="text-slate-600">Revenue Brain assisted</span>
-                <span className="font-medium text-slate-900">{formatRupiah(revenue_attribution.assisted_revenue)}</span>
+                <span className="font-medium text-slate-900">{fmt(revenue_attribution.assisted_revenue)}</span>
               </div>
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-blue-500 rounded-full"
-                  style={{ width: `${(revenue_attribution.assisted_percentage) * 100}%` }}
+                  style={{ width: `${revenue_attribution.assisted_percentage * 100}%` }}
                 />
               </div>
               <div className="text-xs text-slate-500 mt-1">{(revenue_attribution.assisted_percentage * 100).toFixed(1)}% of revenue</div>
@@ -407,12 +399,12 @@ export default function DashboardPage() {
             <div>
               <div className="flex justify-between text-sm mb-1.5">
                 <span className="text-slate-600">Experiment driven</span>
-                <span className="font-medium text-slate-900">{formatRupiah(revenue_attribution.experiment_revenue)}</span>
+                <span className="font-medium text-slate-900">{fmt(revenue_attribution.experiment_revenue)}</span>
               </div>
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-purple-500 rounded-full"
-                  style={{ width: `${(revenue_attribution.experiment_percentage) * 100}%` }}
+                  style={{ width: `${revenue_attribution.experiment_percentage * 100}%` }}
                 />
               </div>
               <div className="text-xs text-slate-500 mt-1">{(revenue_attribution.experiment_percentage * 100).toFixed(1)}% of revenue</div>
@@ -421,7 +413,7 @@ export default function DashboardPage() {
           <div className="mt-5 pt-4 border-t border-slate-100">
             <div className="flex justify-between">
               <span className="text-sm font-semibold text-slate-900">Total</span>
-              <span className="text-lg font-bold text-slate-900">{formatRupiah(revenue_attribution.total_revenue)}</span>
+              <span className="text-lg font-bold text-slate-900">{fmt(revenue_attribution.total_revenue)}</span>
             </div>
           </div>
         </div>
@@ -437,10 +429,10 @@ export default function DashboardPage() {
               <div key={seg.key} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
                 <div>
                   <div className="text-sm font-medium text-slate-800">{seg.name}</div>
-                  <div className="text-xs text-slate-500">{formatNumber(seg.count)} readers</div>
+                  <div className="text-xs text-slate-500">{fmt(seg.count)} readers</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-semibold text-slate-900">{formatRupiah(seg.estimated_revenue)}</div>
+                  <div className="text-sm font-semibold text-slate-900">{fmt(seg.estimated_revenue)}</div>
                   <div className="text-xs text-slate-500">est. revenue</div>
                 </div>
               </div>
@@ -469,7 +461,7 @@ export default function DashboardPage() {
             <tbody>
               {recent_decisions.map((dec) => {
                 const readerId = dec.readers?.external_user_id ?? dec.readers?.anonymous_id ?? dec.reader_id;
-                const shortId = readerId ? `${readerId.substring(0, 8)}…` : '—';
+                const shortId = readerId ? `${String(readerId).substring(0, 8)}…` : '—';
                 return (
                   <tr key={dec.id} className="border-b border-slate-50 hover:bg-slate-50/50">
                     <td className="py-3 text-slate-500">{timeAgo(dec.timestamp)}</td>

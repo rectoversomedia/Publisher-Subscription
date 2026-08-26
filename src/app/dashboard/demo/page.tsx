@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { Play, Pause, RotateCcw, Zap, Brain, ChevronRight, Target, RefreshCw, TrendingUp } from 'lucide-react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { Play, Pause, RotateCcw, Zap, Brain, Target, RefreshCw, TrendingUp, CheckCircle, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 // ── Demo Reader Scenarios ────────────────────────────────────
 
@@ -171,10 +173,8 @@ function ScoreBar({ label, value, max = 100, color }: { label: string; value: nu
   );
 }
 
-function formatRupiah(value: number): string {
-  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}jt`;
-  if (value >= 1_000) return `Rp ${(value / 1_000).toFixed(0)}rb`;
-  return `Rp ${value.toLocaleString('id-ID')}`;
+function fmt(value: number): string {
+  return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
 const ACTION_LABELS: Record<string, { label: string; color: string; bg: string; border: string }> = {
@@ -202,42 +202,87 @@ const REASON_EXPLANATIONS: Record<string, string[]> = {
 // ── Main Demo Component ──────────────────────────────────────
 
 export default function DemoPage() {
+  const router = useRouter();
   const [activeReader, setActiveReader] = useState(DEMO_READERS[2]!); // Start with high-intent
   const [events, setEvents] = useState<string[]>([]);
   const [simulating, setSimulating] = useState(false);
   const [scoreHistory, setScoreHistory] = useState<number[]>([]);
   const [readProgress, setReadProgress] = useState(0);
+  const [sessionId] = useState(() => `demo_${Date.now()}`);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [showConversion, setShowConversion] = useState(false);
+
+  const emitEvent = useCallback(async (eventName: string, properties: Record<string, unknown> = {}) => {
+    try {
+      await fetch('/api/v1/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_name: eventName,
+          reader_id: activeReader.id,
+          session_id: sessionId,
+          article_id: 'demo_article_001',
+          properties,
+        }),
+      });
+    } catch {
+      // non-blocking — demo continues even if event emission fails
+    }
+  }, [activeReader.id, sessionId]);
 
   const actionConfig = ACTION_LABELS[activeReader.expectedAction] ?? ACTION_LABELS['ALLOW_FREE']!;
   const reasons = REASON_EXPLANATIONS[activeReader.expectedAction] ?? [];
 
   const simulateReader = useCallback(() => {
     if (!simulating) return;
-    const eventSequence = [
-      'Google Search → Article',
-      'Article View',
-      'Read 25%',
-      'Read 50%',
-      'Premium Content',
-      'Read 75%',
-      'Article Complete',
-      'Revenue Brain Decision',
-    ] as const;
+    const eventSequence: Array<() => void> = [
+      () => { emitEvent('session_start', { source: 'demo' }); setEvents((prev) => [...prev.slice(-6), 'Session Start']); },
+      () => { emitEvent('page_view', { url: '/demo', referrer: 'google' }); setEvents((prev) => [...prev.slice(-6), 'Page View']); },
+      () => { setReadProgress(15); emitEvent('article_view', { article_id: 'demo_article_001', category: 'Investigasi', is_premium: true }); setEvents((prev) => [...prev.slice(-6), 'Article View']); },
+      () => { setReadProgress(35); emitEvent('scroll_depth', { depth: 25 }); setEvents((prev) => [...prev.slice(-6), 'Read 25%']); },
+      () => { setReadProgress(55); emitEvent('scroll_depth', { depth: 50 }); setEvents((prev) => [...prev.slice(-6), 'Read 50%']); },
+      () => { setReadProgress(75); emitEvent('scroll_depth', { depth: 75 }); setEvents((prev) => [...prev.slice(-6), 'Read 75%']); },
+      () => {
+        setReadProgress(100);
+        emitEvent('article_completed', { article_id: 'demo_article_001' });
+        emitEvent('decision_requested', {
+          reader_id: activeReader.id,
+          action: activeReader.expectedAction,
+          confidence: activeReader.expectedConfidence,
+        });
+        setEvents((prev) => [...prev.slice(-6), 'Revenue Brain Decision']);
+      },
+      () => {
+        emitEvent('decision_made', {
+          action: activeReader.expectedAction,
+          confidence: activeReader.expectedConfidence,
+          execution_mode: 'DEMO',
+        });
+        setLoggedIn(true);
+        setEvents((prev) => [...prev.slice(-6), 'Treatment Shown']);
+      },
+      () => {
+        if (activeReader.expectedAction.includes('MONTHLY') || activeReader.expectedAction.includes('ANNUAL')) {
+          emitEvent('conversion_started', { offer_type: activeReader.expectedAction });
+          setShowConversion(true);
+        }
+        setSimulating(false);
+        setEvents((prev) => [...prev.slice(-6), 'Demo Complete ✓']);
+      },
+    ];
 
     let step = 0;
     const interval = setInterval(() => {
       if (step < eventSequence.length) {
-        setEvents((prev) => [...prev.slice(-6), eventSequence[step] ?? '']);
-        setReadProgress(Math.min(100, (step / eventSequence.length) * 100));
+        eventSequence[step]?.();
         step++;
       } else {
         clearInterval(interval);
-        setSimulating(false);
       }
-    }, 1200);
+    }, 1400);
 
     return () => clearInterval(interval);
-  }, [simulating]);
+  }, [simulating, emitEvent, activeReader]);
 
   useEffect(() => {
     if (simulating) {
@@ -252,6 +297,8 @@ export default function DemoPage() {
     setSimulating(false);
     setScoreHistory([]);
     setReadProgress(0);
+    setLoggedIn(false);
+    setShowConversion(false);
   };
 
   return (
@@ -285,6 +332,8 @@ export default function DemoPage() {
                     setEvents([]);
                     setSimulating(false);
                     setReadProgress(0);
+                    setLoggedIn(false);
+                    setShowConversion(false);
                   }}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${
                     activeReader.id === reader.id
@@ -334,7 +383,7 @@ export default function DemoPage() {
             </div>
             <div className="pt-3 border-t border-white/10">
               <div className="text-xs text-white/50">Estimated LTV</div>
-              <div className="text-lg font-bold text-white">{formatRupiah(activeReader.features.predicted_ltv)}</div>
+              <div className="text-lg font-bold text-white">{fmt(activeReader.features.predicted_ltv)}</div>
             </div>
           </div>
 
@@ -431,6 +480,35 @@ export default function DemoPage() {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Subscription Conversion Panel */}
+            {showConversion && (
+              <div className="mx-6 mb-6 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-xl p-5">
+                <div className="flex items-center gap-3 mb-4">
+                  <CheckCircle className="w-5 h-5 text-emerald-600" />
+                  <span className="text-sm font-semibold text-emerald-900">Reader Converted!</span>
+                  <span className="text-xs text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">Live event emitted</span>
+                </div>
+                <p className="text-sm text-emerald-800 mb-4">
+                  The <strong>{activeReader.name}</strong> selected {actionConfig.label}.
+                  A <code>conversion_started</code> event was sent to the events API.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => router.push('/dashboard/decisions')}
+                    className="text-xs px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+                  >
+                    View Decisions →
+                  </button>
+                  <button
+                    onClick={() => router.push('/dashboard/readers')}
+                    className="text-xs px-3 py-1.5 bg-white text-emerald-700 border border-emerald-200 rounded-lg hover:bg-emerald-50"
+                  >
+                    View Readers →
+                  </button>
+                </div>
               </div>
             )}
           </div>

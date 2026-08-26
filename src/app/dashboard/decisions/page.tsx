@@ -16,10 +16,8 @@ interface Decision {
   readers?: { anonymous_id?: string; external_user_id?: string };
 }
 
-function formatRupiah(value: number): string {
-  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `Rp ${(value / 1_000).toFixed(0)}rb`;
-  return `Rp ${value.toLocaleString('id-ID')}`;
+function fmt(value: number): string {
+  return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
 function timeAgo(dateStr: string): string {
@@ -110,7 +108,7 @@ export default function DecisionsPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-xs font-medium text-slate-700">
-                      {dec.expected_value ? formatRupiah(dec.expected_value) : '—'}
+                      {dec.expected_value ? fmt(dec.expected_value) : '—'}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">

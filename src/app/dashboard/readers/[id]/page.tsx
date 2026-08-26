@@ -74,10 +74,8 @@ function ScoreBar({ label, value, max = 100, color = 'blue' }: { label: string; 
   );
 }
 
-function formatRupiah(value: number): string {
-  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}jt`;
-  if (value >= 1_000) return `Rp ${(value / 1_000).toFixed(0)}rb`;
-  return `Rp ${value.toLocaleString('id-ID')}`;
+function fmt(value: number): string {
+  return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
 function timeAgo(dateStr: string): string {
@@ -207,7 +205,7 @@ export default function ReaderDetailPage() {
               <span className="text-sm font-medium text-white/70">Estimated Lifetime Value</span>
             </div>
             <div className="text-3xl font-bold text-white mb-1">
-              {features?.predicted_ltv ? formatRupiah(features.predicted_ltv) : '—'}
+              {features?.predicted_ltv ? fmt(features.predicted_ltv) : '—'}
             </div>
             <div className="text-xs text-white/50">Heuristic estimate · not a guaranteed value</div>
           </div>

@@ -1,8 +1,37 @@
 // GET /api/v1/readers/[id] — Reader Detail
+// Uses direct Supabase REST API to avoid connection pool issues
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
 import { explainDecision } from '@/decision';
-import type { ReaderProfile } from '@/domain/types';
+
+const SB_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+async function sbQuery(table: string, params: string = '') {
+  const url = `${SB_URL}/rest/v1/${table}?${params}`;
+  const res = await fetch(url, {
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+async function sbRpc(sql: string) {
+  const res = await fetch(`${SB_URL}/rest/v1/rpc/exec_sql`, {
+    method: 'POST',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal',
+    },
+    body: JSON.stringify({ p_sql: sql }),
+  });
+  return res.ok;
+}
 
 export async function GET(
   request: NextRequest,
@@ -11,69 +40,74 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const { data: reader, error } = await supabaseAdmin
-      .from('readers')
-      .select(`
-        *,
-        features:reader_features(*),
-        topic_affinity:reader_topic_affinity(*)
-      `)
-      .eq('id', id)
-      .single();
+    // Fetch reader with features and topic affinity
+    const reader = await sbQuery(
+      'readers',
+      `id=eq.${encodeURIComponent(id)}&select=*`
+    ) as Array<Record<string, unknown>>;
 
-    if (error || !reader) {
+    if (!reader || reader.length === 0) {
       return NextResponse.json({ error: 'Reader not found' }, { status: 404 });
     }
 
+    const readerData = reader[0];
+
+    const features = await sbQuery(
+      'reader_features',
+      `reader_id=eq.${encodeURIComponent(id)}&select=*`
+    ) as Array<Record<string, unknown>>;
+
+    const topicAffinity = await sbQuery(
+      'reader_topic_affinity',
+      `reader_id=eq.${encodeURIComponent(id)}&select=*&order=score.desc`
+    ) as Array<Record<string, unknown>>;
+
     // Get recent decisions
-    const { data: decisions } = await supabaseAdmin
-      .from('decisions')
-      .select('*')
-      .eq('reader_id', id)
-      .order('timestamp', { ascending: false })
-      .limit(10);
+    const decisions = await sbQuery(
+      'decisions',
+      `reader_id=eq.${encodeURIComponent(id)}&select=*&order=timestamp.desc&limit=10`
+    ) as Array<Record<string, unknown>>;
 
     // Get recent events
-    const { data: events } = await supabaseAdmin
-      .from('events')
-      .select('*')
-      .eq('reader_id', id)
-      .order('timestamp', { ascending: false })
-      .limit(50);
+    const events = await sbQuery(
+      'events',
+      `reader_id=eq.${encodeURIComponent(id)}&select=*&order=timestamp.desc&limit=50`
+    ) as Array<Record<string, unknown>>;
 
     // Get experiment assignments
-    const { data: assignments } = await supabaseAdmin
-      .from('experiment_assignments')
-      .select(`
-        *,
-        experiments(id, name, status),
-        experiment_variants(id, name)
-      `)
-      .eq('reader_id', id);
+    const assignments = await sbQuery(
+      'experiment_assignments',
+      `reader_id=eq.${encodeURIComponent(id)}&select=*,experiments(id,name,status),experiment_variants(id,name)`
+    ) as Array<Record<string, unknown>>;
 
     // Build latest decision explanation
-    const latestDecision = decisions?.[0];
+    const latestDecision = decisions && decisions.length > 0 ? decisions[0] : null;
     let decisionExplanation = null;
 
-    if (latestDecision && reader.features) {
+    if (latestDecision && features && features.length > 0) {
+      const featureData = features[0];
       decisionExplanation = {
         ...latestDecision,
         explanation: explainDecision(
           {
-            decision_id: latestDecision.id,
-            action: latestDecision.selected_action,
-            offer: null,
-            confidence: latestDecision.confidence ?? 0.5,
-            reason_codes: latestDecision.reason_codes ?? [],
-            decision_version: latestDecision.decision_version,
+            decision_id: latestDecision.id as string,
+            action: latestDecision.selected_action as string,
+            offer: latestDecision.selected_offer_id as string | null,
+            confidence: (latestDecision.confidence as number) ?? 0.5,
+            reason_codes: (latestDecision.reason_codes as string[]) ?? [],
+            decision_version: (latestDecision.decision_version as string) ?? 'rules-v1',
           },
-          reader.features
+          featureData
         ),
       };
     }
 
     return NextResponse.json({
-      reader: reader as ReaderProfile,
+      reader: {
+        ...readerData,
+        features: features && features.length > 0 ? features[0] : null,
+        topic_affinity: topicAffinity ?? [],
+      },
       decisions: decisions ?? [],
       events: events ?? [],
       experiment_assignments: assignments ?? [],
