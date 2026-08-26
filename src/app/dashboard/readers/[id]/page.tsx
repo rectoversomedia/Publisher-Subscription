@@ -116,6 +116,8 @@ export default function ReaderDetailPage() {
     topic_affinity: TopicAffinity[];
     anonymous_id: string | null;
     external_user_id: string | null;
+    name: string | null;
+    email: string | null;
     subscription_status: string;
     identity_status: string;
     last_seen_at: string;
