@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { supabaseAdmin } from '@/lib/supabase';
 import { makeDecision, persistDecision } from '@/decision';
-import type { DecisionContext } from '@/domain/types';
+import type { DecisionContext, LifecycleStage } from '@/domain/types';
 
 const DecisionRequestSchema = z.object({
   reader_id: z.string(),
@@ -68,8 +68,18 @@ export async function POST(request: NextRequest) {
 
     const executionMode = (config?.find((c: { key: string; value: unknown }) => c.key === 'execution_mode')?.value as string) ?? 'LIVE';
 
+    const features = reader.features ?? {};
+
+    // Enrich context with lifecycle stage + metering from reader_features
+    const enrichedContext: DecisionContext = {
+      ...context,
+      lifecycle_stage: (features as Record<string, unknown>).lifecycle_stage as LifecycleStage | undefined,
+      free_articles_read: (features as Record<string, unknown>).free_articles_read as number | undefined,
+      free_article_limit: 3, // DEFAULT_FREE_ARTICLE_LIMIT — override via system_config if needed
+    };
+
     // Make decision
-    const result = await makeDecision(reader, context as DecisionContext, { executionMode });
+    const result = await makeDecision(reader, enrichedContext, { executionMode });
 
     // Persist decision
     if (reader.features && executionMode !== 'SHADOW') {

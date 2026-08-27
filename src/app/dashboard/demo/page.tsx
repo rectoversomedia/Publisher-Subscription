@@ -395,7 +395,7 @@ export default function DemoPage() {
                 ))}
               </div>
               <p className="text-[12px] text-slate-400 leading-relaxed">
-                Revenue Brain successfully converted Andi from <strong className="text-slate-600">NEW</strong> → <strong className="text-emerald-400">SUBSCRIBED</strong> in 6 days. The investigative content paywall on Day 5 triggered conversion, with save-offer intervention on Day 6 preventing checkout abandonment.
+                Revenue Brain berhasil mengkonversi Andi dari <strong className="text-slate-600">NEW</strong> → <strong className="text-emerald-400">SUBSCRIBED</strong> dalam 6 hari. Soft paywall investigative content pada Hari ke-5 memicu konversi, dengan intervensi save-offer pada Hari ke-6 mencegah checkout abandonment.
               </p>
             </div>
           )}
