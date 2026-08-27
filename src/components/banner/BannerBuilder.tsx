@@ -205,11 +205,11 @@ function BannerPreview({ banner }: { banner: Partial<OfferBanner> }) {
               <span className="text-sm">🔒</span>
             </div>
             <div className="flex-1">
-              <p className={`text-sm font-bold ${tokens.text}`}>{t(banner.headline) || 'Banner headline akan muncul di sini'}</p>
-              <p className={`text-xs ${tokens.muted} mt-0.5`}>{t(banner.body_copy) || 'Body copy banner akan muncul di sini'}</p>
+              <p className={`text-sm font-bold ${tokens.text}`}>{t(banner.headline) || 'Dapatkan Akses Tanpa Batas ke Tempo+'}</p>
+              <p className={`text-xs ${tokens.muted} mt-0.5`}>{t(banner.body_copy) || 'Langganan mulai Rp 49.000/bulan, batalkan kapan saja'}</p>
             </div>
             <button className={`px-3 py-1.5 rounded-lg text-xs font-bold ${tokens.btn} flex-shrink-0`}>
-              {t(banner.cta_label) || 'CTA Button'}
+              {t(banner.cta_label) || 'Berlangganan Sekarang'}
             </button>
           </div>
           {banner.show_price && banner.discounted_price && (
@@ -222,7 +222,7 @@ function BannerPreview({ banner }: { banner: Partial<OfferBanner> }) {
                   Rp {(banner.original_price ?? 0).toLocaleString('id-ID')}
                 </span>
               )}
-              <span className={`text-xs ${tokens.muted}`}> {banner.billing_period ?? '/month'}</span>
+              <span className={`text-xs ${tokens.muted}`}> {banner.billing_period ?? '/bulan'}</span>
             </div>
           )}
         </div>
@@ -288,21 +288,21 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
     headline_variant_b: '',
     body_copy: '',
     body_copy_variant_b: '',
-    cta_label: 'Subscribe Now',
+    cta_label: 'Berlangganan Sekarang',
     cta_label_variant_b: '',
     cta_action: 'SUBSCRIBE',
     layout: 'modal',
     theme: 'dark',
     icon: 'lock',
-    accent_color: '#DC2626',
+    accent_color: '#C41230',
     background_color: null,
     text_color: null,
     badge_label: '',
-    badge_color: '#DC2626',
+    badge_color: '#C41230',
     show_price: true,
     original_price: 64000,
-    discounted_price: null,
-    billing_period: '/month',
+    discounted_price: 49000,
+    billing_period: '/bulan',
     target_lifecycle: [],
     target_min_propensity: null,
     target_max_propensity: null,
