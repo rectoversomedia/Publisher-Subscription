@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Demo — Tempo Revenue Brain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0A0A0F;
+      --surface: #141420;
+      --surface2: #1E1E30;
+      --surface3: #252538;
+      --ink: #FAFAFA;
+      --ink-muted: rgba(250,250,250,.55);
+      --ink-dim: rgba(250,250,250,.25);
+      --accent: #C41230;
+      --accent-light: rgba(196,18,48,.12);
+      --accent-border: rgba(196,18,48,.3);
+      --blue: #3B82F6;
+      --blue-light: rgba(59,130,246,.12);
+      --emerald: #10B981;
+      --emerald-light: rgba(16,185,129,.12);
+      --amber: #F59E0B;
+      --purple: #A855F7;
+      --border: rgba(255,255,255,.07);
+      --border2: rgba(255,255,255,.12);
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,15,.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-brand { display: flex; align-items: center; gap: 10px; }
+    .header-logo {
+      width: 32px; height: 32px; background: var(--accent); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+    .header-sub { font-size: 11px; color: var(--ink-muted); }
+    .header-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 20px;
+      background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.25);
+      color: #10B981; font-size: 11px; font-weight: 700;
+    }
+    .live-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #10B981;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .4; }
+    }
+
+    /* Main layout */
+    .main { display: flex; min-height: calc(100vh - 60px); }
+    .sidebar {
+      width: 260px; flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      overflow-y: auto; padding: 20px 0;
+    }
+    .content { flex: 1; overflow: hidden; padding: 28px 32px; }
+
+    /* Sidebar */
+    .sidebar-section { padding: 0 16px 20px; }
+    .sidebar-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--ink-dim);
+      padding: 0 8px 10px;
+    }
+    .reader-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 8px; border-radius: 10px;
+      cursor: pointer; transition: background .15s;
+    }
+    .reader-item:hover { background: var(--surface2); }
+    .reader-item.active { background: var(--accent-light); border: 1px solid var(--accent-border); }
+    .reader-avatar {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: white;
+    }
+    .reader-info { flex: 1; min-width: 0; }
+    .reader-name { font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .reader-meta { font-size: 11px; color: var(--ink-muted); }
+    .reader-stage {
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; padding: 2px 6px; border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    /* Content header */
+    .content-header { margin-bottom: 28px; }
+    .content-eyebrow {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 10px;
+    }
+    .eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--blue);
+    }
+    .eyebrow-text {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--ink-muted);
+    }
+    .content-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 800; color: var(--ink); line-height: 1.2; }
+    .content-subtitle { font-size: 14px; color: var(--ink-muted); margin-top: 4px; }
+
+    /* Cards */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px;
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .card-title { font-size: 13px; font-weight: 700; color: var(--ink); }
+    .card-sub { font-size: 11px; color: var(--ink-muted); }
+
+    /* Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+    /* Metric chips */
+    .metric-chip {
+      padding: 12px 14px; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 12px;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .metric-chip-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-muted); }
+    .metric-chip-value { font-size: 22px; font-weight: 800; color: var(--ink); font-family: 'Playfair Display', serif; letter-spacing: -.02em; line-height: 1.1; }
+    .metric-chip-sub { font-size: 11px; color: var(--ink-muted); }
+    .metric-chip.blue .metric-chip-value { color: var(--blue); }
+    .metric-chip.green .metric-chip-value { color: var(--emerald); }
+    .metric-chip.amber .metric-chip-value { color: var(--amber); }
+    .metric-chip.red .metric-chip-value { color: var(--accent); }
+
+    /* Score bars */
+    .score-row { margin-bottom: 14px; }
+    .score-row:last-child { margin-bottom: 0; }
+    .score-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .score-label { font-size: 12px; color: var(--ink-muted); }
+    .score-value { font-size: 12px; font-weight: 700; color: var(--ink); }
+    .score-track { height: 6px; background: var(--surface3); border-radius: 3px; overflow: hidden; }
+    .score-fill { height: 100%; border-radius: 3px; transition: width .8s cubic-bezier(.16,1,.3,1); }
+
+    /* Timeline */
+    .timeline { display: flex; flex-direction: column; }
+    .tl-item {
+      display: flex; gap: 12px;
+      padding-bottom: 16px; position: relative;
+    }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-line { width: 1px; background: var(--border2); position: absolute; left: 5px; top: 14px; bottom: 0; }
+    .tl-item:last-child .tl-line { display: none; }
+    .tl-dot {
+      width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; margin-top: 3px;
+      position: relative; z-index: 1;
+    }
+    .tl-content { flex: 1; padding-top: 0; }
+    .tl-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .tl-desc { font-size: 12px; color: var(--ink-muted); margin-top: 1px; }
+    .tl-time { font-size: 10px; color: var(--ink-dim); margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+    /* Tags */
+    .stage-tag {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; padding: 3px 8px; border-radius: 10px;
+    }
+
+    /* Decision box */
+    .decision-box {
+      background: var(--surface2); border: 1px solid var(--border2);
+      border-radius: 12px; padding: 16px;
+    }
+    .decision-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-dim); margin-bottom: 8px; }
+    .decision-action {
+      font-size: 15px; font-weight: 700; padding: 6px 12px;
+      border-radius: 8px; display: inline-block; margin-bottom: 8px;
+    }
+
+    /* Event log */
+    .event-log { display: flex; flex-direction: column; gap: 8px; }
+    .event-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 8px;
+      font-size: 12px;
+    }
+    .event-name { flex: 1; color: var(--ink); font-weight: 500; }
+    .event-time { color: var(--ink-dim); font-family: 'DM Mono', monospace; font-size: 10px; }
+    .event-badge {
+      font-size: 9px; font-weight: 700; padding: 2px 6px;
+      border-radius: 6px; text-transform: uppercase; letter-spacing: .05em;
+    }
+
+    /* Banner preview */
+    .banner-preview {
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+    .banner-top {
+      position: relative; height: 140px; overflow: hidden;
+    }
+    .banner-img { width: 100%; height: 100%; object-fit: cover; }
+    .banner-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(220,38,38,.1), rgba(220,38,38,.85));
+    }
+    .banner-close {
+      position: absolute; top: 10px; right: 10px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(0,0,0,.35); border: none; color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; cursor: pointer;
+    }
+    .banner-body {
+      background: #DC2626; padding: 14px 18px 0;
+    }
+    .banner-promo {
+      display: inline-block; background: white; color: #DC2626;
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; padding: 3px 8px; border-radius: 3px; margin-bottom: 8px;
+    }
+    .banner-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px; font-weight: 800; color: white; line-height: 1.25; margin-bottom: 6px;
+    }
+    .banner-sub { font-size: 11px; color: rgba(255,255,255,.6); line-height: 1.4; margin-bottom: 8px; }
+    .banner-price { display: flex; align-items: baseline; gap: 6px; margin-bottom: 10px; }
+    .banner-price-old { font-size: 10px; text-decoration: line-through; opacity: .5; color: rgba(255,255,255,.6); }
+    .banner-price-new { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 800; color: white; }
+    .banner-price-unit { font-size: 10px; opacity: .7; }
+    .banner-cta {
+      width: 100%; padding: 9px; background: white; color: #DC2626;
+      border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 700; cursor: pointer; margin-bottom: 6px;
+    }
+    .banner-skip { width: 100%; padding: 5px; background: none; border: none; color: rgba(255,255,255,.4); font-size: 10px; cursor: pointer; }
+    .banner-footer {
+      background: #1A1A1A; padding: 10px 18px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .banner-footer-label { font-size: 10px; color: rgba(255,255,255,.35); }
+    .banner-footer-value { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.6); }
+
+    /* Status badges */
+    .badge-new { background: rgba(59,130,246,.15); color: #60A5FA; }
+    .badge-casual { background: rgba(168,85,247,.15); color: #A78BFA; }
+    .badge-engaged { background: rgba(16,185,129,.15); color: #34D399; }
+    .badge-highintent { background: rgba(245,158,11,.15); color: #FCD34D; }
+    .badge-converting { background: rgba(249,115,22,.15); color: #FB923C; }
+    .badge-subscribed { background: rgba(16,185,129,.15); color: #10B981; border: 1px solid rgba(16,185,129,.3); }
+    .badge-atrisk { background: rgba(196,18,48,.15); color: #F87171; }
+    .badge-lapsed { background: rgba(100,116,139,.15); color: #94A3B8; }
+    .badge-winback { background: rgba(168,85,247,.15); color: #C4B5FD; }
+
+    /* Avatar colors */
+    .av-blue { background: #3B82F6; }
+    .av-emerald { background: #10B981; }
+    .av-amber { background: #F59E0B; }
+    .av-purple { background: #A855F7; }
+    .av-red { background: #C41230; }
+
+    /* Empty state */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 80px 20px; text-align: center; gap: 12px;
+    }
+    .empty-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--surface2); display: flex; align-items: center; justify-content: center;
+    }
+    .empty-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+    .empty-desc { font-size: 13px; color: var(--ink-muted); max-width: 320px; line-height: 1.6; }
+
+    /* Refresh button */
+    .refresh-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 8px;
+      background: var(--surface2); border: 1px solid var(--border2);
+      color: var(--ink); font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all .15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .refresh-btn:hover { background: var(--surface3); }
+    .refresh-btn.loading { opacity: .6; pointer-events: none; }
+    .refresh-btn.loading .refresh-icon { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Separator */
+    .sep { height: 1px; background: var(--border); margin: 20px 0; }
+
+    /* Loading skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-brand">
+    <div class="header-logo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div>
+      <div class="header-title">Revenue Brain</div>
+      <div class="header-sub">Tempo+ Demo</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="header-badge">
+      <div class="live-dot"></div>
+      LIVE DATA
+    </div>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadReaders()">
+      <svg class="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      Refresh
+    </button>
+  </div>
+</header>
+
+<div class="main">
+  <!-- Sidebar: Reader list -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reader List — Live dari Supabase</div>
+      <div id="readerList">
+        <div style="padding:16px 8px;text-align:center;">
+          <div class="skeleton" style="height:14px;width:80%;margin:0 auto 8px;"></div>
+          <div class="skeleton" style="height:12px;width:60%;margin:0 auto;"></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Content: Reader detail -->
+  <main class="content" id="mainContent">
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="empty-title">Pilih seorang pembaca</div>
+      <div class="empty-desc">Klik nama pembaca di sidebar untuk melihat profile, score, dan keputusan Revenue Brain secara real-time dari Supabase.</div>
+    </div>
+  </main>
+</div>
+
+<script>
+  const API = '/api/v1/readers';
+
+  // Stage → CSS class + label
+  const STAGE_MAP = {
+    NEW: { cls: 'badge-new', label: 'NEW' },
+    CASUAL: { cls: 'badge-casual', label: 'CASUAL' },
+    ENGAGED: { cls: 'badge-engaged', label: 'ENGAGED' },
+    HIGH_INTENT: { cls: 'badge-highintent', label: 'HIGH INTENT' },
+    CONVERTING: { cls: 'badge-converting', label: 'CONVERTING' },
+    SUBSCRIBED: { cls: 'badge-subscribed', label: 'SUBSCRIBED' },
+    AT_RISK: { cls: 'badge-atrisk', label: 'AT RISK' },
+    LAPSED: { cls: 'badge-lapsed', label: 'LAPSED' },
+    WINBACK: { cls: 'badge-winback', label: 'WINBACK' },
+  };
+
+  const AV_COLORS = ['av-blue', 'av-emerald', 'av-amber', 'av-purple', 'av-red'];
+
+  const DECISIONS = {
+    ALLOW_FREE: { label: 'Free Access', color: '#10B981', bg: 'rgba(16,185,129,.15)' },
+    SHOW_REGISTRATION: { label: 'Registration Wall', color: '#3B82F6', bg: 'rgba(59,130,246,.15)' },
+    SHOW_MONTHLY: { label: 'Monthly Offer', color: '#C41230', bg: 'rgba(196,18,48,.15)' },
+    SHOW_ANNUAL: { label: 'Annual Offer', color: '#10B981', bg: 'rgba(16,185,129,.15)' },
+    SHOW_TRIAL: { label: 'Free Trial', color: '#A855F7', bg: 'rgba(168,85,247,.15)' },
+    SHOW_WINBACK: { label: 'Winback Offer', color: '#A855F7', bg: 'rgba(168,85,247,.15)' },
+    SHOW_SOFT_PAYWALL: { label: 'Soft Paywall', color: '#F59E0B', bg: 'rgba(245,158,11,.15)' },
+    SHOW_HARD_PAYWALL: { label: 'Hard Paywall', color: '#C41230', bg: 'rgba(196,18,48,.15)' },
+    NO_ACTION: { label: 'No Action', color: '#64748B', bg: 'rgba(100,116,139,.15)' },
+  };
+
+  function getStage(reader) {
+    if (reader.features) {
+      const f = reader.features;
+      if (reader.subscription_status === 'ACTIVE') return f.churn_risk >= 70 ? 'AT_RISK' : 'SUBSCRIBED';
+      if (reader.subscription_status === 'EXPIRED' || reader.subscription_status === 'CANCELLED')
+        return f.engagement_score > 50 ? 'WINBACK' : 'LAPSED';
+      if (f.subscription_propensity >= 60) return 'HIGH_INTENT';
+      if (f.offer_clicks_30d >= 1 || f.checkout_starts_30d >= 1) return 'CONVERTING';
+      if (f.sessions_30d === 0) return 'NEW';
+      if (f.articles_30d >= 5) return 'ENGAGED';
+      if (f.sessions_30d <= 2) return 'CASUAL';
+      return 'CASUAL';
+    }
+    return 'NEW';
+  }
+
+  function getDecision(features) {
+    if (!features) return 'ALLOW_FREE';
+    const p = features.subscription_propensity;
+    if (p >= 80) return 'SHOW_ANNUAL';
+    if (p >= 60) return 'SHOW_MONTHLY';
+    if (p >= 30) return 'SHOW_REGISTRATION';
+    return 'ALLOW_FREE';
+  }
+
+  function timeAgo(dateStr) {
+    if (!dateStr) return '—';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const h = Math.floor(diff / 3600000);
+    if (h < 1) return Math.floor(diff / 60000) + 'm ago';
+    if (h < 24) return h + 'h ago';
+    return Math.floor(h / 24) + 'd ago';
+  }
+
+  function initials(name) {
+    if (!name) return '??';
+    return name.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase();
+  }
+
+  function fmt(n) {
+    if (!n && n !== 0) return '—';
+    return n.toLocaleString('en-US');
+  }
+
+  function avColor(name) {
+    if (!name) return 'av-blue';
+    return AV_COLORS[name.charCodeAt(0) % AV_COLORS.length];
+  }
+
+  // ── Load readers list ──
+  async function loadReaders() {
+    const btn = document.getElementById('refreshBtn');
+    btn.classList.add('loading');
+
+    const listEl = document.getElementById('readerList');
+    listEl.innerHTML = '<div style="padding:12px 8px;text-align:center;"><span style="font-size:12px;color:var(--ink-dim);">Loading...</span></div>';
+
+    try {
+      const res = await fetch(`${API}?limit=50`);
+      const json = await res.json();
+      const readers = json.data || [];
+
+      if (readers.length === 0) {
+        listEl.innerHTML = `
+          <div style="padding:24px 8px;text-align:center;">
+            <div style="font-size:12px;color:var(--ink-muted);margin-bottom:8px;">Belum ada data reader.</div>
+            <div style="font-size:11px;color:var(--ink-dim);">Pastikan events sudah dikirim ke /api/v1/events</div>
+          </div>`;
+        btn.classList.remove('loading');
+        return;
+      }
+
+      listEl.innerHTML = readers.map(r => {
+        const stage = getStage(r);
+        const s = STAGE_MAP[stage] || { cls: 'badge-new', label: 'NEW' };
+        const name = r.name || r.email || 'Anon #' + (r.anonymous_id ? r.anonymous_id.slice(-4) : r.id.slice(-4));
+        const subLabel = r.subscription_status === 'ACTIVE' ? 'Subscribed' : r.subscription_status === 'EXPIRED' ? 'Expired' : 'Free';
+        return `<div class="reader-item" onclick="loadReaderDetail('${r.id}')">
+          <div class="reader-avatar ${avColor(name)}">${initials(name)}</div>
+          <div class="reader-info">
+            <div class="reader-name">${name}</div>
+            <div class="reader-meta">${subLabel} · ${timeAgo(r.last_seen_at)}</div>
+          </div>
+          <span class="reader-stage ${s.cls}">${s.label}</span>
+        </div>`;
+      }).join('');
+
+    } catch(e) {
+      listEl.innerHTML = `<div style="padding:16px 8px;text-align:center;"><span style="font-size:12px;color:#F87171;">Gagal load: ${e.message}</span></div>`;
+    }
+    btn.classList.remove('loading');
+  }
+
+  // ── Load reader detail ──
+  async function loadReaderDetail(id) {
+    // Highlight active
+    document.querySelectorAll('.reader-item').forEach(el => el.classList.remove('active'));
+    const items = document.querySelectorAll('.reader-item');
+    items.forEach(el => {
+      if (el.getAttribute('onclick')?.includes(id)) el.classList.add('active');
+    });
+
+    const content = document.getElementById('mainContent');
+    content.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+        <div class="skeleton" style="height:32px;width:200px;"></div>
+        <div class="skeleton" style="height:20px;width:120px;"></div>
+      </div>
+      <div class="skeleton" style="height:400px;border-radius:16px;"></div>`;
+
+    try {
+      const res = await fetch(`${API}/${id}`);
+      const json = await res.json();
+
+      if (json.error) {
+        content.innerHTML = `<div class="empty-state"><div class="empty-title">Error</div><div class="empty-desc">${json.error}</div></div>`;
+        return;
+      }
+
+      renderDetail(content, json);
+    } catch(e) {
+      content.innerHTML = `<div class="empty-state"><div class="empty-title">Error</div><div class="empty-desc">${e.message}</div></div>`;
+    }
+  }
+
+  function renderDetail(el, data) {
+    const r = data.reader;
+    const f = r.features;
+    const decisions = data.decisions || [];
+    const events = data.events || [];
+    const stage = getStage(r);
+    const s = STAGE_MAP[stage] || STAGE_MAP['NEW'];
+    const name = r.name || r.email || 'Anon #' + (r.anonymous_id ? r.anonymous_id.slice(-6) : r.id.slice(-6));
+    const isKnown = r.identity_status === 'REGISTERED' || r.identity_status === 'KNOWN';
+
+    const decision = getDecision(f);
+    const dec = DECISIONS[decision] || DECISIONS['ALLOW_FREE'];
+    const lastEvent = events[0];
+
+    // Banner type based on stage
+    const bannerVariant = stage === 'HIGH_INTENT' || stage === 'CONVERTING' ? 'offer' : stage === 'WINBACK' ? 'winback' : stage === 'SUBSCRIBED' ? 'retention' : 'soft';
+
+    const engagementColor = (f?.engagement_score ?? 0) >= 70 ? '#3B82F6' : (f?.engagement_score ?? 0) >= 40 ? '#F59E0B' : '#64748B';
+    const propensityColor = (f?.subscription_propensity ?? 0) >= 70 ? '#10B981' : (f?.subscription_propensity ?? 0) >= 40 ? '#F59E0B' : '#64748B';
+    const churnColor = (f?.churn_risk ?? 0) >= 70 ? '#F87171' : (f?.churn_risk ?? 0) >= 40 ? '#F59E0B' : '#10B981';
+
+    el.innerHTML = `
+      <!-- Header -->
+      <div class="content-header">
+        <div class="content-eyebrow">
+          <div class="eyebrow-dot"></div>
+          <span class="eyebrow-text">Revenue Brain · Reader Profile</span>
+          <span class="reader-stage ${s.cls}">${s.label}</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+          <div>
+            <div class="content-title">${name}</div>
+            <div class="content-subtitle">
+              ${r.anonymous_id ? 'anon_' + r.anonymous_id.slice(-8) : r.id.slice(0,16) + '…'} &nbsp;·&nbsp;
+              ${isKnown ? r.email || r.phone || '' : ''}
+              ${r.subscription_status === 'ACTIVE' ? '<span style="color:#10B981;font-weight:600;"> · Subscriber Aktif</span>' : ''}
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0;">
+            <div class="decision-box">
+              <div class="decision-label">Revenue Brain Decision</div>
+              <div class="decision-action" style="background:${dec.bg};color:${dec.color};">${dec.label}</div>
+              <div style="font-size:11px;color:var(--ink-muted);">Confidence: ${f ? Math.round((f.subscription_propensity || 50) * 0.9 + 10) : 50}%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top metrics -->
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="metric-chip blue">
+          <div class="metric-chip-label">Engagement Score</div>
+          <div class="metric-chip-value">${fmt(f?.engagement_score ?? 0)}</div>
+          <div class="metric-chip-sub">of 100</div>
+        </div>
+        <div class="metric-chip green">
+          <div class="metric-chip-label">Propensity</div>
+          <div class="metric-chip-value">${fmt(f?.subscription_propensity ?? 0)}</div>
+          <div class="metric-chip-sub">subscribe likelihood</div>
+        </div>
+        <div class="metric-chip ${(f?.churn_risk ?? 0) >= 70 ? 'red' : 'amber'}">
+          <div class="metric-chip-label">Churn Risk</div>
+          <div class="metric-chip-value">${fmt(f?.churn_risk ?? 0)}</div>
+          <div class="metric-chip-sub">${r.subscription_status === 'ACTIVE' ? 'subscriber risk' : '—'}</div>
+        </div>
+        <div class="metric-chip">
+          <div class="metric-chip-label">Est. LTV</div>
+          <div class="metric-chip-value">${f?.predicted_ltv ? 'Rp ' + fmt(f.predicted_ltv) : '—'}</div>
+          <div class="metric-chip-sub">lifetime value</div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="grid-2" style="margin-bottom:20px;">
+        <!-- Scores card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Revenue Brain Scores</div>
+          </div>
+          <div class="score-row">
+            <div class="score-header">
+              <span class="score-label">Engagement</span>
+              <span class="score-value" style="color:${engagementColor}">${fmt(f?.engagement_score ?? 0)}/100</span>
+            </div>
+            <div class="score-track">
+              <div class="score-fill" style="width:${f?.engagement_score ?? 0}%;background:${engagementColor}"></div>
+            </div>
+          </div>
+          <div class="score-row">
+            <div class="score-header">
+              <span class="score-label">Subscription Propensity</span>
+              <span class="score-value" style="color:${propensityColor}">${fmt(f?.subscription_propensity ?? 0)}/100</span>
+            </div>
+            <div class="score-track">
+              <div class="score-fill" style="width:${f?.subscription_propensity ?? 0}%;background:${propensityColor}"></div>
+            </div>
+          </div>
+          <div class="score-row">
+            <div class="score-header">
+              <span class="score-label">Price Sensitivity</span>
+              <span class="score-value">${fmt(f?.price_sensitivity ?? 0)}/100</span>
+            </div>
+            <div class="score-track">
+              <div class="score-fill" style="width:${f?.price_sensitivity ?? 0}%;background:#F59E0B"></div>
+            </div>
+          </div>
+          <div class="score-row">
+            <div class="score-header">
+              <span class="score-label">Content Loyalty</span>
+              <span class="score-value">${fmt(f?.content_loyalty ?? 0)}/100</span>
+            </div>
+            <div class="score-track">
+              <div class="score-fill" style="width:${f?.content_loyalty ?? 0}%;background:#A855F7"></div>
+            </div>
+          </div>
+          ${r.subscription_status === 'ACTIVE' ? `
+          <div class="score-row">
+            <div class="score-header">
+              <span class="score-label">Churn Risk</span>
+              <span class="score-value" style="color:${churnColor}">${fmt(f?.churn_risk ?? 0)}/100</span>
+            </div>
+            <div class="score-track">
+              <div class="score-fill" style="width:${f?.churn_risk ?? 0}%;background:${churnColor}"></div>
+            </div>
+          </div>` : ''}
+        </div>
+
+        <!-- Behavioral metrics -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Behavioral Metrics (30 hari)</div>
+          </div>
+          <div class="grid-2" style="gap:12px;">
+            ${metricsGrid(f, r)}
+          </div>
+          <div class="sep"></div>
+          <div class="card-title" style="margin-bottom:10px;">Contact Info</div>
+          ${isKnown ? `
+            ${r.name ? `<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;font-size:13px;"><span style="color:var(--ink-muted);width:60px;">Nama:</span><span style="font-weight:600;">${r.name}</span></div>` : ''}
+            ${r.email ? `<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;font-size:13px;"><span style="color:var(--ink-muted);width:60px;">Email:</span><span>${r.email}</span></div>` : ''}
+            ${r.phone ? `<div style="display:flex;gap:8px;align-items:center;font-size:13px;"><span style="color:var(--ink-muted);width:60px;">HP:</span><span>${r.phone}</span></div>` : ''}
+          ` : `<div style="font-size:13px;color:var(--ink-dim);font-style:italic;">Reader belum terdaftar (anonim)</div>`}
+        </div>
+      </div>
+
+      <!-- Bottom row -->
+      <div class="grid-2">
+        <!-- Event timeline -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Event Timeline</div>
+            <span style="font-size:10px;color:var(--ink-dim);">${events.length} events</span>
+          </div>
+          ${events.length > 0 ? `
+          <div class="event-log">
+            ${events.slice(0, 12).map(ev => {
+              const badgeCls = ev.event_name === 'subscription_success' ? 'badge-subscribed'
+                : ev.event_name === 'paywall_view' ? 'badge-highintent'
+                : ev.event_name === 'checkout_start' ? 'badge-converting'
+                : 'badge-new';
+              return `<div class="event-row">
+                <div class="event-name">${ev.event_name.replace(/_/g, ' ')}</div>
+                <div class="event-time">${timeAgo(ev.timestamp)}</div>
+                <span class="event-badge ${badgeCls}">${ev.event_name.split('_')[0]}</span>
+              </div>`;
+            }).join('')}
+          </div>` : '<div style="font-size:13px;color:var(--ink-dim);text-align:center;padding:20px;">Belum ada event tercatat</div>'}
+        </div>
+
+        <!-- Banner preview -->
+        <div class="card" style="padding:20px;">
+          <div class="card-header">
+            <div class="card-title">Banner yang Ditampilkan</div>
+            <span class="reader-stage badge-highintent">${dec.label}</span>
+          </div>
+          <div class="banner-preview">
+            ${bannerHTML(bannerVariant, f)}
+          </div>
+          <div style="margin-top:12px;font-size:11px;color:var(--ink-muted);">
+            <strong style="color:var(--ink)">Revenue Brain logic:</strong>
+            ${bannerLogic(stage, f, dec)}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function metricsGrid(f, r) {
+    if (!f) return '<div style="font-size:12px;color:var(--ink-dim);grid-column:1/-1;text-align:center;padding:20px;">Loading metrics...</div>';
+    return `
+      ${[[f.sessions_30d, 'Sessions (30d)', 'times'], [f.articles_30d, 'Articles (30d)', 'pcs'], [f.premium_articles_30d, 'Premium', 'pcs'], [f.paywall_views_30d, 'Paywall Views', 'x'], [f.offer_clicks_30d, 'Offer Clicks', 'x'], [f.checkout_starts_30d, 'Checkout Starts', 'x'], [f.sessions_7d, 'Sessions (7d)', 'times'], [r.subscription_status === 'ACTIVE' ? f.churn_risk : null, r.subscription_status === 'ACTIVE' ? 'Churn Risk' : 'Status', r.subscription_status === 'ACTIVE' ? '/100' : r.subscription_status?.toLowerCase()]].filter(x => x[0] !== null).map(([v, l, u]) => `
+        <div style="padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;">
+          <div style="font-size:10px;color:var(--ink-muted);margin-bottom:2px;">${l}</div>
+          <div style="font-size:16px;font-weight:700;color:var(--ink);">${fmt(v)}<span style="font-size:10px;color:var(--ink-muted);font-weight:400;"> ${u}</span></div>
+        </div>`).join('')}
+    `;
+  }
+
+  function bannerHTML(variant, f) {
+    if (variant === 'offer') return `
+      <div class="banner-top">
+        <img class="banner-img" src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=480&h=140&fit=crop&q=75" />
+        <div class="banner-overlay"></div>
+        <button class="banner-close">×</button>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:12px 16px;">
+          <div class="banner-promo">Diskon 30% · Terbatas!</div>
+          <div class="banner-headline">Jurnalisme Independen,<br/>Sekarang Lebih Terjangkau</div>
+        </div>
+      </div>
+      <div class="banner-body">
+        <div class="banner-sub">Akses tanpa batas ke seluruh investigasi dan konten premium Tempo+.</div>
+        <div class="banner-price">
+          <span class="banner-price-old">Rp 64.000</span>
+          <span class="banner-price-new">Rp 44.800</span>
+          <span class="banner-price-unit">/bulan</span>
+        </div>
+        <button class="banner-cta">Ambil Penawaran Ini</button>
+        <button class="banner-skip">Tidak, mungkin lain waktu</button>
+      </div>
+      <div class="banner-footer">
+        <span class="banner-footer-label">Tempo+ · Personal Offer</span>
+        <span class="banner-footer-value">Priority: 95 · ${f?.subscription_propensity ?? 0}% propensity</span>
+      </div>`;
+
+    if (variant === 'winback') return `
+      <div class="banner-top" style="background:#0F172A;">
+        <img class="banner-img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=480&h=140&fit=crop&q=75" style="filter:brightness(0.5) sepia(0.2);" />
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(30,20,60,.8));"></div>
+        <button class="banner-close">×</button>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:12px 16px;">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#C4B5FD;margin-bottom:6px;">✦ Selamat Datang Kembali</div>
+          <div class="banner-headline" style="font-style:italic;">"Kami sudah menunggu<br/>kamu kembali..."</div>
+        </div>
+      </div>
+      <div class="banner-body" style="background:#0F172A;">
+        <div class="banner-sub" style="color:rgba(255,255,255,.5);">Investigasi dan liputan yang kamu butuhkan tetap ada di sini.</div>
+        <div class="banner-price">
+          <span class="banner-price-old" style="color:rgba(255,255,255,.4);">Rp 64.000</span>
+          <span class="banner-price-new">Rp 49.000</span>
+          <span class="banner-price-unit">/bulan</span>
+        </div>
+        <button class="banner-cta" style="color:#8B5CF6;">Saya Kembali</button>
+        <button class="banner-skip">Belum siap</button>
+      </div>
+      <div class="banner-footer">
+        <span class="banner-footer-label">Tempo+ · Winback Offer</span>
+        <span class="banner-footer-value">Priority: 85 · Re-engagement mode</span>
+      </div>`;
+
+    if (variant === 'soft') return `
+      <div style="background:#1A1A2E;padding:16px 18px;">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);margin-bottom:8px;">Tempo+ Meter</div>
+        <div style="display:flex;gap:4px;margin-bottom:12px;">
+          ${[0,1,2].map(i => `<div style="flex:1;height:4px;border-radius:2px;background:${i < 2 ? '#C41230' : 'rgba(255,255,255,.15)'}"></div>`).join('')}
+        </div>
+        <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:800;color:white;margin-bottom:6px;">2 dari 3 artikel gratis sudah terpakai</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:12px;line-height:1.5;">Dapatkan akses tak terbatas ke seluruh investigasi Tempo dengan langganan Tempo+.</div>
+        <button style="width:100%;padding:9px;background:#C41230;color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Berlangganan Sekarang</button>
+      </div>
+      <div class="banner-footer">
+        <span class="banner-footer-label">Tempo+ · Soft Paywall</span>
+        <span class="banner-footer-value">Free: 1 artikel tersisa</span>
+      </div>`;
+
+    // retention
+    return `
+      <div style="background:linear-gradient(135deg,#0A1628,#0F2027);padding:20px 18px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">✦</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:800;color:white;margin-bottom:4px;">Terima kasih sudah bersama Tempo+</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:12px;">Jurnalisme investigasi butuh dukungan pembaca seperti kamu.</div>
+        <div style="font-size:12px;color:#10B981;font-weight:600;">✓ Langganan aktif · Renew otomatis</div>
+      </div>
+      <div class="banner-footer">
+        <span class="banner-footer-label">Retention Mode</span>
+        <span class="banner-footer-value">Churn Risk: ${f?.churn_risk ?? 0}/100</span>
+      </div>`;
+  }
+
+  function bannerLogic(stage, f, dec) {
+    if (stage === 'HIGH_INTENT') return `Reader propensity ${f?.subscription_propensity}/100. Tinggi engagement (${f?.engagement_score}/100). langsung tawarkan langganan.`;
+    if (stage === 'CONVERTING') return `Reader sudah klik offer ${f?.offer_clicks_30d}x dan checkout ${f?.checkout_starts_30d}x. Prioritas tinggi.`;
+    if (stage === 'WINBACK') return `Ex-subscriber dengan engagement ${f?.engagement_score}/100. Fokus re-engagement dengan welcome back offer.`;
+    if (stage === 'SUBSCRIBED') return `Active subscriber. Tunjukkan retention message, watch churn risk (${f?.churn_risk}/100).`;
+    if (stage === 'NEW') return `Reader baru. Berikan akses gratis (3 artikel). Mulai build engagement profile.`;
+    if (stage === 'ENGAGED') return `Reader aktif dengan ${f?.articles_30d} artikel/bulan. Naikkan propensity dengan targeted offer.`;
+    if (stage === 'CASUAL') return `Reader occasional. Dkuran engagement untuk membangun propensity score.`;
+    if (stage === 'AT_RISK') return `Subscriber aktif dengan churn risk tinggi (${f?.churn_risk}/100). intervene sekarang.`;
+    return `Stage: ${stage}. Decision: ${dec.label}.`;
+  }
+
+  // Auto-select first reader on load
+  loadReaders().then(() => {
+    const firstItem = document.querySelector('.reader-item');
+    if (firstItem) firstItem.click();
+  });
+</script>
+
+</body>
+</html>

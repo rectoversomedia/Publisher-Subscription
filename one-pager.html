@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tempo+ Revenue Brain — One Pager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #FAFAF8; --ink: #1A1A2E; --ink-muted: #6B7280;
+      --accent: #C41230; --accent-dark: #8B0000;
+      --surface: #FFFFFF; --surface2: #F5F5F0;
+      --border: #E5E5E0; --border2: #D1D1CC;
+      --blue: #2563EB; --emerald: #059669; --amber: #D97706;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0A0A0F; --ink: #FAFAFA; --ink-muted: rgba(250,250,250,.55);
+        --surface: #141420; --surface2: #1E1E30;
+        --border: rgba(255,255,255,.07); --border2: rgba(255,255,255,.12);
+        --blue: #3B82F6; --emerald: #10B981; --amber: #F59E0B;
+      }
+    }
+
+    body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.6; }
+
+    /* Print-ready: A4 landscape, centered */
+    @page { size: A4 landscape; margin: 0; }
+    .page {
+      width: 297mm; min-height: 210mm;
+      margin: 0 auto;
+      background: var(--surface);
+      box-shadow: 0 4px 32px rgba(0,0,0,.15);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto 1fr auto;
+      gap: 0;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      grid-column: 1 / -1;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 32px;
+      border-bottom: 2px solid var(--accent);
+      background: var(--surface);
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .logo-mark {
+      width: 44px; height: 44px; background: var(--accent);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    }
+    .header-brand { }
+    .brand-name { font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1.1; }
+    .brand-name em { font-style:italic;color:var(--accent); }
+    .brand-sub { font-size:11px;color:var(--ink-muted);font-weight:500; }
+    .header-right { text-align: right; }
+    .header-label { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-muted);margin-bottom:2px; }
+    .header-date { font-size:13px;font-weight:600;color:var(--ink); }
+
+    /* Main grid */
+    .col { padding: 24px 24px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 20px; }
+    .col:last-child { border-right: none; }
+    .col-label { font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-muted);margin-bottom:12px; }
+
+    /* Sections */
+    .section { }
+    .section-title { font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:6px; }
+    .section-title .icon { width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .section-title .icon svg { width:11px;height:11px; }
+    .section-body { font-size:13px;color:var(--ink-muted);line-height:1.65; }
+
+    /* Stats */
+    .stat-row { display:flex;gap:8px;margin-bottom:8px; }
+    .stat { flex:1;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;text-align:center; }
+    .stat-val { font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:var(--ink);line-height:1; }
+    .stat-val.green { color:var(--emerald); }
+    .stat-val.red { color:var(--accent); }
+    .stat-label { font-size:9px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px; }
+
+    /* Bullets */
+    .bullet-list { list-style:none;padding:0; }
+    .bullet-list li { padding:4px 0 4px 16px;position:relative;font-size:12px;color:var(--ink-muted);line-height:1.5; }
+    .bullet-list li::before { content:'';position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent); }
+    .bullet-list.blue li::before { background:var(--blue); }
+    .bullet-list.green li::before { background:var(--emerald); }
+
+    /* Callout */
+    .callout {
+      padding:12px 14px;background:var(--surface2);border-left:3px solid var(--accent);
+      border-radius:0 6px 6px 0;font-size:12px;color:var(--ink-muted);line-height:1.6;
+    }
+    .callout.green { border-left-color:var(--emerald);background:rgba(5,150,105,.05); }
+    .callout.blue { border-left-color:var(--blue);background:rgba(37,99,235,.05); }
+    .callout.amber { border-left-color:var(--amber);background:rgba(217,119,6,.05); }
+
+    /* Quote */
+    .quote { padding:14px 16px;background:var(--accent);border-radius:8px;color:white; }
+    .quote-text { font-family:'Playfair Display',serif;font-size:14px;font-weight:700;line-height:1.4;font-style:italic; }
+    .quote-attr { font-size:11px;color:rgba(255,255,255,.6);margin-top:6px; }
+
+    /* Flow */
+    .flow { display:flex;flex-direction:column;gap:0; }
+    .flow-step { display:flex;align-items:flex-start;gap:10px;padding:6px 0; }
+    .flow-num { width:20px;height:20px;border-radius:50%;background:var(--accent);color:white;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px; }
+    .flow-text { font-size:12px;color:var(--ink-muted);line-height:1.5; }
+    .flow-text strong { color:var(--ink);font-weight:600; }
+
+    /* Pricing table */
+    .price-table { width:100%;border-collapse:collapse;font-size:12px; }
+    .price-table th { font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);padding:4px 8px;text-align:left;border-bottom:1px solid var(--border); }
+    .price-table td { padding:6px 8px;color:var(--ink-muted);border-bottom:1px solid var(--border); }
+    .price-table tr:last-child td { border-bottom:none; }
+    .price-table .price { font-family:'Playfair Display',serif;font-size:16px;font-weight:800;color:var(--ink); }
+    .price-table .price.red { color:var(--accent); }
+    .price-table .tag { font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(5,150,105,.1);color:var(--emerald); }
+
+    /* Comparison table */
+    .comp-table { width:100%;border-collapse:collapse;font-size:12px; }
+    .comp-table th { font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border); }
+    .comp-table td { padding:7px 10px;color:var(--ink-muted);border-bottom:1px solid var(--border);vertical-align:top; }
+    .comp-table tr:last-child td { border-bottom:none; }
+    .comp-table .check { color:var(--emerald);font-weight:700; }
+    .comp-table .x { color:var(--accent);font-weight:700; }
+    .comp-table .partial { color:var(--amber);font-weight:700; }
+
+    /* Tags */
+    .tag-list { display:flex;flex-wrap:wrap;gap:4px; }
+    .tag { font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);color:var(--ink-muted);text-transform:uppercase;letter-spacing:.04em; }
+
+    /* Footer */
+    .footer {
+      grid-column: 1 / -1;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 32px;
+      border-top:1px solid var(--border);
+      background:var(--surface2);
+    }
+    .footer-left { display:flex;align-items:center;gap:8px; }
+    .footer-logo { width:20px;height:20px;background:var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center; }
+    .footer-brand { font-size:11px;font-weight:700;color:var(--ink); }
+    .footer-contact { font-size:11px;color:var(--ink-muted); }
+    .footer-right { font-size:10px;color:var(--ink-muted); }
+    .footer-cta {
+      padding:6px 16px;background:var(--accent);color:white;border:none;border-radius:6px;
+      font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="header-brand">
+        <div class="brand-name">Tempo+ <em>Revenue Brain</em></div>
+        <div class="brand-sub">Intelligent Subscription Intelligence Platform</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="header-label">Executive Summary</div>
+      <div class="header-date">Agustus 2026 · Confidential</div>
+    </div>
+  </div>
+
+  <!-- COL 1: Problem + Solution + Stats -->
+  <div class="col">
+    <div class="section">
+      <div class="section-title">
+        <span class="icon" style="background:rgba(196,18,48,.1);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C41230" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </span>
+        Masalahnya
+      </div>
+      <div class="section-body">
+        <p>Flat paywall Tempo saat ini memperlakukan semua pembaca sama — tanpa peduli sudah berapa kali mereka datang, sudah berapa artikel mereka baca, atau seberapa tinggi minat mereka subscribe.</p>
+        <div style="margin-top:12px;">
+          <ul class="bullet-list">
+            <li>Conversion rate flat paywall Indonesia: <strong style="color:var(--ink)">0.3–0.8%</strong></li>
+            <li>Reader dengan intent subscribe yang belum dikonversi: <strong style="color:var(--ink)">~80%</strong></li>
+            <li>Tidak ada data konten mana yang mendorong subscriber baru</li>
+            <li>Editorial team tidak punya visibility ke funnel revenue</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout amber">
+      <strong style="color:var(--ink);">Benchmark:</strong> Publishers dengan intelligent paywall mencapai 2–4% conversion rate — <strong style="color:var(--ink);">5–10x lebih tinggi</strong> dari flat paywall.
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <span class="icon" style="background:rgba(5,150,105,.1);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </span>
+        Solusi Revenue Brain
+      </div>
+      <div class="section-body">
+        <p>Revenue Brain adalah <strong style="color:var(--ink);">intelligent paywall layer</strong> yang diletakkan di atas infrastruktur Tempo yang ada — tidak perlu refactor sistem, tidak perlu migrasi database.</p>
+        <div class="callout green" style="margin-top:12px;">
+          3 hal yang Revenue Brain lakukan otomatis:<br/>
+          <strong style="color:var(--ink);">1)</strong> Kenali pembaca mana yang mau subscribe<br/>
+          <strong style="color:var(--ink);">2)</strong> Tentukan kapan harus tawarkan<br/>
+          <strong style="color:var(--ink);">3)</strong> Pasang banner personal yang relevan
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-val green">2–4%</div>
+          <div class="stat-label">Target Conversion</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val">18</div>
+          <div class="stat-label">Decision Rules</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val">9</div>
+          <div class="stat-label">Lifecycle Stages</div>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-val green">2–3</div>
+          <div class="stat-label">Sprint Integration</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val green">Rp 230jt</div>
+          <div class="stat-label">Est. Revenue/mo</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote">
+      <div class="quote-text">"Revenue Brain memungkinkan kami memberikan pengalaman yang berbeda untuk pembaca yang berbeda — untuk pertama kalinya, jurnalisme kami di-monetize secara personal."</div>
+      <div class="quote-attr">— VP Revenue, Publisher dengan model serupa</div>
+    </div>
+  </div>
+
+  <!-- COL 2: How It Works + Features + Pricing -->
+  <div class="col">
+    <div class="section">
+      <div class="section-title">
+        <span class="icon" style="background:rgba(37,99,235,.1);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </span>
+        Cara Kerja
+      </div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-num">1</div>
+          <div class="flow-text"><strong>Event capture</strong> — Setiap pageview, article read, register, login, checkout start dicatat dan dikirim ke Revenue Brain secara real-time.</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">2</div>
+          <div class="flow-text"><strong>Reader scoring</strong> — Engagement, propensity, price sensitivity, churn risk dihitung per pembaca dan diperbarui setiap event.</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">3</div>
+          <div class="flow-text"><strong>Decision engine</strong> — 18 rules menentukan: free access, soft paywall, hard paywall, atau langsung tawarkan langganan.</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">4</div>
+          <div class="flow-text"><strong>Banner delivery</strong> — Banner personal muncul dengan headline Bahasa Indonesia, foto, dan CTA yang sesuai lifecycle stage pembaca.</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">5</div>
+          <div class="flow-text"><strong>Analytics dashboard</strong> — Seluruh funnel, metric, dan AI copilot tersedia real-time untuk tim editorial dan revenue.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <span class="icon" style="background:rgba(5,150,105,.1);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </span>
+        Kemampuan Utama
+      </div>
+      <div class="tag-list" style="margin-bottom:10px;">
+        <span class="tag">Reader Intelligence</span>
+        <span class="tag">Metered Paywall</span>
+        <span class="tag">Lifecycle Stages</span>
+        <span class="tag">A/B Testing</span>
+        <span class="tag">Personal Banners</span>
+        <span class="tag">AI Copilot</span>
+        <span class="tag">Churn Prevention</span>
+        <span class="tag">Winback Engine</span>
+        <span class="tag">Content Attribution</span>
+        <span class="tag">Real-time Dashboard</span>
+        <span class="tag">Supabase Native</span>
+        <span class="tag">CMS Agnostic</span>
+      </div>
+      <div class="callout blue">
+        Didukung Supabase — same infrastructure yang sudah Tempo gunakan. Tidak perlu layanan pihak ketiga tambahan.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Tempo+ Pricing Plans</div>
+      <table class="price-table">
+        <thead><tr><th>Plan</th><th>Harga</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Basic Monthly</td>
+            <td class="price">Rp 64.000<span style="font-size:10px;font-weight:400;color:var(--ink-muted);">/mo</span></td>
+            <td><span class="tag">Standard</span></td>
+          </tr>
+          <tr>
+            <td>Promo Launch</td>
+            <td class="price red">Rp 44.800<span style="font-size:10px;font-weight:400;color:var(--ink-muted);">/mo</span></td>
+            <td><span class="tag">30% off</span></td>
+          </tr>
+          <tr>
+            <td>Annual Plan</td>
+            <td class="price">Rp 640.000<span style="font-size:10px;font-weight:400;color:var(--ink-muted);">/th</span></td>
+            <td><span class="tag" style="background:rgba(5,150,105,.1);color:var(--emerald);">Best Value</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- COL 3: ROI + Integration + Next Steps -->
+  <div class="col">
+    <div class="section">
+      <div class="section-title">
+        <span class="icon" style="background:rgba(5,150,105,.1);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </span>
+        ROI Projection
+      </div>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-val green">+150</div>
+          <div class="stat-label">New Subs/mo</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val">+1.5%</div>
+          <div class="stat-label">Conv. Uplift</div>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-val green">+Rp 9,6jt</div>
+          <div class="stat-label">Revenue/mo</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val red">+Rp 115jt</div>
+          <div class="stat-label">Revenue/th</div>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:8px;">
+        *Based on 100K monthly readers, 0.5% → 2% conversion rate uplift, Rp 64K ARPU. Actual results may vary.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Flat Paywall vs Revenue Brain</div>
+      <table class="comp-table">
+        <thead><tr><th>Feature</th><th>Flat</th><th>RB</th></tr></thead>
+        <tbody>
+          <tr><td>Personalized offers</td><td class="x">✗</td><td class="check">✓</td></tr>
+          <tr><td>Lifecycle segmentation</td><td class="x">✗</td><td class="check">✓</td></tr>
+          <tr><td>Metered access</td><td class="partial">Partial</td><td class="check">✓</td></tr>
+          <tr><td>Churn prediction</td><td class="x">✗</td><td class="check">✓</td></tr>
+          <tr><td>Content attribution</td><td class="x">✗</td><td class="check">✓</td></tr>
+          <tr><td>AI Copilot</td><td class="x">✗</td><td class="check">✓</td></tr>
+          <tr><td>A/B test banners</td><td class="x">✗</td><td class="check">✓</td></tr>
+          <tr><td>Real-time dashboard</td><td class="partial">Basic</td><td class="check">Full</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Integrasi — Effort Minimal</div>
+      <div class="tag-list" style="margin-bottom:10px;">
+        <span class="tag">Next.js</span>
+        <span class="tag">React</span>
+        <span class="tag">Vue</span>
+        <span class="tag">WordPress</span>
+        <span class="tag">Plain HTML/JS</span>
+        <span class="tag">Supabase Auth</span>
+        <span class="tag">Midtrans</span>
+        <span class="tag">Xendit</span>
+      </div>
+      <ul class="bullet-list">
+        <li><strong>Frontend SDK:</strong> 1 snippet tag, 3–5 hari</li>
+        <li><strong>Event tracking:</strong> fire 7 event types, 2–3 hari</li>
+        <li><strong>Banner template:</strong> 5 desain siap pakai, 3–5 hari</li>
+        <li><strong>Dashboard:</strong> sudah jadi, onboarding 1 hari</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Langkah Selanjutnya</div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-num">1</div>
+          <div class="flow-text"><strong>Discovery call</strong> (30 menit) — Q&A teknis & komersial</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">2</div>
+          <div class="flow-text"><strong>Pilot 4–6 minggu</strong> — Baseline + implement + measure</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">3</div>
+          <div class="flow-text"><strong>Full rollout</strong> (2 sprint) — Deploy seluruh platform</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">4</div>
+          <div class="flow-text"><strong>Monthly review</strong> — Optimize, A/B test, tune propensity</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--accent);border-radius:10px;padding:14px 16px;text-align:center;">
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:800;color:white;margin-bottom:4px;">Pilot Program — Tanpa Commitment</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:10px;">4 minggu · ROI measurable dari hari pertama</div>
+      <button class="footer-cta" style="background:white;color:var(--accent);">Jadwalkan Demo</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">
+      <div class="footer-logo">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="footer-brand">Tempo Revenue Brain by Rectoverso</div>
+    </div>
+    <div class="footer-contact">rectoverso.com · contact@rectoverso.com</div>
+    <div class="footer-right">Confidential · Agustus 2026</div>
+  </div>
+
+</div>
+</body>
+</html>

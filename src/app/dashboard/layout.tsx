@@ -264,15 +264,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* LIVE badge */}
-            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-400/10 border border-emerald-400/20 rounded-full flex-shrink-0">
-              <div className="relative">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping opacity-50" />
-              </div>
-              <span className="text-[9px] font-bold text-emerald-400 tracking-wider">LIVE</span>
-            </div>
-
             {/* Page title */}
             <h1 className="text-[15px] font-bold text-slate-800 truncate">
               {activeItem?.label ?? 'Dashboard'}
@@ -280,6 +271,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
+            {/* LIVE badge */}
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-400/10 border border-emerald-400/20 rounded-full">
+              <div className="relative">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping opacity-50" />
+              </div>
+              <span className="text-[9px] font-bold text-emerald-400 tracking-wider">LIVE</span>
+            </div>
+
             {/* Clock */}
             <div className="hidden md:block text-right">
               <div className="text-[11px] font-semibold text-slate-600" id="liveClock">--:--:--</div>

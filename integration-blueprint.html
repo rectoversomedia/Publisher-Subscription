@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Integration Blueprint — Tempo Revenue Brain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0A0A0F; --surface: #141420; --surface2: #1E1E30; --surface3: #252538;
+      --ink: #FAFAFA; --ink-muted: rgba(250,250,250,.5); --ink-dim: rgba(250,250,250,.2);
+      --accent: #C41230; --accent-light: rgba(196,18,48,.12);
+      --blue: #3B82F6; --blue-light: rgba(59,130,246,.12);
+      --emerald: #10B981; --emerald-light: rgba(16,185,129,.12);
+      --amber: #F59E0B; --amber-light: rgba(245,158,11,.12);
+      --purple: #A855F7; --purple-light: rgba(168,85,247,.12);
+      --border: rgba(255,255,255,.07); --border2: rgba(255,255,255,.12);
+    }
+    body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 32px; }
+
+    header { margin-bottom: 40px; }
+    .eyebrow { display:flex;align-items:center;gap:8px;margin-bottom:12px; }
+    .eyebrow-dot { width:6px;height:6px;border-radius:50%;background:var(--accent); }
+    .eyebrow-text { font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-muted); }
+    h1 { font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,48px);font-weight:800;color:var(--ink);letter-spacing:-.03em;line-height:1.1; }
+    h1 em { font-style:italic;color:var(--accent); }
+    .subtitle { font-size:15px;color:var(--ink-muted);margin-top:10px;line-height:1.6;max-width:600px; }
+
+    /* Blueprint sections */
+    .bp-section { margin-bottom: 40px; }
+    .bp-title { font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-muted);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border); }
+
+    /* Architecture diagram */
+    .arch-diagram {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px;
+      display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 0;
+      overflow-x: auto;
+    }
+    .arch-layer { display: flex; flex-direction: column; gap: 10px; min-width: 180px; }
+    .arch-layer-label { font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-dim);margin-bottom:4px;text-align:center; }
+    .arch-node {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .arch-node-icon { width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .arch-node-title { font-size:13px;font-weight:700;color:var(--ink); }
+    .arch-node-sub { font-size:11px;color:var(--ink-muted); }
+    .arch-arrow { display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 16px;flex-shrink:0; }
+    .arch-arrow-line { width:2px;height:40px;background:linear-gradient(to bottom,var(--border2),transparent); }
+    .arch-arrow-label { font-size:9px;color:var(--ink-dim);font-weight:600;white-space:nowrap; }
+
+    /* Flow cards */
+    .flow-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:16px; }
+    .flow-step { background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;overflow:hidden; }
+    .flow-step::before { content:'';position:absolute;top:0;left:0;right:0;height:3px; }
+    .flow-step:nth-child(1)::before { background:var(--blue); }
+    .flow-step:nth-child(2)::before { background:var(--accent); }
+    .flow-step:nth-child(3)::before { background:var(--emerald); }
+    .flow-step:nth-child(4)::before { background:var(--purple); }
+    .flow-step-num { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-dim);margin-bottom:8px; }
+    .flow-step-title { font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px; }
+    .flow-step-desc { font-size:12px;color:var(--ink-muted);line-height:1.6;margin-bottom:14px; }
+    .flow-step-code {
+      background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;
+      font-family:'DM Mono',monospace;font-size:11px;color:#10B981;line-height:1.7;overflow-x:auto;
+    }
+    .flow-step-tag { display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;margin-top:10px; }
+
+    /* Effort table */
+    .effort-table { width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden; }
+    .effort-table th { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);padding:12px 16px;text-align:left;background:var(--surface2);border-bottom:1px solid var(--border); }
+    .effort-table td { padding:12px 16px;font-size:13px;color:var(--ink-muted);border-bottom:1px solid var(--border);vertical-align:middle; }
+    .effort-table tr:last-child td { border-bottom:none; }
+    .effort-badge { display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700; }
+    .effort-low { background:rgba(16,185,129,.12);color:#10B981; }
+    .effort-med { background:rgba(245,158,11,.12);color:#F59E0B; }
+    .effort-high { background:rgba(196,18,48,.12);color:#F87171; }
+    .effort-done { background:rgba(59,130,246,.12);color:#60A5FA; }
+
+    /* SDK code */
+    .sdk-block { background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden; }
+    .sdk-header { padding:12px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px; }
+    .sdk-title { font-size:12px;font-weight:700;color:var(--ink); }
+    .sdk-lang { font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--surface3);color:var(--ink-muted); }
+    .sdk-body { padding:20px; }
+    .sdk-code { font-family:'DM Mono',monospace;font-size:12px;color:#D4D4D4;line-height:1.8;overflow-x:auto;white-space:pre; }
+    .sdk-code .c { color:#6B7280; }
+    .sdk-code .k { color:#C586C0; }
+    .sdk-code .s { color:#CE9178; }
+    .sdk-code .fn { color:#DCDCAA; }
+    .sdk-code .v { color:#9CDCFE; }
+    .sdk-code .n { color:#B5CEA8; }
+    .sdk-code .bl { color:#10B981; }
+
+    /* Compatibility grid */
+    .compat-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:12px; }
+    .compat-item { background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px; }
+    .compat-icon { width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .compat-name { font-size:13px;font-weight:700;color:var(--ink); }
+    .compat-note { font-size:11px;color:var(--ink-muted); }
+    .compat-status { margin-left:auto; }
+    .compat-check { width:20px;height:20px;border-radius:50%;background:rgba(16,185,129,.2);display:flex;align-items:center;justify-content:center; }
+
+    /* Timeline */
+    .timeline-h { display:flex;align-items:flex-start;gap:0; }
+    .tl-week { flex:1;padding:16px;border:1px solid var(--border);border-radius:12px;margin-right:12px;background:var(--surface); }
+    .tl-week:last-child { margin-right:0; }
+    .tl-week-label { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);margin-bottom:10px; }
+    .tl-week-title { font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px; }
+    .tl-week-desc { font-size:11px;color:var(--ink-muted);line-height:1.5;margin-bottom:10px; }
+    .tl-task { display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-muted);padding:3px 0; }
+    .tl-task-dot { width:6px;height:6px;border-radius:50%;flex-shrink:0; }
+
+    /* Security */
+    .security-grid { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
+    .security-item { background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px; }
+    .security-icon { width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px; }
+    .security-title { font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px; }
+    .security-desc { font-size:12px;color:var(--ink-muted);line-height:1.6; }
+
+    @media(max-width:900px) {
+      .arch-diagram { grid-template-columns:1fr; }
+      .arch-arrow { transform:rotate(90deg);padding:8px 0; }
+      .flow-grid { grid-template-columns:1fr 1fr; }
+      .compat-grid { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="eyebrow">
+      <div class="eyebrow-dot"></div>
+      <span class="eyebrow-text">Integration Blueprint · Technical Guide</span>
+    </div>
+    <h1>Integrasi Revenue Brain<br/><em>ke Platform Tempo</em></h1>
+    <p class="subtitle">Panduan teknis untuk tim engineering Tempo. Revenue Brain berjalan sebagai service terpisah — tidak perlu refactor sistem existing.</p>
+  </header>
+
+  <!-- Architecture Diagram -->
+  <div class="bp-section">
+    <div class="bp-title">Arsitektur Sistem</div>
+    <div class="arch-diagram">
+      <div class="arch-layer">
+        <div class="arch-layer-label">Frontend Tempo</div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:var(--blue-light);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div>
+            <div class="arch-node-title">Tempo.co CMS</div>
+            <div class="arch-node-sub">Next.js / React</div>
+          </div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:var(--purple-light);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <div>
+            <div class="arch-node-title">Tempo RB SDK</div>
+            <div class="arch-node-sub">JavaScript snippet</div>
+          </div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:var(--amber-light);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div>
+            <div class="arch-node-title">Banner Component</div>
+            <div class="arch-node-sub">React / Vue component</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">
+        <div class="arch-arrow-line"></div>
+        <div class="arch-arrow-label">Events API</div>
+        <div class="arch-arrow-line" style="background:linear-gradient(to top,var(--border2),transparent);"></div>
+      </div>
+
+      <div class="arch-layer">
+        <div class="arch-layer-label">Revenue Brain API</div>
+        <div class="arch-node" style="border-color:rgba(196,18,48,.3);background:rgba(196,18,48,.06);">
+          <div class="arch-node-icon" style="background:rgba(196,18,48,.2);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C41230" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <div class="arch-node-title">Event Ingestion</div>
+            <div class="arch-node-sub">/api/v1/events</div>
+          </div>
+        </div>
+        <div class="arch-node" style="border-color:rgba(196,18,48,.3);background:rgba(196,18,48,.06);">
+          <div class="arch-node-icon" style="background:rgba(196,18,48,.2);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C41230" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div class="arch-node-title">Decision Engine</div>
+            <div class="arch-node-sub">/api/v1/decision · 18 rules</div>
+          </div>
+        </div>
+        <div class="arch-node" style="border-color:rgba(196,18,48,.3);background:rgba(196,18,48,.06);">
+          <div class="arch-node-icon" style="background:rgba(196,18,48,.2);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C41230" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div>
+            <div class="arch-node-title">Scoring Engine</div>
+            <div class="arch-node-sub">Reader features update</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">
+        <div class="arch-arrow-line"></div>
+        <div class="arch-arrow-label">Supabase</div>
+        <div class="arch-arrow-line" style="background:linear-gradient(to top,var(--border2),transparent);"></div>
+      </div>
+
+      <div class="arch-layer">
+        <div class="arch-layer-label">Data Layer</div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:var(--emerald-light);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </div>
+          <div>
+            <div class="arch-node-title">Supabase DB</div>
+            <div class="arch-node-sub">Readers, Events, Features</div>
+          </div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:var(--blue-light);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          </div>
+          <div>
+            <div class="arch-node-title">Dashboard</div>
+            <div class="arch-node-sub">/dashboard/*</div>
+          </div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:var(--purple-light);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <div>
+            <div class="arch-node-title">Copilot Query</div>
+            <div class="arch-node-sub">/api/copilot/query</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Implementation Steps -->
+  <div class="bp-section">
+    <div class="bp-title">4 Langkah Implementasi</div>
+    <div class="flow-grid">
+      <div class="flow-step">
+        <div class="flow-step-num">Step 01 — Frontend</div>
+        <div class="flow-step-title">Pasang SDK Snippet</div>
+        <div class="flow-step-desc">Copy-paste 1 baris JavaScript ke article template. SDK otomatis track pageviews dan inject banner container.</div>
+        <div class="flow-step-code">// 1 baris di &lt;head&gt;
+&lt;script src="//sdk.tempo-rb.com/tempo.js"&gt;&lt;/script&gt;</div>
+        <span class="flow-step-tag" style="background:var(--blue-light);color:#60A5FA;">Effort: 3–5 hari</span>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-step-num">Step 02 — Events</div>
+        <div class="flow-step-title">Kirim Event Data</div>
+        <div class="flow-step-desc">Fire 7 event types utama: register, login, article_view, paywall_view, offer_click, checkout_start, subscription_success.</div>
+        <div class="flow-step-code">TempoRB.track('article_view', {
+  article_id: 'art_123',
+  category: 'Investigation',
+  is_premium: true
+});</div>
+        <span class="flow-step-tag" style="background:var(--accent-light);color:#FF6B7A;">Effort: 2–3 hari</span>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-step-num">Step 03 — Decision</div>
+        <div class="flow-step-title">Revenue Brain decide</div>
+        <div class="flow-step-desc">Setiap article view → call decision API → dapat action (free/paywall/offer). Banner muncul sesuai decision. Tidak ada logic di frontend.</div>
+        <div class="flow-step-code">// Backend / frontend call
+GET /api/v1/decision
+  ?reader_id=xxx
+  &article_id=yyy
+→ { action: "SHOW_MONTHLY", banner_id: "bn_01" }</div>
+        <span class="flow-step-tag" style="background:var(--emerald-light);color:#34D399;">Effort: 1–2 hari</span>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-step-num">Step 04 — Dashboard</div>
+        <div class="flow-step-title">Monitor & Optimize</div>
+        <div class="flow-step-desc">Seluruh funnel dan metric muncul real-time. AI Copilot untuk query natural language. A/B test banner variants.</div>
+        <div class="flow-step-code">→ /dashboard/readers      // Explorer
+→ /dashboard/banners     // Banner manager
+→ /dashboard/analytics    // Funnel
+→ /api/copilot/query      // AI queries</div>
+        <span class="flow-step-tag" style="background:var(--purple-light);color:#C4B5FD;">Effort: 1 hari (onboarding)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Reference -->
+  <div class="bp-section">
+    <div class="bp-title">Event Reference — 7 Event Types</div>
+    <div class="sdk-block">
+      <div class="sdk-header">
+        <div class="sdk-title">Tempo RB SDK — Event Tracking API</div>
+        <span class="sdk-lang">JavaScript / TypeScript</span>
+      </div>
+      <div class="sdk-body">
+        <div class="sdk-code"><span class="c">// =============================================</span>
+<span class="c">// TEMPO REVENUE BRAIN — Event Tracking SDK</span>
+<span class="c">// =============================================</span>
+
+<span class="c">// Initialize SDK (once, in &lt;head&gt;)</span>
+<span class="k">const</span> <span class="fn">tempoRB</span> = <span class="k">new</span> <span class="fn">TempoRB</span>({
+  <span class="v">apiKey</span>: <span class="s">'tk_live_tempo_xxx'</span>,
+  <span class="v">environment</span>: <span class="s">'production'</span> <span class="c">// or 'staging'</span>
+});
+
+<span class="c">// ─── Identity Events ───────────────────────────</span>
+
+<span class="c">// Fire when reader registers</span>
+<span class="fn">tempoRB</span>.<span class="fn">track</span>(<span class="s">'register'</span>, {
+  <span class="v">name</span>:   <span class="s">'Budi Santoso'</span>,     <span class="c">// optional</span>
+  <span class="v">email</span>:  <span class="s">'budi@example.com'</span>,  <span class="c">// optional</span>
+  <span class="v">phone</span>:  <span class="s">'+62812345678'</span>,      <span class="c">// optional</span>
+  <span class="v">method</span>: <span class="s">'google'</span>              <span class="c">// 'email' | 'google' | 'apple' | 'phone'</span>
+});
+
+<span class="c">// Fire when reader logs in</span>
+<span class="fn">tempoRB</span>.<span class="fn">track</span>(<span class="s">'login'</span>, {
+  <span class="v">user_id</span>: <span class="s">'usr_abc123'</span>,
+  <span class="v">email</span>:   <span class="s">'budi@example.com'</span>
+});
+
+<span class="c">// ─── Engagement Events ─────────────────────────</span>
+
+<span class="c">// Fire on every article page load</span>
+<span class="fn">tempoRB</span>.<span class="fn">track</span>(<span class="s">'article_view'</span>, {
+  <span class="v">article_id</span>: <span class="s">'art_investigasi_2024'</span>,
+  <span class="v">category</span>:   <span class="s">'Investigation'</span>,
+  <span class="v">topic</span>:      <span class="s">'Politik'</span>,
+  <span class="v">is_premium</span>: <span class="v">true</span>,
+  <span class="v">scroll_depth</span>: <span class="n">72</span>    <span class="c">// 0–100</span>
+});
+
+<span class="c">// Fire when reader hits paywall</span>
+<span class="fn">tempoRB</span>.<span class="fn">track</span>(<span class="s">'paywall_view'</span>, {
+  <span class="v">article_id</span>: <span class="s">'art_investigasi_2024'</span>,
+  <span class="v">offer_id</span>:   <span class="s">'off_monthly_v1'</span>
+});
+
+<span class="c">// ─── Conversion Events ──────────────────────────</span>
+
+<span class="c">// Fire when reader clicks offer banner</span>
+<span class="fn">tempoRB</span>.<span class="fn">track</span>(<span class="s">'subscription_offer_click'</span>, {
+  <span class="v">offer_id</span>: <span class="s">'off_monthly_v1'</span>,
+  <span class="v">banner_id</span>: <span class="s">'bn_promo_01'</span>,
+  <span class="v">plan</span>:     <span class="s">'monthly'</span>
+});
+
+<span class="c">// Fire when checkout page loads</span>
+<span class="fn">tempoRB</span>.<span class="fn">track</span>(<span class="s">'checkout_start'</span>, {
+  <span class="v">plan</span>: <span class="s">'monthly'</span>,
+  <span class="v">price</span>: <span class="n">64000</span>
+});
+
+<span class="c">// Fire when subscription is confirmed</span>
+<span class="fn">tempoRB</span>.<span class="fn">track</span>(<span class="s">'subscription_success'</span>, {
+  <span class="v">plan</span>:      <span class="s">'monthly'</span>,
+  <span class="v">price</span>:     <span class="n">64000</span>,
+  <span class="v">revenue</span>:   <span class="n">64000</span>,
+  <span class="v">article_id</span>: <span class="s">'art_investigasi_2024'</span> <span class="c">// attribution</span>
+});
+
+<span class="c">// ─── Revenue Brain Decision ─────────────────────</span>
+<span class="c">// Call this on article load to get what to show</span>
+
+<span class="k">const</span> decision = <span class="k">await</span> <span class="fn">tempoRB</span>.<span class="fn">decide</span>({
+  <span class="v">article_id</span>: <span class="s">'art_investigasi_2024'</span>,
+  <span class="v">category</span>:   <span class="s">'Investigation'</span>
+});
+
+<span class="c">// decision.action: 'ALLOW_FREE' | 'SHOW_MONTHLY' |</span>
+<span class="c">//                 'SHOW_ANNUAL' | 'SHOW_SOFT_PAYWALL' |</span>
+<span class="c">//                 'SHOW_HARD_PAYWALL' | 'SHOW_REGISTRATION'</span>
+
+<span class="k">if</span> (decision.<span class="v">action</span> === <span class="s">'SHOW_MONTHLY'</span>) {
+  <span class="fn">showBanner</span>(decision.<span class="v">banner</span>);
+}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Effort & Timeline -->
+  <div class="bp-section">
+    <div class="bp-title">Estimasi Effort & Timeline</div>
+    <table class="effort-table">
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Deskripsi</th>
+          <th>Effort</th>
+          <th>Tim</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;color:var(--ink);">SDK Integration</td>
+          <td>Pasang tempo.js snippet di article template</td>
+          <td><span class="effort-badge effort-low">Low (3–5 hari)</span></td>
+          <td>Frontend Dev</td>
+          <td><span class="effort-badge effort-done">Already built</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--ink);">Event Tracking</td>
+          <td>Fire 7 event types di key user journeys</td>
+          <td><span class="effort-badge effort-low">Low (2–3 hari)</span></td>
+          <td>Frontend Dev</td>
+          <td><span class="effort-badge effort-done">API ready</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--ink);">Banner Component</td>
+          <td>Integrasi React/Vue banner component di paywall slot</td>
+          <td><span class="effort-badge effort-med">Medium (3–5 hari)</span></td>
+          <td>Frontend Dev</td>
+          <td><span class="effort-badge effort-done">5 templates siap</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--ink);">Auth Integration</td>
+          <td>Connect Supabase Auth atau existing auth ke SDK identity</td>
+          <td><span class="effort-badge effort-med">Medium (2–3 hari)</span></td>
+          <td>Backend Dev</td>
+          <td><span class="effort-badge effort-done">Supabase native</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--ink);">Payment Integration</td>
+          <td>Connect Midtrans/Xendit webhook ke subscription_success event</td>
+          <td><span class="effort-badge effort-low">Low (1–2 hari)</span></td>
+          <td>Backend Dev</td>
+          <td><span class="effort-badge effort-done">Webhook ready</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:var(--ink);">Dashboard Onboarding</td>
+          <td>Training tim editorial & revenue soal dashboard</td>
+          <td><span class="effort-badge effort-low">Low (1 hari)</span></td>
+          <td>Semua tim</td>
+          <td><span class="effort-badge effort-done">Self-serve</span></td>
+        </tr>
+        <tr style="background:rgba(16,185,129,.04);">
+          <td style="font-weight:700;color:var(--ink);">Total</td>
+          <td colspan="2" style="color:var(--ink-muted);">12–19 hari working days · 2–3 sprint</td>
+          <td colspan="2" style="font-weight:700;color:#10B981;">Pilot-ready in 4–6 minggu</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Integration Timeline -->
+  <div class="bp-section">
+    <div class="bp-title">Sprint Timeline</div>
+    <div class="timeline-h">
+      <div class="tl-week">
+        <div class="tl-week-label">Sprint 1 · Week 1–2</div>
+        <div class="tl-week-title">Foundation</div>
+        <div class="tl-week-desc">Setup SDK, integrate event tracking, connect Supabase, basic banner display.</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--blue);"></div>SDK snippet install</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--accent);"></div>Event tracking — identity</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--accent);"></div>Event tracking — engagement</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--emerald);"></div>Supabase connection test</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--purple);"></div>Decision API integration</div>
+      </div>
+      <div class="tl-week">
+        <div class="tl-week-label">Sprint 1 · Week 3–4</div>
+        <div class="tl-week-title">Banner & Conversion</div>
+        <div class="tl-week-desc">Banner component, conversion event tracking, payment webhook, A/B test setup.</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--blue);"></div>Banner component integration</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--accent);"></div>Conversion events</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--emerald);"></div>Payment webhook</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--purple);"></div>A/B test config</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--amber);"></div>UAT testing</div>
+      </div>
+      <div class="tl-week">
+        <div class="tl-week-label">Sprint 2 · Week 5–6</div>
+        <div class="tl-week-title">Pilot Launch</div>
+        <div class="tl-week-desc">Deploy to staging, soft launch 1 section, measure baseline metrics, tune propensity model.</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--blue);"></div>Staging deploy</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--accent);"></div>Soft launch — 1 section</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--emerald);"></div>Baseline measurement</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--purple);"></div>Tune propensity scoring</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--amber);"></div>Dashboard training</div>
+      </div>
+      <div class="tl-week" style="border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.03);">
+        <div class="tl-week-label">Week 7+</div>
+        <div class="tl-week-title">Full Rollout</div>
+        <div class="tl-week-desc">Deploy ke seluruh platform, ongoing A/B testing, monthly optimization review.</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--emerald);"></div>Full platform deploy</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--purple);"></div>A/B test iteration</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--amber);"></div>Monthly review</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--blue);"></div>Churn prevention activate</div>
+        <div class="tl-task"><div class="tl-task-dot" style="background:var(--accent);"></div>Content attribution analyze</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compatibility & Security -->
+  <div class="bp-section">
+    <div class="bp-title">Kompatibilitas & Keamanan</div>
+    <div class="compat-grid" style="margin-bottom:20px;">
+      <div class="compat-item">
+        <div class="compat-icon" style="background:rgba(59,130,246,.12);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <div>
+          <div class="compat-name">Next.js / React</div>
+          <div class="compat-note">Native SDK support, SSR compatible</div>
+        </div>
+        <div class="compat-status"><div class="compat-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      </div>
+      <div class="compat-item">
+        <div class="compat-icon" style="background:rgba(168,85,247,.12);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </div>
+        <div>
+          <div class="compat-name">Vue.js</div>
+          <div class="compat-note">via tempo-vue package</div>
+        </div>
+        <div class="compat-status"><div class="compat-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      </div>
+      <div class="compat-item">
+        <div class="compat-icon" style="background:rgba(245,158,11,.12);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div>
+          <div class="compat-name">WordPress / Plain HTML</div>
+          <div class="compat-note">Script tag integration</div>
+        </div>
+        <div class="compat-status"><div class="compat-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      </div>
+      <div class="compat-item">
+        <div class="compat-icon" style="background:rgba(16,185,129,.12);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <div class="compat-name">Supabase Auth</div>
+          <div class="compat-note">Native integration, no extra config</div>
+        </div>
+        <div class="compat-status"><div class="compat-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      </div>
+      <div class="compat-item">
+        <div class="compat-icon" style="background:rgba(59,130,246,.12);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
+        <div>
+          <div class="compat-name">Midtrans</div>
+          <div class="compat-note">Webhook → subscription_success event</div>
+        </div>
+        <div class="compat-status"><div class="compat-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      </div>
+      <div class="compat-item">
+        <div class="compat-icon" style="background:rgba(59,130,246,.12);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
+        <div>
+          <div class="compat-name">Xendit</div>
+          <div class="compat-note">Webhook → subscription_success event</div>
+        </div>
+        <div class="compat-status"><div class="compat-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      </div>
+    </div>
+
+    <div class="security-grid">
+      <div class="security-item">
+        <div class="security-icon" style="background:rgba(16,185,129,.12);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="security-title">API Key Security</div>
+        <div class="security-desc">Service role key hanya di backend/server. SDK menggunakan read-only key dengan rate limiting. Tidak ada credential di client-side bundle.</div>
+      </div>
+      <div class="security-item">
+        <div class="security-icon" style="background:rgba(59,130,246,.12);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="security-title">RLS di Supabase</div>
+        <div class="security-desc">Row Level Security aktif di semua tabel. Reader hanya bisa read/update data miliknya sendiri. Service role untuk server-side operations saja.</div>
+      </div>
+      <div class="security-item">
+        <div class="security-icon" style="background:rgba(168,85,247,.12);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="security-title">GDPR / UU PDP Compliant</div>
+        <div class="security-desc">Data reader bersifat pseudonymous. Email/phone di-hash SHA-256 untuk privacy. Reader bisa request data export atau deletion via API.</div>
+      </div>
+      <div class="security-item">
+        <div class="security-icon" style="background:rgba(245,158,11,.12);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="security-title">Rate Limiting</div>
+        <div class="security-desc">Event API: 1000 req/min per API key. Decision API: 500 req/min. Dashboard: 100 req/min. Limits bisa di-scale per-client.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

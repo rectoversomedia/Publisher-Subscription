@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tempo Revenue Brain — Deck Presentasi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0A0A0F;
+      --surface: #141420;
+      --surface2: #1E1E30;
+      --ink: #FAFAFA;
+      --ink-muted: rgba(250,250,250,.55);
+      --accent: #C41230;
+      --accent-light: rgba(196,18,48,.15);
+      --accent-border: rgba(196,18,48,.3);
+      --blue: #3B82F6;
+      --emerald: #10B981;
+      --amber: #F59E0B;
+      --purple: #A855F7;
+      --border: rgba(255,255,255,.08);
+      --border2: rgba(255,255,255,.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Slide Navigation ── */
+    .nav-dots {
+      position: fixed; right: 24px; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 10px; z-index: 50;
+    }
+    .nav-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.2); cursor: pointer;
+      transition: all .3s; border: none;
+    }
+    .nav-dot.active { background: var(--accent); transform: scale(1.4); }
+    .nav-dot:hover { background: rgba(255,255,255,.5); }
+
+    .nav-arrows {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 12px; z-index: 50;
+    }
+    .nav-arrow {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,.08); border: 1px solid var(--border2);
+      color: var(--ink); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all .2s; font-size: 18px;
+    }
+    .nav-arrow:hover { background: rgba(255,255,255,.15); }
+    .nav-arrow:disabled { opacity: .3; cursor: not-allowed; }
+
+    .slide-counter {
+      position: fixed; bottom: 40px; right: 32px;
+      font-size: 12px; color: rgba(255,255,255,.3);
+      font-family: 'DM Mono', monospace; z-index: 50;
+    }
+
+    /* ── Slide Base ── */
+    .slide {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 80px 100px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide-number {
+      position: absolute; top: 32px; left: 100px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .1em; color: rgba(255,255,255,.2);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .slide-brand {
+      position: absolute; top: 28px; right: 100px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .slide-brand-logo {
+      width: 28px; height: 28px; background: var(--accent); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .slide-brand-name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.5); }
+
+    /* ── Typography ── */
+    .headline-xl {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 6vw, 80px);
+      font-weight: 800; line-height: 1.05;
+      letter-spacing: -.03em; color: var(--ink);
+    }
+    .headline-xl em { font-style: italic; color: var(--accent); }
+
+    .headline-lg {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 4.5vw, 60px);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -.02em; color: var(--ink);
+    }
+
+    .headline-md {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 3vw, 42px);
+      font-weight: 700; line-height: 1.2;
+      letter-spacing: -.02em; color: var(--ink);
+    }
+
+    .body-lg { font-size: 20px; line-height: 1.6; color: var(--ink-muted); }
+    .body-md { font-size: 17px; line-height: 1.7; color: var(--ink-muted); }
+
+    .label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--accent);
+    }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 20px;
+      background: var(--accent-light); border: 1px solid var(--accent-border);
+      color: #FF6B7A; font-size: 11px; font-weight: 600;
+    }
+
+    /* ── Grid layouts ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px;
+    }
+    .card-accent { border-color: var(--accent-border); background: var(--accent-light); }
+
+    /* ── Metric display ── */
+    .metric {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .metric-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 40px; font-weight: 800;
+      color: var(--ink); letter-spacing: -.03em; line-height: 1;
+    }
+    .metric-label { font-size: 13px; color: var(--ink-muted); font-weight: 500; }
+    .metric-change { font-size: 12px; font-weight: 600; color: var(--emerald); margin-top: 4px; }
+
+    /* ── Decorative ── */
+    .deco-line {
+      width: 48px; height: 3px; background: var(--accent); border-radius: 2px;
+    }
+    .deco-ring {
+      position: absolute; border-radius: 50%;
+      border: 1px solid rgba(196,18,48,.2);
+    }
+
+    /* ── Funnel ── */
+    .funnel { display: flex; flex-direction: column; gap: 6px; }
+    .funnel-bar {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .funnel-label { font-size: 13px; color: var(--ink-muted); width: 120px; flex-shrink: 0; }
+    .funnel-track {
+      flex: 1; height: 28px; background: var(--surface2);
+      border-radius: 6px; overflow: hidden; position: relative;
+    }
+    .funnel-fill {
+      height: 100%; border-radius: 6px;
+      display: flex; align-items: center; padding-left: 10px;
+      font-size: 11px; font-weight: 700; color: white;
+      transition: width 1s cubic-bezier(.16,1,.3,1);
+    }
+
+    /* ── Timeline ── */
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .timeline-item {
+      display: flex; gap: 20px; position: relative;
+      padding-bottom: 24px;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-dot {
+      width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+      margin-top: 4px; position: relative; z-index: 1;
+    }
+    .timeline-dot.accent { background: var(--accent); box-shadow: 0 0 12px rgba(196,18,48,.5); }
+    .timeline-dot.muted { background: rgba(255,255,255,.2); }
+    .timeline-line {
+      position: absolute; left: 5px; top: 16px; bottom: 0; width: 1px;
+      background: rgba(255,255,255,.08);
+    }
+    .timeline-content { flex: 1; }
+    .timeline-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+    .timeline-desc { font-size: 13px; color: var(--ink-muted); }
+
+    /* ── Pill list ── */
+    .pill-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      padding: 6px 14px; border-radius: 20px;
+      background: var(--surface2); border: 1px solid var(--border);
+      font-size: 13px; font-weight: 500; color: var(--ink);
+    }
+
+    /* ── Cover Slide ── */
+    .cover-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 80% 20%, rgba(196,18,48,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(59,130,246,.06) 0%, transparent 50%);
+    }
+    .cover-content { position: relative; z-index: 1; max-width: 800px; }
+    .cover-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-radius: 20px;
+      background: rgba(196,18,48,.15); border: 1px solid rgba(196,18,48,.3);
+      color: #FF6B7A; font-size: 12px; font-weight: 700;
+      margin-bottom: 24px;
+    }
+    .cover-kicker {
+      font-size: 14px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .12em; color: rgba(255,255,255,.3);
+      margin-bottom: 16px;
+    }
+    .cover-meta {
+      margin-top: 40px; display: flex; align-items: center; gap: 16px;
+    }
+    .cover-meta-item { font-size: 13px; color: rgba(255,255,255,.35); }
+
+    /* ── Split slide ── */
+    .split-left { flex: 1; }
+    .split-right {
+      flex: 1; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* ── Highlight text ── */
+    .hl { color: var(--accent); font-style: normal; }
+
+    /* ── Screens mockup ── */
+    .mockup-browser {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,.5);
+    }
+    .mockup-bar {
+      height: 32px; background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 12px; gap: 6px;
+    }
+    .mockup-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .mockup-content { padding: 16px; }
+
+    /* ── Scroll indicator ── */
+    .scroll-hint {
+      position: absolute; bottom: 32px; left: 100px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11px; color: rgba(255,255,255,.25);
+    }
+    .scroll-hint-arrow {
+      width: 16px; height: 16px; border-right: 2px solid rgba(255,255,255,.25);
+      border-bottom: 2px solid rgba(255,255,255,.25);
+      transform: rotate(45deg); animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: rotate(45deg) translateY(0); }
+      50% { transform: rotate(45deg) translateY(4px); }
+    }
+
+    /* ── ROI slide ── */
+    .roi-calculator {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 40px;
+    }
+    .roi-result {
+      background: linear-gradient(135deg, rgba(16,185,129,.15) 0%, rgba(16,185,129,.05) 100%);
+      border: 1px solid rgba(16,185,129,.3); border-radius: 16px; padding: 32px;
+    }
+    .roi-big {
+      font-family: 'Playfair Display', serif;
+      font-size: 64px; font-weight: 800; color: #10B981;
+      letter-spacing: -.03em; line-height: 1;
+    }
+
+    /* ── Table ── */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: rgba(255,255,255,.3);
+      padding: 8px 16px; text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td {
+      padding: 14px 16px; font-size: 14px; color: var(--ink);
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table .num { font-variant-numeric: tabular-nums; text-align: right; }
+    .data-table .highlight { color: var(--emerald); font-weight: 700; }
+
+    /* ── CTA ── */
+    .cta-box {
+      background: linear-gradient(135deg, var(--accent) 0%, #8B0000 100%);
+      border-radius: 20px; padding: 48px;
+      display: flex; align-items: center; justify-content: space-between; gap: 32px;
+    }
+    .cta-btn {
+      padding: 14px 32px; background: white; color: var(--accent);
+      border: none; border-radius: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700;
+      cursor: pointer; white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0,0,0,.3);
+    }
+
+    /* ── Animations ── */
+    .fade-up {
+      opacity: 0; transform: translateY(24px);
+      animation: fadeUp .6s ease forwards;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .delay-1 { animation-delay: .1s; }
+    .delay-2 { animation-delay: .2s; }
+    .delay-3 { animation-delay: .3s; }
+    .delay-4 { animation-delay: .4s; }
+    .delay-5 { animation-delay: .5s; }
+  </style>
+</head>
+<body>
+
+<!-- Navigation dots -->
+<div class="nav-dots">
+  <button class="nav-dot active" onclick="goTo(0)" title="Slide 1"></button>
+  <button class="nav-dot" onclick="goTo(1)" title="Slide 2"></button>
+  <button class="nav-dot" onclick="goTo(2)" title="Slide 3"></button>
+  <button class="nav-dot" onclick="goTo(3)" title="Slide 4"></button>
+  <button class="nav-dot" onclick="goTo(4)" title="Slide 5"></button>
+  <button class="nav-dot" onclick="goTo(5)" title="Slide 6"></button>
+  <button class="nav-dot" onclick="goTo(6)" title="Slide 7"></button>
+  <button class="nav-dot" onclick="goTo(7)" title="Slide 8"></button>
+  <button class="nav-dot" onclick="goTo(8)" title="Slide 9"></button>
+  <button class="nav-dot" onclick="goTo(9)" title="Slide 10"></button>
+</div>
+
+<div class="nav-arrows">
+  <button class="nav-arrow" id="prevBtn" onclick="prevSlide()" disabled>‹</button>
+  <button class="nav-arrow" id="nextBtn" onclick="nextSlide()">›</button>
+</div>
+
+<div class="slide-counter" id="slideCounter">01 / 10</div>
+
+<!-- ─────────────────────────────────────────────── -->
+<!-- SLIDE 1: COVER -->
+<!-- ─────────────────────────────────────────────── -->
+<section class="slide" id="slide-0">
+  <div class="cover-bg"></div>
+  <div class="slide-brand">
+    <div class="slide-brand-logo">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="slide-brand-name">Tempo Revenue Brain</span>
+  </div>
+  <div class="slide-number">Deck Presentasi</div>
+
+  <div class="cover-content">
+    <div class="cover-badge fade-up">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      Solusi Revenue Intelligence untuk Tempo Media
+    </div>
+    <div class="cover-kicker fade-up delay-1">PROPOSAL TEKNOLOGI</div>
+    <h1 class="headline-xl fade-up delay-2">
+      Revenue Brain<br/><em>Tempo+</em>
+    </h1>
+    <p class="body-lg fade-up delay-3" style="margin-top:24px; max-width:580px;">
+      Intelligent paywall & offer system yang menampilkan <strong style="color:var(--ink)">penawaranlangganan yang tepat</strong> kepada <strong style="color:var(--ink)">pembaca yang tepat</strong> pada <strong style="color:var(--ink)">momen yang tepat</strong> — untuk meningkatkan konversi subscriber.
+    </p>
+    <div class="cover-meta fade-up delay-4">
+      <span class="cover-meta-item">Tempo Media × Rectoverso</span>
+      <span class="cover-meta-item">•</span>
+      <span class="cover-meta-item">Agustus 2026</span>
+      <span class="cover-meta-item">•</span>
+      <span class="cover-meta-item">Confidential</span>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-hint-arrow"></div>
+    Scroll atau tekan › untuk lanjut
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── -->
+<!-- SLIDE 2: THE PROBLEM -->
+<!-- ─────────────────────────────────────────────── -->
+<section class="slide" id="slide-1">
+  <div class="slide-number">02 — Problem</div>
+  <div class="slide-brand">
+    <div class="slide-brand-logo">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="slide-brand-name">Tempo Revenue Brain</span>
+  </div>
+
+  <div style="max-width:900px;">
+    <div class="tag fade-up" style="margin-bottom:20px;">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      Konteks Pasar
+    </div>
+    <h2 class="headline-lg fade-up delay-1" style="margin-bottom:32px;">
+      Media Indonesia kehilangan<br/><em>ribuan subscriber potensial</em><br/>setiap bulan
+    </h2>
+
+    <div class="grid-2 fade-up delay-2">
+      <div>
+        <p class="body-md" style="margin-bottom:24px;">
+          Temposaat ini menjalankan <strong style="color:var(--ink)">flat paywall</strong> — semua pembaca melihat hal yang sama, pada momen yang sama. Tidak ada personalisasi. Tidak ada intelligence.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(196,18,48,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C41230" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--ink);">Reader baru langsung diblokir</div>
+              <div style="font-size:13px;color:var(--ink-muted);">Belum kenal Tempo+ udah diminta bayar. Conversion rate rendah.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(196,18,48,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C41230" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--ink);">Reader loyal tidak ditawari upgrade</div>
+              <div style="font-size:13px;color:var(--ink-muted);">Yang sudah baca 50+ artikel investigasi tetap dapat halaman yang sama.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(196,18,48,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C41230" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--ink);">Tidak ada data conversion</div>
+              <div style="font-size:13px;color:var(--ink-muted);">Tim editorial tidak tahu konten apa yang paling banyak konversi subscriber.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-accent">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:20px;">Benchmark Industri</div>
+        <table class="data-table">
+          <thead><tr><th>Metrik</th><th class="num">Nilai</th></tr></thead>
+          <tbody>
+            <tr><td>Paywall conversion rate (ID)</td><td class="num highlight">0.3 – 0.8%</td></tr>
+            <tr><td>Paywall conversion rate (global)</td><td class="num">1.5 – 3.5%</td></tr>
+            <tr><td>Free → paid churn (ID)</td><td class="num">75 – 85%</td></tr>
+            <tr><td>Reader dengan intent subscribe</td><td class="num">~12%</td></tr>
+            <tr><td>Yang actually di-convert</td><td class="num highlight">~2%</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:11px;color:rgba(255,255,255,.3);margin-top:16px;line-height:1.5;">
+          Sumber: Reuters Institute, Pew Research,awan Indonesia media publishers 2024-2025
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── -->
+<!-- SLIDE 3: THE SOLUTION -->
+<!-- ─────────────────────────────────────────────── -->
+<section class="slide" id="slide-2">
+  <div class="slide-number">03 — Solusi</div>
+  <div class="slide-brand">
+    <div class="slide-brand-logo">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="slide-brand-name">Tempo Revenue Brain</span>
+  </div>
+
+  <div style="max-width:1100px;">
+    <div class="tag fade-up" style="margin-bottom:20px;">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+      Apa itu Revenue Brain?
+    </div>
+    <h2 class="headline-lg fade-up delay-1" style="margin-bottom:48px;">
+      Intelligence engine yang<br/><em>belajar</em> dari setiap perilaku pembaca
+    </h2>
+
+    <div class="grid-3 fade-up delay-2" style="margin-bottom:40px;">
+      <div class="card">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.2);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px;">Reader Intelligence</div>
+        <div style="font-size:13px;color:var(--ink-muted);line-height:1.6;">
+          Setiap pembaca punya profile: engagement score, subscription propensity, churn risk, dan topik konten favorit.
+        </div>
+      </div>
+      <div class="card">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(196,18,48,.15);border:1px solid rgba(196,18,48,.2);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C41230" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px;">Decision Engine</div>
+        <div style="font-size:13px;color:var(--ink-muted);line-height:1.6;">
+          18 decision rules yang menentukan: free access, soft paywall, hard paywall, atau offer langsung.
+        </div>
+      </div>
+      <div class="card">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.2);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px;">Offer Banners</div>
+        <div style="font-size:13px;color:var(--ink-muted);line-height:1.6;">
+          Banner personal yang muncul dengan headline Bahasa Indonesia, foto jurnalis, dan CTA yang sesuai konteks.
+        </div>
+      </div>
+    </div>
+
+    <div class="card fade-up delay-3" style="padding:24px 28px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--accent);"></div>
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);">Alur Keputusan Otomatis</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;">
+        <div style="flex:1;min-width:120px;padding:12px 16px;background:var(--surface2);border-radius:10px;text-align:center;">
+          <div style="font-size:12px;font-weight:700;color:var(--ink);">Reader baru</div>
+          <div style="font-size:11px;color:var(--ink-muted);">3 artikel gratis</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;width:32px;color:rgba(255,255,255,.2);font-size:18px;">›</div>
+        <div style="flex:1;min-width:120px;padding:12px 16px;background:var(--surface2);border-radius:10px;text-align:center;">
+          <div style="font-size:12px;font-weight:700;color:var(--ink);">Engaged reader</div>
+          <div style="font-size:11px;color:var(--ink-muted);">Soft paywall + offer</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;width:32px;color:rgba(255,255,255,.2);font-size:18px;">›</div>
+        <div style="flex:1;min-width:120px;padding:12px 16px;background:rgba(196,18,48,.15);border:1px solid rgba(196,18,48,.3);border-radius:10px;text-align:center;">
+          <div style="font-size:12px;font-weight:700;color:var(--ink);">High intent</div>
+          <div style="font-size:11px;color:var(--ink-muted);">Direct offer</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;width:32px;color:rgba(255,255,255,.2);font-size:18px;">›</div>
+        <div style="flex:1;min-width:120px;padding:12px 16px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);border-radius:10px;text-align:center;">
+          <div style="font-size:12px;font-weight:700;color:var(--ink);">Subscriber</div>
+          <div style="font-size:11px;color:var(--ink-muted);">Retention mode</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── -->
+<!-- SLIDE 4: READER INTELLIGENCE -->
+<!-- ─────────────────────────────────────────────── -->
+<section class="slide" id="slide-3">
+  <div class="slide-number">04 — Reader Intelligence</div>
+  <div class="slide-brand">
+    <div class="slide-brand-logo">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="slide-brand-name">Tempo Revenue Brain</span>
+  </div>
+
+  <div style="max-width:1100px;">
+    <div class="tag fade-up" style="margin-bottom:20px;">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+      Profile каждого Pembaca
+    </div>
+    <h2 class="headline-lg fade-up delay-1" style="margin-bottom:40px;">
+      Setiap pembaca punya<br/><em>behavioral fingerprint</em>
+    </h2>
+
+    <div class="grid-2 fade-up delay-2">
+      <div class="card" style="padding:24px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--ink);">ProfilReader: Budi Santoso</div>
+            <div style="font-size:12px;color:var(--ink-muted);">reader_7f3a... · REGISTERED</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+          <div style="padding:12px;background:var(--surface2);border-radius:10px;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:4px;">Engagement</div>
+            <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#3B82F6;">82</div>
+            <div style="height:4px;background:var(--surface);border-radius:2px;margin-top:6px;">
+              <div style="height:4px;width:82%;background:linear-gradient(90deg,#3B82F6,#60A5FA);border-radius:2px;"></div>
+            </div>
+          </div>
+          <div style="padding:12px;background:var(--surface2);border-radius:10px;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:4px;">Propensity</div>
+            <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#10B981;">74</div>
+            <div style="height:4px;background:var(--surface);border-radius:2px;margin-top:6px;">
+              <div style="height:4px;width:74%;background:linear-gradient(90deg,#10B981,#34D399);border-radius:2px;"></div>
+            </div>
+          </div>
+          <div style="padding:12px;background:var(--surface2);border-radius:10px;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:4px;">Price Sensitivity</div>
+            <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#F59E0B;">38</div>
+            <div style="height:4px;background:var(--surface);border-radius:2px;margin-top:6px;">
+              <div style="height:4px;width:38%;background:linear-gradient(90deg,#F59E0B,#FBBF24);border-radius:2px;"></div>
+            </div>
+          </div>
+          <div style="padding:12px;background:var(--surface2);border-radius:10px;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:4px;">Churn Risk</div>
+            <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:var(--ink-muted);">—</div>
+            <div style="height:4px;background:var(--surface);border-radius:2px;margin-top:6px;">
+              <div style="height:4px;width:0%;border-radius:2px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:12px;background:var(--surface2);border-radius:10px;margin-bottom:12px;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:8px;">Lifecycle Stage</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span style="padding:4px 10px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:20px;font-size:11px;font-weight:600;color:#60A5FA;">HIGH_INTENT</span>
+            <span style="padding:4px 10px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);border-radius:20px;font-size:11px;font-weight:600;color:#34D399;">Investigation Lover</span>
+            <span style="padding:4px 10px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:20px;font-size:11px;font-weight:600;color:#C4B5FD;">Newsletter Subscriber</span>
+          </div>
+        </div>
+
+        <div style="font-size:12px;color:var(--ink-muted);line-height:1.6;">
+          <strong style="color:var(--ink);">Revenue Brain Decision:</strong>
+          <span style="color:#10B981;font-weight:600;"> SHOW_MONTHLY</span> — "Reader ini sudah membaca 47 artikel premium, tinggi engagement, propensity 74. Tawarkan langganan bulanan sekarang."
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card" style="padding:20px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:12px;">Lifecycle Stages yang Dipetakan</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#3B82F6;"></div>
+                  <span style="font-size:13px;color:var(--ink);">NEW</span>
+                </div>
+                <span style="font-size:12px;color:var(--ink-muted);">First-time visitor</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#8B5CF6;"></div>
+                  <span style="font-size:13px;color:var(--ink);">CASUAL</span>
+                </div>
+                <span style="font-size:12px;color:var(--ink-muted);">1–2x per minggu</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#10B981;"></div>
+                  <span style="font-size:13px;color:var(--ink);">HIGH_INTENT</span>
+                </div>
+                <span style="font-size:12px;color:var(--ink-muted);">3–5x per minggu, sering klik paywall</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#F59E0B;"></div>
+                  <span style="font-size:13px;color:var(--ink);">CONVERTING</span>
+                </div>
+                <span style="font-size:12px;color:var(--ink-muted);">Sudah pernah klik offer</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#C41230;"></div>
+                  <span style="font-size:13px;color:var(--ink);">AT_RISK</span>
+                </div>
+                <span style="font-size:12px;color:var(--ink-muted);">Subscriber aktif, engagement turun</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#64748B;"></div>
+                  <span style="font-size:13px;color:var(--ink);">WINBACK</span>
+                </div>
+                <span style="font-size:12px;color:var(--ink-muted);">Ex-subscriber, engagement masih tinggi</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:20px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:12px;">Signal yang Diukur</div>
+            <div class="pill-list">
+              <span class="pill">Sessions 30d</span>
+              <span class="pill">Premium reads</span>
+              <span class="pill">Avg scroll depth</span>
+              <span class="pill">Paywall views</span>
+              <span class="pill">Offer clicks</span>
+              <span class="pill">Checkout starts</span>
+              <span class="pill">Content affinity</span>
+              <span class="pill">Newsletter</span>
+              <span class="pill">Registration</span>
+              <span class="pill">Recency</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── -->
+<!-- SLIDE 5: FUNNEL -->
+<!-- ─────────────────────────────────────────────── -->
+<section class="slide" id="slide-4">
+  <div class="slide-number">05 — Conversion Funnel</div>
+  <div class="slide-brand">
+    <div class="slide-brand-logo">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="slide-brand-name">Tempo Revenue Brain</span>
+  </div>
+
+  <div style="max-width:1100px;">
+    <div class="tag fade-up" style="margin-bottom:20px;">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+      Pendekatan Berbasis Data
+    </div>
+    <h2 class="headline-lg fade-up delay-1" style="margin-bottom:16px;">
+      Dari 10.000 pembaca →<br/><em>300+ subscriber baru</em> per bulan
+    </h2>
+    <p class="body-md fade-up delay-2" style="margin-bottom:40px;max-width:600px;">
+      Dengan intelligent paywall, Tempo bisa men-convert reader yang sebelumnya lolos tanpa terdeteksi. Ini simulasi impact berdasarkan traffic Tempo+.
+    </p>
+
+    <div class="grid-2 fade-up delay-3">
+      <div>
+        <div class="funnel" style="margin-bottom:32px;">
+          <div class="funnel-bar">
+            <div class="funnel-label">Pembaca bulanan</div>
+            <div class="funnel-track">
+              <div class="funnel-fill" style="width:100%;background:rgba(255,255,255,.1);">10.000</div>
+            </div>
+          </div>
+          <div class="funnel-bar">
+            <div class="funnel-label">Baca 3+ artikel</div>
+            <div class="funnel-track">
+              <div class="funnel-fill" style="width:62%;background:rgba(59,130,246,.7);">~6.200</div>
+            </div>
+          </div>
+          <div class="funnel-bar">
+            <div class="funnel-label">Lihat paywall</div>
+            <div class="funnel-track">
+              <div class="funnel-fill" style="width:35%;background:rgba(168,85,247,.7);">~3.500</div>
+            </div>
+          </div>
+          <div class="funnel-bar">
+            <div class="funnel-label">Klik offer</div>
+            <div class="funnel-track">
+              <div class="funnel-fill" style="width:12%;background:rgba(245,158,11,.7);">~1.200</div>
+            </div>
+          </div>
+          <div class="funnel-bar">
+            <div class="funnel-label">Checkout start</div>
+            <div class="funnel-track">
+              <div class="funnel-fill" style="width:5%;background:rgba(16,185,129,.7);">~500</div>
+            </div>
+          </div>
+          <div class="funnel-bar">
+            <div class="funnel-label" style="font-weight:700;color:var(--ink);">Berlangganan</div>
+            <div class="funnel-track">
+              <div class="funnel-fill" style="width:3%;background:var(--accent);">~300</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:12px;color:var(--ink-muted);font-style:italic;">
+          * Simulasi berdasarkan benchmark Tempo.co traffic ( Mei 2026) dan industri media Indonesia conversion rates.
+        </div>
+      </div>
+
+      <div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+          <div class="card" style="padding:20px;text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:800;color:var(--ink);">3.0%</div>
+            <div style="font-size:12px;color:var(--ink-muted);margin-top:4px;">Conversion rate target</div>
+          </div>
+          <div class="card" style="padding:20px;text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:800;color:#10B981;">300+</div>
+            <div style="font-size:12px;color:var(--ink-muted);margin-top:4px;">Subscriber baru/bulan</div>
+          </div>
+          <div class="card" style="padding:20px;text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:800;color:var(--ink);">Rp 64K</div>
+            <div style="font-size:12px;color:var(--ink-muted);margin-top:4px;">Avg revenue/subscriber</div>
+          </div>
+          <div class="card" style="padding:20px;text-align:center;background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.2);">
+            <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:800;color:#10B981;">Rp 230M</div>
+            <div style="font-size:12px;color:#34D399;margin-top:4px;">Pendapatan tambahan/bulan</div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:20px;background:rgba(196,18,48,.08);border-color:rgba(196,18,48,.2);">
+          <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:8px;">💡 Pendekatan Revenue Brain</div>
+          <p style="font-size:13px;color:var(--ink-muted);line-height:1.6;">
+            Flat paywall Tempo saat ini mengkonversi ~0.3–0.5% reader. Dengan intelligent paywall yang men-target reader high-intent dengan offer personal, conversion rate bisa naik ke 2–3%.
+          </p>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(196,18,48,.2);display:flex;align-items:center;gap:8px;">
+            <span style="font-size:24px;font-weight:800;color:#10B981;font-family:'Playfair Display',serif;">5–10x</span>
+            <span style="font-size:13px;color:var(--ink-muted);">peningkatan conversion rate dibanding flat paywall</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── -->
+<!-- SLIDE 6: BANNER DESIGNS -->
+<!-- ─────────────────────────────────────────────── -->
+<section class="slide" id="slide-5">
+  <div class="slide-number">06 — Offer Banners</div>
+  <div class="slide-brand">
+    <div class="slide-brand-logo">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="slide-brand-name">Tempo Revenue Brain</span>
+  </div>
+
+  <div style="max-width:1200px;">
+    <div class="tag fade-up" style="margin-bottom:20px;">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+      Banner Personal — Bahasa Indonesia
+    </div>
+    <h2 class="headline-lg fade-up delay-1" style="margin-bottom:40px;">
+      Banner yang terasa <em>dibuat untuk pembaca</em>—<br/>bukan generic popup
+    </h2>
+
+    <div class="grid-2 fade-up delay-2" style="gap:32px;">
+      <!-- Banner 1: Promo -->
+      <div style="border-radius:12px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.4);">
+        <div style="background:#DC2626;padding:16px 20px 0;position:relative;">
+          <div style="height:120px;overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=480&h=120&fit=crop&q=80" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.65);" />
+          </div>
+          <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(to bottom,rgba(220,38,38,.2),rgba(220,38,38,.85));"></div>
+          <div style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;">×</div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 20px;">
+            <div style="display:inline-block;background:white;color:#DC2626;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:3px;margin-bottom:8px;">Diskon 30% — Terbatas!</div>
+            <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:800;color:white;line-height:1.25;margin-bottom:6px;">Jurnalisme Independen,<br/>Sekarang Lebih Terjangkau</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.65);line-height:1.5;margin-bottom:10px;">Akses tanpa batas ke seluruh investigasi dan konten premium Tempo+.</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px;">
+              <span style="font-size:11px;text-decoration:line-through;opacity:.5;color:rgba(255,255,255,.6);">Rp 64.000</span>
+              <span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:white;">Rp 44.800</span>
+              <span style="font-size:10px;opacity:.6;color:rgba(255,255,255,.7);">/bulan</span>
+            </div>
+            <button style="width:100%;padding:9px;border-radius:8px;background:white;color:#DC2626;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:4px;">Ambil Penawaran Ini</button>
+            <button style="width:100%;padding:5px;background:none;border:none;color:rgba(255,255,255,.45);font-size:10px;cursor:pointer;">Tidak, mungkin lain waktu</button>
+          </div>
+        </div>
+        <div style="background:#1A1A1A;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:white;">Promo Offer</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4);">Modal · Priority: 95</div>
+          </div>
+          <span style="font-size:10px;padding:2px 8px;background:rgba(16,185,129,.2);color:#34D399;border-radius:20px;font-weight:600;">A/B Testing</span>
+        </div>
+      </div>
+
+      <!-- Banner 2: Winback -->
+      <div style="border-radius:12px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.4);">
+        <div style="background:#0F172A;padding:16px 20px 0;position:relative;">
+          <div style="height:120px;overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=480&h=120&fit=crop&q=80" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.5) sepia(0.2);" />
+          </div>
+          <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(30,20,60,.8));"></div>
+          <div style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;">×</div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 20px;">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#C4B5FD;margin-bottom:8px;">✦ Selamat Datang Kembali</div>
+            <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:800;font-style:italic;color:white;line-height:1.25;margin-bottom:6px;">"Kami sudah menunggu<br/>kamu kembali..."</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:10px;">Investigasi dan liputan yang kamu butuhkan tetap ada di sini.</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px;">
+              <span style="font-size:11px;text-decoration:line-through;opacity:.5;color:rgba(255,255,255,.5);">Rp 64.000</span>
+              <span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:white;">Rp 49.000</span>
+              <span style="font-size:10px;opacity:.6;color:rgba(255,255,255,.7);">/bulan</span>
+            </div>
+            <button style="width:100%;padding:9px;border-radius:8px;background:#8B5CF6;color:white;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:4px;">Saya Kembali</button>
+            <button style="width:100%;padding:5px;background:none;border:none;color:rgba(255,255,255,.4);font-size:10px;cursor:pointer;">Belum siap</button>
+          </div>
+        </div>
+        <div style="background:#1A1A1A;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:white;">Winback</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4);">Modal · Priority: 85</div>
+          </div>
+          <span style="font-size:10px;padding:2px 8px;background:rgba(139,92,246,.2);color:#A78BFA;border-radius:20px;font-weight:600;">Personal & Emosional</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pill-list fade-up delay-3" style="margin-top:28px;justify-content:center;">
+      <span class="pill">5+ Template Banner</span>
+      <span class="pill">A/B Testing Otomatis</span>
+      <span class="pill">Targeting per Lifecycle</span>
+      <span class="pill">Unsplash Photography</span>
+      <span class="pill">Headline Bahasa Indonesia</span>
+      <span class="pill">Priority & Impression Cap</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── -->
+<!-- SLIDE 7: COPILOT -->
+<!-- ─────────────────────────────────────────────── -->
+<section class="slide" id="slide-6">
+  <div class="slide-number">07 — Revenue Copilot</div>
+  <div class="slide-brand">
+    <div class="slide-brand-logo">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="slide-brand-name">Tempo Revenue Brain</span>
+  </div>
+
+  <div style="max-width:1100px;">
+    <div class="tag fade-up" style="margin-bottom:20px;">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+      AI-Powered Analytics
+    </div>
+    <h2 class="headline-lg fade-up delay-1" style="margin-bottom:40px;">
+      Tanya, dapat jawaban.<br/><em>Tidak perlu buka laporan.</em>
+    </h2>
+
+    <div class="grid-2 fade-up delay-2">
+      <div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="padding:16px 20px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;gap:12px;">
+            <div style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <div style="font-size:13px;color:var(--ink);">"Reader mana yang paling mungkin subscribe minggu ini?"</div>
+          </div>
+          <div style="padding:16px 20px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:12px;">
+            <div style="font-size:12px;font-weight:600;color:#10B981;margin-bottom:8px;">Jawaban Revenue Brain:</div>
+            <div style="font-size:13px;color:var(--ink);line-height:1.6;">
+              Ditemukan <strong>847 reader</strong> dengan propensity ≥ 60. 312 di antaranya sudah klik offer tapi belum subscribe. Prioritas outreach: <strong>Budi Santoso, Rina Wulandari,</strong> dan <strong>Ahmad Hidayat</strong>. estimated tambahan subscriber: <strong>23–41 orang</strong> minggu ini.
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;padding:16px;background:var(--surface2);border-radius:12px;border:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:12px;">Contoh Query Lainnya</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="font-size:13px;color:var(--ink-muted);">→ "Konten apa yang paling banyak konversi subscriber?"</div>
+            <div style="font-size:13px;color:var(--ink-muted);">→ "Siapa yang akan churn dalam 7 hari ke depan?"</div>
+            <div style="font-size:13px;color:var(--ink-muted);">→ "Berapa estimated revenue opportunity bulan ini?"</div>
+            <div style="font-size:13px;color:var(--ink-muted);">→ "Reader mana yang perlu di-winback?"</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card" style="padding:20px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:14px;">Metric Langsung</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:13px;color:var(--ink-muted);">Reader aktif 30d</span>
+                <span style="font-size:14px;font-weight:700;color:var(--ink);">5.238</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:13px;color:var(--ink-muted);">High intent readers</span>
+                <span style="font-size:14px;font-weight:700;color:#10B981;">847</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:13px;color:var(--ink-muted);">AT_RISK subscribers</span>
+                <span style="font-size:14px;font-weight:700;color:#F59E0B;">124</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:13px;color:var(--ink-muted);">Estimated lost opportunity</span>
+                <span style="font-size:14px;font-weight:700;color:#C41230;">Rp 1.2M / bulan</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:13px;color:var(--ink-muted);">Subscribers baru (30d)</span>
+                <span style="font-size:14px;font-weight:700;color:#10B981;">+312</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:20px;background:rgba(196,18,48,.08);border-color:rgba(196,18,48,.2);">
+            <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:8px;">📊 Insight Otomatis</div>
+            <div style="font-size:13px;color:var(--ink-muted);line-height:1.6;">
+              Pembaca yang membaca >5 artikel <strong style="color:var(--ink);">Investigation</strong> per bulan punya conversion rate <strong style="color:#10B981;">3.2x lebih tinggi</strong> dari rata-rata. Rekomendasi: buat banner khusus untuk topik Investigation.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── -->
+<!-- SLIDE 8: INTEGRATION -->
+<!-- ─────────────────────────────────────────────── -->
+<section class="slide" id="slide-7">
+  <div class="slide-number">08 — Integrasi</div>
+  <div class="slide-brand">
+    <div class="slide-brand-logo">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="slide-brand-name">Tempo Revenue Brain</span>
+  </div>
+
+  <div style="max-width:1100px;">
+    <div class="tag fade-up" style="margin-bottom:20px;">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+      Technical Integration
+    </div>
+    <h2 class="headline-lg fade-up delay-1" style="margin-bottom:16px;">
+      Implementasi dalam<br/><em>2–3 sprint</em>
+    </h2>
+    <p class="body-md fade-up delay-2" style="margin-bottom:40px;max-width:600px;">
+      Revenue Brain adalah service terpisah. Tim Tempo hanya perlu install SDK snippet dan integrate event API. Tidak perlu refactor sistem yang ada.
+    </p>
+
+    <div class="grid-2 fade-up delay-3">
+      <div>
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div style="display:flex;gap:16px;align-items:flex-start;">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;font-weight:800;color:#3B82F6;">1</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px;">Pasang SDK Snippet</div>
+              <div style="font-size:13px;color:var(--ink-muted);line-height:1.6;">Copy-paste 1 baris JavaScript ke article template Tempo. Otomatis track semua pageviews dan article views.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;font-weight:800;color:#3B82F6;">2</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px;">Kirim Events</div>
+              <div style="font-size:13px;color:var(--ink-muted);line-height:1.6;">Fire events saat reader berinteraksi: register, login, article_view, paywall_view, offer_click, checkout_start, subscription_success.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;font-weight:800;color:#3B82F6;">3</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px;">Revenue Brain decide</div>
+              <div style="font-size:13px;color:var(--ink-muted);line-height:1.6;">Setiap article view → call decision API → dapat keputusan: free/paywall/offer. Banner muncul otomatis sesuai decision.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;font-weight:800;color:#10B981;">4</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px;">Monitor di Dashboard</div>
+              <div style="font-size:13px;color:var(--ink-muted);line-height:1.6;">Seluruh funnel dan metric muncul real-time di dashboard Revenue Brain. Tidak perlu setup BI tool terpisah.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;padding:16px;background:var(--surface2);border-radius:12px;border:1px solid var(--border);">
+          <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:8px;">Contoh SDK Usage:</div>
+          <code style="font-family:'DM Mono',monospace;font-size:12px;color:#10B981;line-height:1.7;display:block;">
+            <span style="color:#7DD3FC;">// Page view</span><br/>
+            TempoRB.track(<span style="color:#FBBF24;">'page_view'</span>, { article_id: <span style="color:#FBBF24;">'art_123'</span> });<br/><br/>
+            <span style="color:#7DD3FC;">// Registration</span><br/>
+            TempoRB.track(<span style="color:#FBBF24;">'register'</span>, { name: <span style="color:#FBBF24;">'Budi Santoso'</span>, email: <span style="color:#FBBF24;">'budi@...'</span> });<br/><br/>
+            <span style="color:#7DD3FC;">// Subscription success</span><br/>
+            TempoRB.track(<span style="color:#FBBF24;">'subscription_success'</span>, { plan: <span style="color:#FBBF24;">'monthly'</span>, revenue: <span style="color:#FBBF24;">64000</span> });
+          </code>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card" style="padding:20px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:12px;">Estimasi Effort</div>
+            <table class="data-table" style="font-size:13px;">
+              <tbody>
+                <tr><td>Frontend SDK integration</td><td class="num" style="color:#10B981;font-weight:600;">3–5 hari</td></tr>
+                <tr><td>Event tracking setup</td><td class="num" style="color:#10B981;font-weight:600;">2–3 hari</td></tr>
+                <tr><td>Banner template design</td><td class="num" style="color:#3B82F6;font-weight:600;">3–5 hari</td></tr>
+                <tr><td>Dashboard onboarding</td><td class="num" style="color:#3B82F6;font-weight:600;">1 hari</td></tr>
+                <tr><td style="font-weight:700;color:var(--ink);border-top:1px solid var(--border);padding-top:12px;">Total</td><td class="num" style="font-weight:800;color:#10B981;font-size:18px;border-top:1px solid var(--border);padding-top:12px;">2–3 sprint</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card" style="padding:20px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:12px;">Kompatibilitas</div>
+            <div class="pill-list">
+              <span class="pill">Next.js</span>
+              <span class="pill">React</span>
+              <span class="pill">Vue</span>
+              <span class="pill">Plain HTML/JS</span>
+              <span class="pill">WordPress</span>
+              <span class="pill">Supabase Auth</span>
+              <span class="pill">Firebase Auth</span>
+              <span class="pill">Midtrans</span>
+              <span class="pill">Xendit</span>
+            </div>
+          </div>
+
+          <div class="card" style="padding:20px;background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.2);">
+            <div style="font-size:13px;font-weight:700;color:#10B981;margin-bottom:8px;">✓ Tidak perlu refactor sistem existing</div>
+            <div style="font-size:13px;color:var(--ink-muted);line-height:1.6;">
+              Revenue Brain berjalan sebagai service terpisah. CMS, auth, dan payment system Tempo tetap seperti biasa. Hanya tambah layer intelligence di atas.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── -->
+<!-- SLIDE 9: ROI -->
+<!-- ─────────────────────────────────────────────── -->
+<section class="slide" id="slide-8">
+  <div class="slide-number">09 — ROI Projection</div>
+  <div class="slide-brand">
+    <div class="slide-brand-logo">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="slide-brand-name">Tempo Revenue Brain</span>
+  </div>
+
+  <div style="max-width:1100px;">
+    <div class="tag fade-up" style="margin-bottom:20px;">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+      Impact Finansial
+    </div>
+    <h2 class="headline-lg fade-up delay-1" style="margin-bottom:40px;">
+      Investasi kecil.<br/><em>Impact besar.</em>
+    </h2>
+
+    <div class="grid-2 fade-up delay-2" style="gap:40px;align-items:start;">
+      <div class="roi-calculator">
+        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:20px;">Kalkulator Impact (Tempo+)</div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <div style="font-size:12px;color:var(--ink-muted);margin-bottom:6px;">Monthly Unique Readers</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" min="10000" max="500000" value="100000" id="roi-readers" style="flex:1;" oninput="calcROI()" />
+              <span id="roi-readers-val" style="font-size:14px;font-weight:700;color:var(--ink);min-width:70px;text-align:right;">100.000</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--ink-muted);margin-bottom:6px;">Current Conversion Rate</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" min="1" max="50" value="5" id="roi-curr" style="flex:1;" oninput="calcROI()" />
+              <span id="roi-curr-val" style="font-size:14px;font-weight:700;color:var(--ink);min-width:70px;text-align:right;">0.5%</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--ink-muted);margin-bottom:6px;">Target Conversion Rate (dengan Revenue Brain)</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" min="10" max="100" value="30" id="roi-target" style="flex:1;" oninput="calcROI()" />
+              <span id="roi-target-val" style="font-size:14px;font-weight:700;color:#10B981;min-width:70px;text-align:right;">3.0%</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--ink-muted);margin-bottom:6px;">Avg Revenue per Subscriber (/bulan)</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" min="30000" max="150000" step="1000" value="64000" id="roi-arpu" style="flex:1;" oninput="calcROI()" />
+              <span id="roi-arpu-val" style="font-size:14px;font-weight:700;color:var(--ink);min-width:80px;text-align:right;">Rp 64.000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="roi-result" style="margin-bottom:20px;">
+          <div style="font-size:12px;font-weight:600;color:#34D399;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Pendapatan Tambahan per Bulan</div>
+          <div class="roi-big" id="roi-result-monthly">Rp 192.000.000</div>
+          <div style="font-size:14px;color:#6EE7B7;margin-top:8px;" id="roi-result-monthly-sub">+250 subscriber baru × Rp 64.000</div>
+        </div>
+
+        <div class="roi-result" style="margin-bottom:20px;background:linear-gradient(135deg,rgba(196,18,48,.15) 0%,rgba(196,18,48,.05) 100%);border-color:rgba(196,18,48,.3);">
+          <div style="font-size:12px;font-weight:600;color:#FCA5A5;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Pendapatan Tambahan per Tahun</div>
+          <div style="font-family:'Playfair Display',serif;font-size:64px;font-weight:800;color:#F87171;letter-spacing:-.03em;line-height:1;">Rp 2,3M</div>
+          <div style="font-size:14px;color:#FCA5A5;margin-top:8px;">Annual revenue uplift (Rp 192jt × 12 bulan)</div>
+        </div>
+
+        <div class="card" style="padding:20px;">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:12px;">Asumsi</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--ink-muted);">
+            <div>• Conversion uplift dari 0.5% → 3.0% (benchmark similar media publishers)</div>
+            <div>• Avg ARPU Rp 64.000/bulan untuk Tempo+ basic plan</div>
+            <div>• Tidak termasuk upsell ke annual plan</div>
+            <div>• Churn rate diasumsikan stabil</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcROI() {
+      const readers = parseInt(document.getElementById('roi-readers').value);
+      const currRate = parseInt(document.getElementById('roi-curr').value) / 10;
+      const targetRate = parseInt(document.getElementById('roi-target').val) / 10;
+      const arpu = parseInt(document.getElementById('roi-arpu').value);
+
+      document.getElementById('roi-readers-val').textContent = readers.toLocaleString('id-ID');
+      document.getElementById('roi-curr-val').textContent = (currRate / 10).toFixed(1) + '%';
+      document.getElementById('roi-target-val').textContent = (targetRate / 10).toFixed(1) + '%';
+      document.getElementById('roi-arpu-val').textContent = 'Rp ' + arpu.toLocaleString('id-ID');
+
+      const currSubs = Math.round(readers * currRate / 100);
+      const targetSubs = Math.round(readers * targetRate / 100);
+      const newSubs = targetSubs - currSubs;
+      const monthlyRev = newSubs * arpu;
+      const yearlyRev = monthlyRev * 12;
+
+      document.getElementById('roi-result-monthly').textContent = 'Rp ' + monthlyRev.toLocaleString('id-ID');
+      document.getElementById('roi-result-monthly-sub').textContent = '+' + newSubs.toLocaleString('id-ID') + ' subscriber × Rp ' + arpu.toLocaleString('id-ID');
+    }
+    calcROI();
+  </script>
+</section>
+
+<!-- ─────────────────────────────────────────────── -->
+<!-- SLIDE 10: CTA -->
+<!-- ─────────────────────────────────────────────── -->
+<section class="slide" id="slide-9">
+  <div class="slide-number">10 — next Steps</div>
+  <div class="slide-brand">
+    <div class="slide-brand-logo">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="slide-brand-name">Tempo Revenue Brain</span>
+  </div>
+
+  <div style="max-width:1000px;">
+    <div class="tag fade-up" style="margin-bottom:20px;">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      Langkah Selanjutnya
+    </div>
+    <h2 class="headline-xl fade-up delay-1" style="margin-bottom:48px;">
+      Siap membawa Tempo+<br/>ke level <em>selanjutnya?</em>
+    </h2>
+
+    <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:48px;">
+      <div class="timeline fade-up delay-2">
+        <div class="timeline-item">
+          <div class="timeline-dot accent"></div>
+          <div class="timeline-content">
+            <div class="timeline-title">Discovery Call (30 menit)</div>
+            <div class="timeline-desc">Presentasi langsung ke tim Tempo. Q&A teknis dan komersial.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot muted"></div>
+          <div class="timeline-content">
+            <div class="timeline-title">Technical Scoping (1 hari)</div>
+            <div class="timeline-desc">Analisis infrastruktur Tempo+. Identifikasi integration points.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot muted"></div>
+          <div class="timeline-content">
+            <div class="timeline-title">Pilot Program (4–6 minggu)</div>
+            <div class="timeline-desc">Implementasi di 1 subdomain/article section. Ukur baseline → pilot conversion uplift.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot muted"></div>
+          <div class="timeline-content">
+            <div class="timeline-title">Full Rollout (2 sprint)</div>
+            <div class="timeline-desc">Deploy ke seluruh platform Tempo+. Training tim internal.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot muted"></div>
+          <div class="timeline-content">
+            <div class="timeline-title">Review & Optimize (Ongoing)</div>
+            <div class="timeline-desc">Monthly business review. A/B test banner. Tune propensity scoring.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-box fade-up delay-3">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:800;color:white;line-height:1.2;margin-bottom:8px;">
+          Mulai pilot program<br/>Tempo+ Revenue Brain
+        </div>
+        <div style="font-size:15px;color:rgba(255,255,255,.6);">
+          Pilot 4 minggu · Tidak ada upfront commitment · ROI measurement dari hari pertama
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end;">
+        <button class="cta-btn">Jadwalkan Demo</button>
+        <div style="font-size:12px;color:rgba(255,255,255,.4);">
+          contact@rectoverso.com<br/>
+          rectoverso.com
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  let currentSlide = 0;
+  const totalSlides = 10;
+
+  function goTo(n) {
+    currentSlide = n;
+    document.getElementById('slide-' + n).scrollIntoView({ behavior: 'smooth' });
+    updateDots();
+    updateArrows();
+  }
+
+  function nextSlide() {
+    if (currentSlide < totalSlides - 1) goTo(currentSlide + 1);
+  }
+
+  function prevSlide() {
+    if (currentSlide > 0) goTo(currentSlide - 1);
+  }
+
+  function updateDots() {
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === currentSlide);
+    });
+    document.getElementById('slideCounter').textContent = String(currentSlide + 1).padStart(2, '0') + ' / ' + String(totalSlides).padStart(2, '0');
+  }
+
+  function updateArrows() {
+    document.getElementById('prevBtn').disabled = currentSlide === 0;
+    document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  }
+
+  // Scroll detection
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id.replace('slide-', '');
+        currentSlide = parseInt(id);
+        updateDots();
+        updateArrows();
+      }
+    });
+  }, { threshold: 0.5 });
+
+  for (let i = 0; i < totalSlides; i++) {
+    observer.observe(document.getElementById('slide-' + i));
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+  });
+</script>
+
+</body>
+</html>

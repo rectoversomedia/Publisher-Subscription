@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ROI Calculator — Tempo Revenue Brain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0A0A0F; --surface: #141420; --surface2: #1E1E30; --surface3: #252538;
+      --ink: #FAFAFA; --ink-muted: rgba(250,250,250,.55); --ink-dim: rgba(250,250,250,.25);
+      --accent: #C41230; --blue: #3B82F6; --emerald: #10B981; --amber: #F59E0B;
+      --border: rgba(255,255,255,.07); --border2: rgba(255,255,255,.12);
+    }
+    body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 48px 40px; }
+
+    header { margin-bottom: 40px; }
+    .eyebrow { display:flex;align-items:center;gap:8px;margin-bottom:12px; }
+    .eyebrow-dot { width:6px;height:6px;border-radius:50%;background:var(--accent); }
+    .eyebrow-text { font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-muted); }
+    h1 { font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,48px);font-weight:800;color:var(--ink);letter-spacing:-.03em;line-height:1.1; }
+    h1 em { font-style:italic;color:var(--accent); }
+    .subtitle { font-size:16px;color:var(--ink-muted);margin-top:10px;line-height:1.6; }
+
+    .grid { display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start; }
+
+    .card { background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px; }
+    .card-title { font-size:14px;font-weight:700;color:var(--ink);margin-bottom:24px; }
+
+    .input-group { margin-bottom:20px; }
+    .input-label { font-size:12px;font-weight:600;color:var(--ink-muted);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center; }
+    .input-value { font-size:14px;font-weight:700;color:var(--ink);font-family:'Playfair Display',serif; }
+
+    input[type=range] { width:100%;height:4px;border-radius:2px;background:var(--surface3);outline:none;-webkit-appearance:none;cursor:pointer; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;border:3px solid var(--bg);box-shadow:0 0 0 2px rgba(196,18,48,.3); }
+
+    .preset-btns { display:flex;gap:8px;margin-top:10px;flex-wrap:wrap; }
+    .preset-btn { padding:5px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border2);color:var(--ink-muted);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif; }
+    .preset-btn:hover,.preset-btn.active { background:var(--accent-light);border-color:rgba(196,18,48,.3);color:#FF6B7A; }
+
+    .result-hero {
+      background:linear-gradient(135deg,rgba(16,185,129,.12) 0%,rgba(16,185,129,.04) 100%);
+      border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:28px;
+      margin-bottom:16px;text-align:center;
+    }
+    .result-label { font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#34D399;margin-bottom:8px; }
+    .result-big { font-family:'Playfair Display',serif;font-size:clamp(40px,6vw,72px);font-weight:800;color:#10B981;letter-spacing:-.04em;line-height:1;margin-bottom:4px; }
+    .result-sub { font-size:13px;color:#6EE7B7; }
+
+    .result-row { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px; }
+    .result-chip { background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center; }
+    .result-chip-label { font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:4px; }
+    .result-chip-value { font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:var(--ink); }
+
+    .yearly-result {
+      background:linear-gradient(135deg,rgba(196,18,48,.12) 0%,rgba(196,18,48,.04) 100%);
+      border:1px solid rgba(196,18,48,.25);border-radius:16px;padding:24px;
+      margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+    }
+    .yearly-left {}
+    .yearly-label { font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#FCA5A5;margin-bottom:4px; }
+    .yearly-big { font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,48px);font-weight:800;color:#F87171;letter-spacing:-.03em;line-height:1; }
+    .yearly-sub { font-size:12px;color:#FCA5A5;margin-top:4px; }
+    .yearly-right { text-align:right; }
+    .yearly-arrow { width:48px;height:48px;border-radius:50%;background:rgba(196,18,48,.15);display:flex;align-items:center;justify-content:center;margin-left:auto;margin-bottom:8px; }
+    .yearly-note { font-size:11px;color:var(--ink-dim); }
+
+    .assumptions { background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px; }
+    .assumptions-title { font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:10px; }
+    .assumption-item { font-size:12px;color:var(--ink-muted);line-height:1.7;padding:2px 0; }
+    .assumption-item::before { content:'· ';color:var(--ink-dim); }
+
+    .comparison { margin-top:16px; }
+    .comparison-title { font-size:12px;font-weight:700;color:var(--ink-muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em; }
+    .comparison-bar { margin-bottom:10px; }
+    .comparison-header { display:flex;justify-content:space-between;margin-bottom:4px; }
+    .comparison-label { font-size:12px;color:var(--ink-muted); }
+    .comparison-val { font-size:12px;font-weight:700;color:var(--ink); }
+    .comparison-track { height:8px;background:var(--surface3);border-radius:4px;overflow:hidden; }
+    .comparison-fill { height:100%;border-radius:4px; }
+
+    .chart-area { margin-top:24px; }
+    .chart-title { font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:16px; }
+    .chart-bars { display:flex;align-items:flex-end;gap:8px;height:120px;padding-bottom:24px;border-bottom:1px solid var(--border);position:relative; }
+    .chart-bar-wrap { flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;position:relative; }
+    .chart-bar { width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height .5s cubic-bezier(.16,1,.3,1); }
+    .chart-label { font-size:10px;color:var(--ink-dim);position:absolute;bottom:-20px;white-space:nowrap; }
+    .chart-value { font-size:9px;font-weight:700;color:var(--ink-muted);position:absolute;top:-16px; }
+
+    .disclaimer { margin-top:32px;padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;font-size:11px;color:var(--ink-dim);line-height:1.7; }
+
+    @media(max-width:800px){ .grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="eyebrow">
+      <div class="eyebrow-dot"></div>
+      <span class="eyebrow-text">Revenue Brain · Kalkulator Impact</span>
+    </div>
+    <h1>Berapa revenue tambahan<br/><em>yang bisa Tempo dapat?</em></h1>
+    <p class="subtitle">Hitung sendiri impact Revenue Brain terhadap subscriber dan pendapatan Tempo+. Gunakan data traffic asli atau estimasi.</p>
+  </header>
+
+  <div class="grid">
+    <!-- Left: Inputs -->
+    <div class="card">
+      <div class="card-title">Parameter Trafik Tempo+</div>
+
+      <div class="input-group">
+        <div class="input-label">
+          <span>Monthly Unique Readers</span>
+          <span class="input-value" id="val-readers">100.000</span>
+        </div>
+        <input type="range" id="inp-readers" min="5000" max="2000000" step="5000" value="100000" />
+        <div class="preset-btns">
+          <button class="preset-btn" onclick="setPreset('readers',50000)">50K</button>
+          <button class="preset-btn active" onclick="setPreset('readers',100000)">100K</button>
+          <button class="preset-btn" onclick="setPreset('readers',250000)">250K</button>
+          <button class="preset-btn" onclick="setPreset('readers',500000)">500K</button>
+          <button class="preset-btn" onclick="setPreset('readers',1000000)">1JT</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">
+          <span>Current Conversion Rate</span>
+          <span class="input-value" id="val-curr-rate">0.5%</span>
+        </div>
+        <input type="range" id="inp-curr-rate" min="1" max="50" step="1" value="5" />
+        <div class="preset-btns">
+          <button class="preset-btn" onclick="setPreset('curr',1)">0.1%</button>
+          <button class="preset-btn active" onclick="setPreset('curr',5)">0.5%</button>
+          <button class="preset-btn" onclick="setPreset('curr',10)">1.0%</button>
+          <button class="preset-btn" onclick="setPreset('curr',20)">2.0%</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">
+          <span>Target Conversion (dengan Revenue Brain)</span>
+          <span class="input-value" id="val-target-rate" style="color:#10B981;">2.0%</span>
+        </div>
+        <input type="range" id="inp-target-rate" min="10" max="100" step="5" value="20" />
+        <div class="preset-btns">
+          <button class="preset-btn" onclick="setPreset('target',10)">1.0%</button>
+          <button class="preset-btn" onclick="setPreset('target',15)">1.5%</button>
+          <button class="preset-btn active" onclick="setPreset('target',20)">2.0%</button>
+          <button class="preset-btn" onclick="setPreset('target',30)">3.0%</button>
+          <button class="preset-btn" onclick="setPreset('target',40)">4.0%</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">
+          <span>Average Revenue per Subscriber / bulan</span>
+          <span class="input-value" id="val-arpu">Rp 64.000</span>
+        </div>
+        <input type="range" id="inp-arpu" min="30000" max="200000" step="1000" value="64000" />
+        <div class="preset-btns">
+          <button class="preset-btn" onclick="setPreset('arpu',44000)">Promo Rp 44K</button>
+          <button class="preset-btn active" onclick="setPreset('arpu',64000)">Basic Rp 64K</button>
+          <button class="preset-btn" onclick="setPreset('arpu',640000)">Annual Rp 640K</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">
+          <span>Average Subscriber Lifespan</span>
+          <span class="input-value" id="val-lifespan">8 bulan</span>
+        </div>
+        <input type="range" id="inp-lifespan" min="3" max="36" step="1" value="8" />
+        <div class="preset-btns">
+          <button class="preset-btn" onclick="setPreset('lifespan',6)">6 bulan</button>
+          <button class="preset-btn active" onclick="setPreset('lifespan',8)">8 bulan</button>
+          <button class="preset-btn" onclick="setPreset('lifespan',12)">12 bulan</button>
+          <button class="preset-btn" onclick="setPreset('lifespan',24)">24 bulan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Results -->
+    <div>
+      <div class="result-hero">
+        <div class="result-label">Pendapatan Tambahan per Bulan</div>
+        <div class="result-big" id="res-monthly">Rp 96.000.000</div>
+        <div class="result-sub" id="res-monthly-sub">+150 subscriber × Rp 64.000/bulan</div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-chip">
+          <div class="result-chip-label">New Subscribers / bulan</div>
+          <div class="result-chip-value" id="res-subs">+150</div>
+        </div>
+        <div class="result-chip">
+          <div class="result-chip-label">Conversion Uplift</div>
+          <div class="result-chip-value" style="color:#10B981;" id="res-uplift">+1.5%</div>
+        </div>
+      </div>
+
+      <div class="yearly-result">
+        <div class="yearly-left">
+          <div class="yearly-label">Pendapatan Tambahan per Tahun</div>
+          <div class="yearly-big" id="res-yearly">Rp 1,15M</div>
+          <div class="yearly-sub" id="res-yearly-sub">×12 bulan</div>
+        </div>
+        <div class="yearly-right">
+          <div class="yearly-arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div class="yearly-note" id="res-ltv-note">LTV: Rp 512.000<br/>per subscriber</div>
+        </div>
+      </div>
+
+      <div class="comparison">
+        <div class="comparison-title">Before vs After Revenue Brain</div>
+        <div class="comparison-bar">
+          <div class="comparison-header">
+            <span class="comparison-label">Before (flat paywall)</span>
+            <span class="comparison-val" id="cmp-before-val">0.5% → 50 subscriber</span>
+          </div>
+          <div class="comparison-track"><div class="comparison-fill" id="cmp-before-bar" style="width:8%;background:rgba(100,116,139,.4);"></div></div>
+        </div>
+        <div class="comparison-bar">
+          <div class="comparison-header">
+            <span class="comparison-label">After (Revenue Brain)</span>
+            <span class="comparison-val" id="cmp-after-val">2.0% → 200 subscriber</span>
+          </div>
+          <div class="comparison-track"><div class="comparison-fill" id="cmp-after-bar" style="width:33%;background:linear-gradient(90deg,#10B981,#34D399);"></div></div>
+        </div>
+        <div class="comparison-bar">
+          <div class="comparison-header">
+            <span class="comparison-label">Incremental gain</span>
+            <span class="comparison-val" id="cmp-delta-val" style="color:#10B981;">+1.5% → +150 subscriber</span>
+          </div>
+          <div class="comparison-track"><div class="comparison-fill" id="cmp-delta-bar" style="width:25%;background:linear-gradient(90deg,#C41230,#F87171);"></div></div>
+        </div>
+      </div>
+
+      <div class="chart-area">
+        <div class="chart-title">Projected Monthly Revenue (Rp juta)</div>
+        <div class="chart-bars" id="chartBars"></div>
+      </div>
+
+      <div class="assumptions" style="margin-top:20px;">
+        <div class="assumptions-title">Asumsi Kalkulasi</div>
+        <div class="assumption-item">Conversion rate benchmark: media Indonesia 0.3–0.8%, global leaders 2–4%</div>
+        <div class="assumption-item">Revenue Brain uplift: 2–5x improvement berdasarkan hasil pilot publishers serupa</div>
+        <div class="assumption-item">ARPU Tempo+ Rp 64.000/bulan (basic plan) — belum termasuk annual upsell</div>
+        <div class="assumption-item">Churn rate diasumsikan stabil; LTV dihitung dari avg lifespan × ARPU</div>
+        <div class="assumption-item">Tidak termasuk upside dari content attribution atau churn prevention</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>Disclaimer:</strong> Kalkulasi ini adalah estimasi berdasarkan benchmark industri dan asumsi yang disebutkan. Hasil aktual bergantung pada implementasi teknis, traffic quality, dan efektivitas banner offer. Revenue Brain tidak menjamin angka pasti — kalkulator ini alat bantu untuk scoping, bukan komitmen revenue.
+  </div>
+
+</div>
+
+<script>
+  const inpReaders = document.getElementById('inp-readers');
+  const inpCurr = document.getElementById('inp-curr-rate');
+  const inpTarget = document.getElementById('inp-target-rate');
+  const inpArpu = document.getElementById('inp-arpu');
+  const inpLifespan = document.getElementById('inp-lifespan');
+
+  function setPreset(key, val) {
+    if (key === 'readers') inpReaders.value = val;
+    if (key === 'curr') inpCurr.value = val;
+    if (key === 'target') inpTarget.value = val;
+    if (key === 'arpu') inpArpu.value = val;
+    if (key === 'lifespan') inpLifespan.value = val;
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    calc();
+  }
+
+  function fmt(n) {
+    if (n >= 1000000000) return 'Rp ' + (n / 1000000000).toFixed(1) + 'M';
+    if (n >= 1000000) return 'Rp ' + (n / 1000000).toFixed(0) + 'jt';
+    if (n >= 1000) return 'Rp ' + (n / 1000).toFixed(0) + 'K';
+    return 'Rp ' + n.toLocaleString('id-ID');
+  }
+
+  function fmtAbs(n) {
+    if (Math.abs(n) >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (Math.abs(n) >= 1000) return (n / 1000).toFixed(0) + 'K';
+    return n.toLocaleString('id-ID');
+  }
+
+  function fmtPct(n) { return (n / 10).toFixed(1) + '%'; }
+
+  function calc() {
+    const readers = parseInt(inpReaders.value);
+    const currRate = parseInt(inpCurr.value) / 10;
+    const targetRate = parseInt(inpTarget.value) / 10;
+    const arpu = parseInt(inpArpu.value);
+    const lifespan = parseInt(inpLifespan.value);
+
+    document.getElementById('val-readers').textContent = readers.toLocaleString('id-ID');
+    document.getElementById('val-curr-rate').textContent = fmtPct(currRate * 10);
+    document.getElementById('val-target-rate').textContent = fmtPct(targetRate * 10);
+    document.getElementById('val-arpu').textContent = 'Rp ' + arpu.toLocaleString('id-ID');
+    document.getElementById('val-lifespan').textContent = lifespan + ' bulan';
+
+    const currSubs = Math.round(readers * currRate / 100);
+    const targetSubs = Math.round(readers * targetRate / 100);
+    const newSubs = targetSubs - currSubs;
+    const monthlyRev = newSubs * arpu;
+    const yearlyRev = monthlyRev * 12;
+    const ltv = arpu * lifespan;
+    const uplift = targetRate - currRate;
+
+    document.getElementById('res-monthly').textContent = fmt(monthlyRev);
+    document.getElementById('res-monthly-sub').textContent = '+' + newSubs.toLocaleString('id-ID') + ' subscriber × Rp ' + arpu.toLocaleString('id-ID') + '/bulan';
+    document.getElementById('res-subs').textContent = '+' + newSubs.toLocaleString('id-ID');
+    document.getElementById('res-uplift').textContent = '+' + fmtPct(uplift * 10 || 0);
+    document.getElementById('res-yearly').textContent = fmt(yearlyRev);
+    document.getElementById('res-yearly-sub').textContent = '×12 bulan';
+    document.getElementById('res-ltv-note').innerHTML = 'LTV: Rp ' + ltv.toLocaleString('id-ID') + '<br/>per subscriber';
+
+    // Comparison bars
+    const maxSubs = targetSubs;
+    document.getElementById('cmp-before-val').textContent = fmtPct(currRate * 10) + ' → ' + currSubs.toLocaleString('id-ID') + ' subscriber';
+    document.getElementById('cmp-before-bar').style.width = maxSubs > 0 ? (currSubs / maxSubs * 100) + '%' : '5%';
+    document.getElementById('cmp-after-val').textContent = fmtPct(targetRate * 10) + ' → ' + targetSubs.toLocaleString('id-ID') + ' subscriber';
+    document.getElementById('cmp-after-bar').style.width = '100%';
+    document.getElementById('cmp-delta-val').textContent = '+' + fmtPct(uplift * 10 || 0) + ' → +' + newSubs.toLocaleString('id-ID') + ' subscriber';
+    document.getElementById('cmp-delta-bar').style.width = maxSubs > 0 ? (newSubs / maxSubs * 100) + '%' : '0%';
+
+    // Monthly chart
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const chartData = months.map((m, i) => {
+      const phase = i < 2 ? 0.2 : i < 4 ? 0.5 : i < 6 ? 0.75 : 1;
+      return Math.round(newSubs * arpu * phase);
+    });
+    const maxVal = Math.max(...chartData);
+
+    const barsEl = document.getElementById('chartBars');
+    barsEl.innerHTML = chartData.map((v, i) => {
+      const h = maxVal > 0 ? (v / maxVal * 100) : 0;
+      const color = i < 2 ? 'rgba(245,158,11,.6)' : i < 6 ? 'rgba(59,130,246,.6)' : 'rgba(16,185,129,.8)';
+      return `<div class="chart-bar-wrap">
+        <div class="chart-value">${v > 0 ? fmtAbs(v) : ''}</div>
+        <div class="chart-bar" style="height:${h}%;background:${color};"></div>
+        <div class="chart-label">${m}</div>
+      </div>`;
+    }).join('');
+  }
+
+  [inpReaders, inpCurr, inpTarget, inpArpu, inpLifespan].forEach(inp => {
+    inp.addEventListener('input', calc);
+  });
+
+  calc();
+</script>
+</body>
+</html>
