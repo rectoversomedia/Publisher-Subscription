@@ -231,7 +231,13 @@ function ReadersContent() {
                     className="border-b border-slate-50 hover:bg-blue-50/30 transition-colors cursor-pointer"
                     onClick={() => window.location.href = `/dashboard/readers/${reader.id}`}
                   >
-                    <td className="px-4 py-3 font-mono text-xs text-slate-600">{reader.id.substring(0, 12)}…</td>
+                    <td className="px-4 py-3">
+                      <div className="font-mono text-xs text-slate-600">
+                        {reader.anonymous_id
+                          ? `anon_${reader.anonymous_id.slice(-8)}`
+                          : reader.id.substring(0, 12) + '…'}
+                      </div>
+                    </td>
                     <td className="px-4 py-3">
                       <div className="font-semibold text-slate-900 text-sm">{getReaderName(reader)}</div>
                       <div className="flex flex-col gap-0.5 mt-0.5">

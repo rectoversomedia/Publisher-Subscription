@@ -19,7 +19,8 @@ export async function GET(request: NextRequest) {
       .from('readers')
       .select(`
         *,
-        features:reader_features(*)
+        features:reader_features(*),
+        anonymous_id
       `, { count: 'exact' })
       .order('last_seen_at', { ascending: false })
       .range(offset, offset + limit - 1);

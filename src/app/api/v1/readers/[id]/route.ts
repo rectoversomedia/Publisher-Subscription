@@ -30,7 +30,7 @@ export async function GET(
     // Fetch reader with features and topic affinity
     const reader = await sbQuery(
       'readers',
-      `id=eq.${encodeURIComponent(id)}&select=*`
+      `id=eq.${encodeURIComponent(id)}&select=*,anonymous_id`
     ) as Array<Record<string, unknown>>;
 
     if (!reader || reader.length === 0) {
