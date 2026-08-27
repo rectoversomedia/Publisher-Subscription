@@ -21,6 +21,7 @@ import {
   Sparkles,
   ShieldCheck,
   Zap,
+  RefreshCw,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
@@ -272,13 +273,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           <div className="flex items-center gap-3 flex-shrink-0">
             {/* LIVE badge */}
-            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-400/10 border border-emerald-400/20 rounded-full">
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-400/10 border border-emerald-400/20 rounded-full flex-shrink-0">
               <div className="relative">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping opacity-50" />
               </div>
               <span className="text-[9px] font-bold text-emerald-400 tracking-wider">LIVE</span>
             </div>
+
+            {/* Refresh */}
+            <button
+              onClick={() => window.location.reload()}
+              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-all flex-shrink-0"
+              title="Refresh"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
 
             {/* Clock */}
             <div className="hidden md:block text-right">

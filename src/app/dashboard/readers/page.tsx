@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Search, ChevronLeft, ChevronRight, Users, Brain,
-  TrendingUp, AlertTriangle, Zap, Filter, RefreshCw,
+  TrendingUp, AlertTriangle, Zap, Filter,
   Phone, Mail, User, ArrowUpRight, Star,
 } from 'lucide-react';
 
@@ -337,17 +337,6 @@ function ReadersContent() {
 
   return (
     <div className="space-y-5">
-
-      {/* ── Header ──────────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-4">
-        <button
-          onClick={fetchReaders}
-          className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold text-slate-500 bg-slate-50 border border-slate-300 rounded-xl hover:bg-slate-100 hover:text-slate-800 transition-all group"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 group-hover:rotate-45 transition-transform duration-300 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
-      </div>
 
       {/* ── Stats row ─────────────────────────────────── */}
       <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
