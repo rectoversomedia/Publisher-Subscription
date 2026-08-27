@@ -81,9 +81,6 @@ export default function SettingsPage() {
   return (
     <div className="space-y-5 max-w-3xl">
 
-      {/* Header */}
-      <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Configuration</h1>
-
       {/* Execution Mode */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-4">

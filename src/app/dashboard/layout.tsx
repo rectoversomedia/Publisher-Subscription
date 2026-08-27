@@ -255,24 +255,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Top bar */}
         <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between gap-4 shadow-sm">
-          {/* Mobile menu toggle */}
-          <button
-            className="lg:hidden p-2 -ml-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all flex-shrink-0"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Mobile menu toggle */}
+            <button
+              className="lg:hidden p-2 -ml-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all flex-shrink-0"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu className="w-5 h-5" />
+            </button>
 
-          <div className="flex items-center gap-3 flex-shrink-0">
-            {/* Live badge */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-400/10 border border-emerald-400/20 rounded-full">
+            {/* LIVE badge */}
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-400/10 border border-emerald-400/20 rounded-full flex-shrink-0">
               <div className="relative">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping opacity-50" />
               </div>
-              <span className="text-[10px] font-bold text-emerald-400 tracking-wider">LIVE</span>
+              <span className="text-[9px] font-bold text-emerald-400 tracking-wider">LIVE</span>
             </div>
 
+            {/* Page title */}
+            <h1 className="text-[15px] font-bold text-slate-800 truncate">
+              {activeItem?.label ?? 'Dashboard'}
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-3 flex-shrink-0">
             {/* Clock */}
             <div className="hidden md:block text-right">
               <div className="text-[11px] font-semibold text-slate-600" id="liveClock">--:--:--</div>

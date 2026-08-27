@@ -197,7 +197,6 @@ export default function DecisionsPage() {
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
-        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Decision Engine</h1>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-400/10 border border-emerald-400/20 rounded-full">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />

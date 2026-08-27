@@ -119,7 +119,6 @@ export default function ExperimentsPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">A/B Experiments</h1>
         <button onClick={() => setShowCreate(true)}
           className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-bold text-slate-900 bg-red-600 rounded-xl hover:bg-[#B01028] transition-colors shadow-lg shadow-red-900/20">
           <Plus className="w-3.5 h-3.5" /> New Experiment

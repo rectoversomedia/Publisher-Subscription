@@ -57,11 +57,6 @@ export default function ContentPage() {
   return (
     <div className="space-y-5">
 
-      {/* Header */}
-      <div>
-        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Content Revenue Intelligence</h1>
-      </div>
-
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[

@@ -107,11 +107,6 @@ export default function CopilotPage() {
   return (
     <div className="space-y-5 max-w-4xl">
 
-      {/* Header */}
-      <div>
-        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Revenue Copilot</h1>
-      </div>
-
       {/* Suggested Questions */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-4">
