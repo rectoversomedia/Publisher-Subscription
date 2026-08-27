@@ -260,13 +260,7 @@ export default function BannersPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Offer Banners</h1>
-          <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
-            <LayoutGrid className="w-3.5 h-3.5 text-red-600/50" />
-            Manage all Tempo+ offer banners
-          </p>
-        </div>
+        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Offer Banners</h1>
         <div className="flex items-center gap-3">
           <button onClick={fetchBanners}
             className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold text-slate-500 bg-slate-50 border border-slate-300 rounded-xl hover:bg-slate-100 hover:text-slate-800 transition-all group">

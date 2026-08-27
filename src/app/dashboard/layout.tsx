@@ -13,7 +13,6 @@ import {
   MessageSquare,
   Settings,
   PlayCircle,
-  Brain,
   Menu,
   X,
   ChevronRight,
@@ -24,6 +23,11 @@ import {
   Zap,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import {
+  DashboardMetaContext,
+  useDashboardMeta,
+  type DashboardMeta,
+} from './DashboardMetaContext';
 
 const navItems = [
   { href: '/dashboard', label: 'Executive Dashboard', icon: LayoutDashboard, desc: 'Overview & KPIs' },
@@ -39,7 +43,52 @@ const navItems = [
   { href: '/dashboard/settings', label: 'Configuration', icon: Settings, desc: 'System settings' },
 ];
 
+// ── Footer ─────────────────────────────────────────────────────
+
+function timeAgo(dateStr: Date): string {
+  const diff = Date.now() - dateStr.getTime();
+  const seconds = Math.floor(diff / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  return `${hours}h ago`;
+}
+
+function DashboardFooter() {
+  const { meta } = useDashboardMeta();
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="border-t border-slate-200 px-6 py-3 bg-white flex items-center justify-between gap-4">
+      <div className="flex items-center gap-2 text-[11px] text-slate-400">
+        <span>Revenue Intelligence</span>
+        {meta.label && (
+          <>
+            <span className="text-slate-300">·</span>
+            <span>{meta.label}</span>
+          </>
+        )}
+        {meta.lastUpdated && (
+          <>
+            <span className="text-slate-300">·</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
+            <span>Updated {timeAgo(meta.lastUpdated)}</span>
+          </>
+        )}
+      </div>
+      <div className="text-[10px] text-slate-300 font-mono">by Rectoverso</div>
+    </div>
+  );
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [meta, setMeta] = useState<DashboardMeta>({});
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -76,37 +125,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Brand Header */}
-        <div className="relative px-5 pt-7 pb-5 flex-shrink-0">
-          <div className="flex items-center gap-3 mb-5">
-            {/* Logo mark */}
-            <div className="relative flex-shrink-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C41230] to-[#8B0000] flex items-center justify-center shadow-lg shadow-red-900/40">
-                <Brain className="w-5 h-5 text-white" />
-              </div>
-              {/* Glow dot */}
-              <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0D0D1F]">
-                <div className="absolute inset-0 bg-emerald-400 rounded-full animate-ping opacity-40" />
-              </div>
-            </div>
-            <div>
-              <div className="text-[15px] font-bold text-white leading-tight tracking-tight">Revenue Intelligence</div>
-              <div className="text-[10px] text-white/50 font-medium tracking-wide">by Rectoverso</div>
-            </div>
-          </div>
-
-          {/* Status bar */}
-          <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.07]">
-            <div className="relative flex-shrink-0">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping opacity-60" />
-            </div>
-            <div className="flex-1">
-              <div className="text-[10px] font-semibold text-white/60">System Operational</div>
-              <div className="text-[9px] text-white/25">Supabase · All services active</div>
-            </div>
-            <div className="text-[9px] font-mono text-emerald-400/70 bg-emerald-400/10 px-1.5 py-0.5 rounded">
-              v1.0
-            </div>
+        <div className="relative px-5 pt-7 pb-4 flex-shrink-0">
+          <div className="text-[11px] text-white/40 font-semibold tracking-widest uppercase">
+            by Rectoverso
           </div>
         </div>
 
@@ -234,18 +255,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Top bar */}
         <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between gap-4 shadow-sm">
-          <div className="flex items-center gap-3 min-w-0">
-            {/* Mobile menu toggle */}
-            <button
-              className="lg:hidden p-2 -ml-2 text-white/40 hover:text-white/80 hover:bg-white/[0.06] rounded-lg transition-all flex-shrink-0"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-
-            {/* Breadcrumb */}
-            <div className="flex items-center gap-2 min-w-0" />
-          </div>
+          {/* Mobile menu toggle */}
+          <button
+            className="lg:hidden p-2 -ml-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all flex-shrink-0"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Menu className="w-5 h-5" />
+          </button>
 
           <div className="flex items-center gap-3 flex-shrink-0">
             {/* Live badge */}
@@ -267,7 +283,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Page content */}
         <main className="flex-1 p-6 min-w-0 bg-white">
-          {children}
+          <DashboardMetaContext.Provider value={{ meta, setMeta }}>
+            {children}
+            <DashboardFooter />
+          </DashboardMetaContext.Provider>
         </main>
       </div>
     </div>

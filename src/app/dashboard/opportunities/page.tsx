@@ -63,13 +63,7 @@ export default function OpportunitiesPage() {
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Revenue Opportunity Radar</h1>
-          <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
-            <Radar className="w-3.5 h-3.5 text-red-600/50" />
-            Where Revenue Intelligence is leaving money on the table
-          </p>
-        </div>
+        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Revenue Opportunity Radar</h1>
       </div>
 
       {/* Summary */}

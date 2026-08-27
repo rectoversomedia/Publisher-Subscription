@@ -110,10 +110,6 @@ export default function CopilotPage() {
       {/* Header */}
       <div>
         <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Revenue Copilot</h1>
-        <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
-          <Brain className="w-3.5 h-3.5 text-red-600/50" />
-          AI-powered revenue queries — all answers from live database
-        </p>
       </div>
 
       {/* Suggested Questions */}

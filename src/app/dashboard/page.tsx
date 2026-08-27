@@ -9,6 +9,7 @@ import {
   ChevronDown, ChevronUp, Info
 } from 'lucide-react';
 import Link from 'next/link';
+import { useDashboardMeta } from './DashboardMetaContext';
 
 // ── Types ───────────────────────────────────────────────────
 
@@ -710,6 +711,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const { setMeta } = useDashboardMeta();
 
   const fetchData = async () => {
     try {
@@ -737,6 +739,12 @@ export default function DashboardPage() {
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (lastUpdated) {
+      setMeta({ label: '30-day window', lastUpdated });
+    }
+  }, [lastUpdated, setMeta]);
 
   // Live clock
   useEffect(() => {
@@ -817,25 +825,9 @@ export default function DashboardPage() {
 
       {/* ── Page Header ──────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">
-            Executive Dashboard
-          </h1>
-          <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
-            <span>Revenue Intelligence</span>
-            <span className="text-slate-300">·</span>
-            <span>30-day window</span>
-            {lastUpdated && (
-              <>
-                <span className="text-slate-300">·</span>
-                <span className="flex items-center gap-1">
-                  <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
-                  Updated {timeAgo(lastUpdated.toISOString())}
-                </span>
-              </>
-            )}
-          </p>
-        </div>
+        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">
+          Executive Dashboard
+        </h1>
         <button
           onClick={fetchData}
           className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold text-slate-500 bg-slate-50 border border-slate-300 rounded-xl hover:bg-slate-100 hover:text-slate-800 transition-all flex-shrink-0 group"

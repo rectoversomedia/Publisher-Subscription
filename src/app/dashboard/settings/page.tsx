@@ -82,13 +82,7 @@ export default function SettingsPage() {
     <div className="space-y-5 max-w-3xl">
 
       {/* Header */}
-      <div>
-        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Configuration</h1>
-        <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
-          <Settings className="w-3.5 h-3.5 text-red-600/50" />
-          Control Revenue Brain behavior — changes take effect immediately
-        </p>
-      </div>
+      <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Configuration</h1>
 
       {/* Execution Mode */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5">
