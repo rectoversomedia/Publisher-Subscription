@@ -22,8 +22,8 @@ import {
 function FieldGroup({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">{label}</label>
-      {hint && <p className="text-xs text-slate-400 -mt-0.5">{hint}</p>}
+      <label className="block text-xs font-semibold text-white/60 uppercase tracking-wide">{label}</label>
+      {hint && <p className="text-xs text-white/30 -mt-0.5">{hint}</p>}
       {children}
     </div>
   );
@@ -38,7 +38,7 @@ function Input({ value, onChange, placeholder, className = '', type = 'text' }: 
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${className}`}
+      className={`w-full px-3 py-2 text-sm border border-white/[0.08] rounded-lg bg-[#111128] text-white/80 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#C41230]/50 focus:border-transparent ${className}`}
     />
   );
 }
@@ -52,7 +52,7 @@ function Textarea({ value, onChange, placeholder, rows = 3 }: {
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
-      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+      className="w-full px-3 py-2 text-sm border border-white/[0.08] rounded-lg bg-[#111128] text-white/80 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#C41230]/50 resize-none"
     />
   );
 }
@@ -64,7 +64,7 @@ function Select({ value, onChange, options }: {
     <select
       value={value}
       onChange={e => onChange(e.target.value)}
-      className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="w-full px-3 py-2 text-sm border border-white/[0.08] rounded-lg bg-[#111128] text-white/80 focus:outline-none focus:ring-2 focus:ring-[#C41230]/50"
     >
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
@@ -77,11 +77,11 @@ function Toggle({ value, onChange, label }: { value: boolean; onChange: (v: bool
       <button
         type="button"
         onClick={() => onChange(!value)}
-        className={`relative w-10 h-5 rounded-full transition-colors ${value ? 'bg-blue-600' : 'bg-slate-200'}`}
+        className={`relative w-10 h-5 rounded-full transition-colors ${value ? 'bg-[#C41230]' : 'bg-white/[0.12]'}`}
       >
-        <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${value ? 'translate-x-5' : 'translate-x-0'}`} />
+        <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-[#111128] rounded-full shadow transition-transform ${value ? 'translate-x-5' : 'translate-x-0'}`} />
       </button>
-      <span className="text-sm text-slate-700">{label}</span>
+      <span className="text-sm text-white/60">{label}</span>
     </label>
   );
 }
@@ -103,7 +103,7 @@ function ChipSelect({ value, onChange, options }: {
           className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
             value.includes(o.value)
               ? 'bg-blue-600 text-white border-blue-600'
-              : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+              : 'bg-[#111128] text-white/50 border-white/[0.08] hover:border-white/[0.15]'
           }`}
         >
           {o.label}
@@ -127,14 +127,14 @@ function ColorSwatch({ value, onChange }: { value: string; onChange: (v: string)
         type="text"
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="px-2 py-1 text-xs border border-slate-200 rounded w-24 font-mono"
+        className="px-2 py-1 text-xs border border-white/[0.08] rounded w-24 font-mono"
       />
       {presets.map(c => (
         <button
           key={c}
           type="button"
           onClick={() => onChange(c)}
-          className="w-6 h-6 rounded-full border-2 border-transparent hover:border-slate-400 transition-colors"
+          className="w-6 h-6 rounded-full border-2 border-transparent hover:border-white/30 transition-colors"
           style={{ backgroundColor: c }}
         />
       ))}
@@ -149,15 +149,15 @@ function Section({ title, icon: Icon, children, defaultOpen = true }: {
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden">
+    <div className="border border-white/[0.08] rounded-xl overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 px-5 py-3.5 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
+        className="w-full flex items-center gap-3 px-5 py-3.5 bg-white/[0.04] hover:bg-white/[0.04] transition-colors text-left"
       >
-        {open ? <ChevronDown className="w-4 h-4 text-slate-500" /> : <ChevronRight className="w-4 h-4 text-slate-500" />}
-        <Icon className="w-4 h-4 text-slate-500" />
-        <span className="text-sm font-semibold text-slate-800">{title}</span>
+        {open ? <ChevronDown className="w-4 h-4 text-white/40" /> : <ChevronRight className="w-4 h-4 text-white/40" />}
+        <Icon className="w-4 h-4 text-white/40" />
+        <span className="text-sm font-semibold text-white/60">{title}</span>
       </button>
       {open && <div className="p-5 space-y-5">{children}</div>}
     </div>
@@ -171,37 +171,37 @@ function BannerPreview({ banner }: { banner: Partial<OfferBanner> }) {
   const theme = (banner.theme ?? 'dark') as BannerTheme;
   const isDark = theme === 'dark';
   const tokens = {
-    dark: { bg: 'bg-slate-900', text: 'text-white', muted: 'text-slate-300', btn: 'bg-red-600 text-white', bar: 'border-red-500' },
-    light: { bg: 'bg-white', text: 'text-slate-900', muted: 'text-slate-500', btn: 'bg-slate-900 text-white', bar: 'border-slate-300' },
-    red: { bg: 'bg-red-600', text: 'text-white', muted: 'text-red-100', btn: 'bg-white text-red-700', bar: 'border-red-400' },
-    emerald: { bg: 'bg-emerald-600', text: 'text-white', muted: 'text-emerald-100', btn: 'bg-white text-emerald-700', bar: 'border-emerald-400' },
+    dark: { bg: 'bg-[#111128]', text: 'text-white', muted: 'text-white/40', btn: 'bg-[#C41230] text-white', bar: 'border-[#C41230]' },
+    light: { bg: 'bg-white/[0.06]', text: 'text-white/80', muted: 'text-white/40', btn: 'bg-white text-[#111128] font-bold', bar: 'border-white/20' },
+    red: { bg: 'bg-red-600', text: 'text-white', muted: 'text-red-100', btn: 'bg-[#111128] text-red-700', bar: 'border-red-400' },
+    emerald: { bg: 'bg-emerald-600', text: 'text-white', muted: 'text-emerald-100', btn: 'bg-[#111128] text-emerald-700', bar: 'border-emerald-400' },
   }[theme];
 
   return (
-    <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
+    <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-white/[0.04]">
       {/* Browser chrome */}
-      <div className="bg-slate-200 px-4 py-2 flex items-center gap-2">
+      <div className="bg-white/[0.06] px-4 py-2 flex items-center gap-2">
         <div className="flex gap-1.5">
           <div className="w-3 h-3 rounded-full bg-red-400" />
           <div className="w-3 h-3 rounded-full bg-yellow-400" />
           <div className="w-3 h-3 rounded-full bg-green-400" />
         </div>
-        <div className="flex-1 bg-white/70 rounded px-3 py-0.5 text-xs text-slate-500 text-center">
+        <div className="flex-1 bg-[#111128]/70 rounded px-3 py-0.5 text-xs text-white/40 text-center">
           tempo.co/article/investigasi-korupsi
         </div>
       </div>
 
       {/* Article mock */}
       <div className="p-4 space-y-3">
-        <div className="h-2 bg-slate-300 rounded w-1/3" />
-        <div className="h-4 bg-slate-700 rounded w-2/3" />
-        <div className="h-2 bg-slate-300 rounded w-full" />
-        <div className="h-2 bg-slate-300 rounded w-5/6" />
+        <div className="h-2 bg-white/[0.07] rounded w-1/3" />
+        <div className="h-4 bg-white/[0.10] rounded w-2/3" />
+        <div className="h-2 bg-white/[0.07] rounded w-full" />
+        <div className="h-2 bg-white/[0.07] rounded w-5/6" />
 
         {/* Banner preview */}
         <div className={`${tokens.bg} rounded-xl border-t-2 ${tokens.bar} p-4 mt-4`}>
           <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white bg-white/10 flex-shrink-0`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white bg-[#111128]/10 flex-shrink-0`}>
               <span className="text-sm">🔒</span>
             </div>
             <div className="flex-1">
@@ -227,8 +227,8 @@ function BannerPreview({ banner }: { banner: Partial<OfferBanner> }) {
           )}
         </div>
 
-        <div className="h-2 bg-slate-300 rounded w-full" />
-        <div className="h-2 bg-slate-300 rounded w-4/5" />
+        <div className="h-2 bg-white/[0.07] rounded w-full" />
+        <div className="h-2 bg-white/[0.07] rounded w-4/5" />
       </div>
     </div>
   );
@@ -348,8 +348,8 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
       <div className="space-y-4">
 
         {/* Basic Info */}
-        <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
-          <h3 className="font-semibold text-slate-900 text-sm">Banner Information</h3>
+        <div className="bg-[#111128] rounded-xl border border-white/[0.08] p-5 space-y-4">
+          <h3 className="font-semibold text-white/80 text-sm">Banner Information</h3>
           <FieldGroup label="Banner Name">
             <Input value={banner.name ?? ''} onChange={v => set('name', v as never)} placeholder="e.g., Soft Paywall Default" />
           </FieldGroup>
@@ -367,7 +367,7 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
                     type="button"
                     onClick={() => set('banner_type', bt.value as BannerType)}
                     className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors ${
-                      isActive ? `${colors.bg} ${colors.text} border-transparent` : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                      isActive ? `${colors.bg} ${colors.text} border-transparent` : 'bg-[#111128] text-white/50 border-white/[0.08] hover:border-white/[0.15]'
                     }`}
                   >
                     {bt.label}
@@ -430,11 +430,11 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
                   type="button"
                   onClick={() => set('layout', l.value as BannerLayout)}
                   className={`p-3 rounded-lg border text-left transition-colors ${
-                    banner.layout === l.value ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-slate-300'
+                    banner.layout === l.value ? 'border-[#C41230] bg-[#C41230]/10' : 'border-white/[0.08] hover:border-white/[0.15]'
                   }`}
                 >
-                  <div className="text-xs font-semibold text-slate-800">{l.label}</div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">{l.desc}</div>
+                  <div className="text-xs font-semibold text-white/60">{l.label}</div>
+                  <div className="text-[10px] text-white/30 mt-0.5">{l.desc}</div>
                 </button>
               ))}
             </div>
@@ -447,10 +447,10 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
                   type="button"
                   onClick={() => set('theme', t.value as BannerTheme)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${
-                    banner.theme === t.value ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-slate-300'
+                    banner.theme === t.value ? 'border-[#C41230] bg-[#C41230]/10' : 'border-white/[0.08] hover:border-white/[0.15]'
                   }`}
                 >
-                  <div className="w-4 h-4 rounded-full border border-slate-200" style={{ backgroundColor: t.swatch }} />
+                  <div className="w-4 h-4 rounded-full border border-white/[0.08]" style={{ backgroundColor: t.swatch }} />
                   {t.label}
                 </button>
               ))}
@@ -467,7 +467,7 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
                   type="button"
                   onClick={() => set('icon', icon)}
                   className={`w-10 h-10 rounded-lg border text-center flex items-center justify-center transition-colors ${
-                    banner.icon === icon ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-slate-300'
+                    banner.icon === icon ? 'border-[#C41230] bg-[#C41230]/10' : 'border-white/[0.08] hover:border-white/[0.15]'
                   }`}
                 >
                   <BannerIcon name={icon} size={18} />
@@ -478,7 +478,7 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
           <FieldGroup label="Badge Label (optional)">
             <div className="flex gap-2">
               <Input value={banner.badge_label ?? ''} onChange={v => set('badge_label', v as never)} placeholder="e.g., 30% OFF" className="flex-1" />
-              <input type="color" value={banner.badge_color ?? '#DC2626'} onChange={e => set('badge_color', e.target.value as never)} className="w-10 h-10 rounded cursor-pointer border border-slate-200" />
+              <input type="color" value={banner.badge_color ?? '#DC2626'} onChange={e => set('badge_color', e.target.value as never)} className="w-10 h-10 rounded cursor-pointer border border-white/[0.08]" />
             </div>
           </FieldGroup>
         </Section>
@@ -546,9 +546,9 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
                   onChange={e => set('variant_allocation_percentage', parseInt(e.target.value) as never)}
                   className="flex-1"
                 />
-                <span className="text-sm font-bold text-slate-700 w-10">{banner.variant_allocation_percentage ?? 50}%</span>
+                <span className="text-sm font-bold text-white/60 w-10">{banner.variant_allocation_percentage ?? 50}%</span>
               </div>
-              <div className="flex text-xs text-slate-500">
+              <div className="flex text-xs text-white/40">
                 <span className="flex-1">Variant A</span>
                 <span className="flex-1 text-right">Variant B</span>
               </div>
@@ -582,9 +582,9 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
                 onChange={e => set('priority', parseInt(e.target.value) as never)}
                 className="flex-1"
               />
-              <span className="text-sm font-bold text-slate-700 w-8 text-right">{banner.priority ?? 50}</span>
+              <span className="text-sm font-bold text-white/60 w-8 text-right">{banner.priority ?? 50}</span>
             </div>
-            <p className="text-xs text-slate-400">Higher priority banners appear first when multiple banners match</p>
+            <p className="text-xs text-white/30">Higher priority banners appear first when multiple banners match</p>
           </FieldGroup>
         </Section>
 
@@ -594,7 +594,7 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
             onClick={handleSave}
             disabled={saving || !banner.name || !banner.headline}
             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all ${
-              saving ? 'bg-slate-300 text-slate-500 cursor-not-allowed' :
+              saving ? 'bg-white/[0.06] text-white/30 cursor-not-allowed' :
               saved ? 'bg-emerald-600 text-white' :
               'bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98]'
             }`}
@@ -607,7 +607,7 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
           <button
             type="button"
             onClick={() => setPreviewOpen(!previewOpen)}
-            className="flex items-center gap-2 px-4 py-3 border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50"
+            className="flex items-center gap-2 px-4 py-3 border border-white/[0.08] rounded-xl text-sm text-white/50 hover:bg-white/[0.04]"
           >
             <Eye className="w-4 h-4" /> Preview
           </button>
@@ -618,38 +618,38 @@ export default function BannerBuilder({ initialBanner, existingBanners = [], onS
       {previewOpen && (
         <div className="xl:sticky xl:top-6 xl:self-start space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-700">Live Preview</h3>
-            <button onClick={() => setPreviewOpen(false)} className="text-slate-400 hover:text-slate-600">
+            <h3 className="text-sm font-semibold text-white/60">Live Preview</h3>
+            <button onClick={() => setPreviewOpen(false)} className="text-white/30 hover:text-white/50">
               <X className="w-4 h-4" />
             </button>
           </div>
           <BannerPreview banner={banner} />
-          <div className="bg-slate-50 rounded-xl border border-slate-200 p-4">
-            <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Summary</h4>
+          <div className="bg-white/[0.04] rounded-xl border border-white/[0.08] p-4">
+            <h4 className="text-xs font-semibold text-white/40 uppercase tracking-wide mb-2">Summary</h4>
             <div className="space-y-1.5 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-500">Type</span>
-                <span className="font-medium text-slate-700">{BANNER_TYPE_LABELS[banner.banner_type as BannerType] ?? '-'}</span>
+                <span className="text-white/40">Type</span>
+                <span className="font-medium text-white/60">{BANNER_TYPE_LABELS[banner.banner_type as BannerType] ?? '-'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Layout</span>
-                <span className="font-medium text-slate-700 capitalize">{banner.layout}</span>
+                <span className="text-white/40">Layout</span>
+                <span className="font-medium text-white/60 capitalize">{banner.layout}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Theme</span>
-                <span className="font-medium text-slate-700 capitalize">{banner.theme}</span>
+                <span className="text-white/40">Theme</span>
+                <span className="font-medium text-white/60 capitalize">{banner.theme}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">A/B Test</span>
-                <span className={`font-medium ${banner.is_ab_test ? 'text-blue-600' : 'text-slate-400'}`}>{banner.is_ab_test ? `Yes (${banner.variant_allocation_percentage ?? 50}% → B)` : 'No'}</span>
+                <span className="text-white/40">A/B Test</span>
+                <span className={`font-medium ${banner.is_ab_test ? 'text-blue-600' : 'text-white/30'}`}>{banner.is_ab_test ? `Yes (${banner.variant_allocation_percentage ?? 50}% → B)` : 'No'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Active</span>
+                <span className="text-white/40">Active</span>
                 <span className={`font-medium ${banner.is_active ? 'text-emerald-600' : 'text-red-500'}`}>{banner.is_active ? 'Yes' : 'No'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Target</span>
-                <span className="font-medium text-slate-700">
+                <span className="text-white/40">Target</span>
+                <span className="font-medium text-white/60">
                   {banner.target_lifecycle?.length
                     ? banner.target_lifecycle.join(', ')
                     : 'All stages'}

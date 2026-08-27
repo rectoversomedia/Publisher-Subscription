@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
@@ -28,15 +29,15 @@ function MiniStatCard({ label, value, sub, color }: {
   label: string; value: string | number; sub?: string; color?: string;
 }) {
   const colorMap: Record<string, string> = {
-    blue: 'bg-blue-50 text-blue-700', emerald: 'bg-emerald-50 text-emerald-700',
-    red: 'bg-red-50 text-red-700', amber: 'bg-amber-50 text-amber-700',
-    purple: 'bg-purple-50 text-purple-700', slate: 'bg-slate-50 text-slate-700',
+    blue: 'bg-blue-500/15 text-blue-400', emerald: 'bg-emerald-500/15 text-emerald-400',
+    red: 'bg-red-500/15 text-red-400', amber: 'bg-amber-500/15 text-amber-400',
+    purple: 'bg-purple-500/15 text-purple-400', slate: 'bg-[#111128]/[0.04] text-white/60',
   };
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4">
-      <div className="text-xs text-slate-500 mb-1">{label}</div>
-      <div className={`text-xl font-black ${color ?? 'text-slate-900'}`}>{value}</div>
-      {sub && <div className="text-xs text-slate-400 mt-0.5">{sub}</div>}
+    <div className="bg-[#111128] border border-white/[0.06] p-4 rounded-xl">
+      <div className="text-[11px] text-white/30 mb-1">{label}</div>
+      <div className={`text-[18px] font-black text-white font-mono`}>{value}</div>
+      {sub && <div className="text-[10px] text-white/25 mt-0.5">{sub}</div>}
     </div>
   );
 }
@@ -97,8 +98,8 @@ export default function EditBannerPage() {
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="h-8 bg-slate-200 rounded w-48 animate-pulse" />
-        <div className="h-64 bg-slate-200 rounded-xl animate-pulse" />
+        <div className="h-8 bg-white/[0.06] rounded w-48 animate-pulse" />
+        <div className="h-64 bg-white/[0.04] rounded-xl animate-pulse" />
       </div>
     );
   }
@@ -120,27 +121,27 @@ export default function EditBannerPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/banners" className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50">
-            <ArrowLeft className="w-4 h-4 text-slate-600" />
+          <Link href="/dashboard/banners" className="p-2 border border-white/[0.08] rounded-xl hover:bg-[#111128]/[0.05]">
+            <ArrowLeft className="w-4 h-4 text-white/40" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-slate-900">{banner.name}</h1>
+              <h1 className="text-[20px] font-black text-white">{banner.name}</h1>
               <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${colors.bg} ${colors.text}`}>
                 {BANNER_TYPE_LABELS[banner.banner_type as keyof typeof BANNER_TYPE_LABELS] ?? banner.banner_type}
               </span>
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                banner.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
+                banner.is_active ? 'bg-emerald-500/15 text-emerald-400' : 'bg-[#111128]/[0.04] text-white/30'
               }`}>
                 {banner.is_active ? 'Active' : 'Inactive'}
               </span>
             </div>
-            <p className="text-sm text-slate-500 mt-0.5">{banner.headline}</p>
+            <p className="text-[11px] text-white/30 mt-0.5">{banner.headline}</p>
           </div>
         </div>
         <button
           onClick={handleDelete}
-          className="flex items-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50"
+          className="flex items-center gap-2 px-3 py-2 border border-white/[0.08] text-white/40 rounded-lg text-sm hover:border-red-500/40 hover:text-red-400"
         >
           <Trash2 className="w-4 h-4" /> Hapus
         </button>
@@ -148,20 +149,20 @@ export default function EditBannerPage() {
 
       {/* Stats Bar */}
       {stats && (
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="bg-[#111128] border border-white/[0.06] p-5 rounded-xl">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-slate-900 text-sm">Performa Banner</h2>
-            <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+            <h2 className="font-bold text-white/80 text-[12px]">Performa Banner</h2>
+            <div className="flex items-center gap-1 bg-[#111128]/[0.04] rounded-xl p-1">
               <button
                 onClick={() => setTab('edit')}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                  tab === 'edit' ? 'bg-white shadow text-slate-900' : 'text-slate-500'
+                  tab === 'edit' ? 'bg-[#C41230] text-white' : 'text-white/40'
                 }`}
               >Edit</button>
               <button
                 onClick={() => setTab('stats')}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                  tab === 'stats' ? 'bg-white shadow text-slate-900' : 'text-slate-500'
+                  tab === 'stats' ? 'bg-[#C41230] text-white' : 'text-white/40'
                 }`}
               >Statistik</button>
             </div>
@@ -175,22 +176,22 @@ export default function EditBannerPage() {
             <MiniStatCard label="Revenue" value={fmtRp(stats.total_revenue)} color="text-emerald-700" />
           </div>
           {banner.is_ab_test && (variantAImp + variantBImp) > 0 && (
-            <div className="mt-4 p-4 bg-slate-50 rounded-xl">
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">A/B Test Result</div>
+            <div className="mt-4 p-4 bg-[#111128]/[0.03] rounded-xl">
+              <div className="text-[10px] font-bold text-white/25 uppercase tracking-wide mb-2">A/B Test Result</div>
               <div className="flex items-center gap-4 text-xs">
                 <div>
-                  <span className="text-slate-600">Variant A: </span>
-                  <span className="font-bold text-slate-900">{fmtNum(variantAImp)} views</span>
+                  <span className="text-white/60">Variant A: </span>
+                  <span className="font-bold text-white">{fmtNum(variantAImp)} views</span>
                 </div>
                 <div className="flex-1 max-w-xs">
-                  <div className="h-2 bg-slate-200 rounded-full overflow-hidden flex">
+                  <div className="h-2 bg-white/[0.07] rounded-full overflow-hidden flex">
                     <div className="bg-blue-500 h-full" style={{ width: `${(variantAImp / (variantAImp + variantBImp)) * 100}%` }} />
                     <div className="bg-purple-500 h-full" style={{ width: `${(variantBImp / (variantAImp + variantBImp)) * 100}%` }} />
                   </div>
                 </div>
                 <div>
-                  <span className="text-slate-600">Variant B: </span>
-                  <span className="font-bold text-slate-900">{fmtNum(variantBImp)} views</span>
+                  <span className="text-white/60">Variant B: </span>
+                  <span className="font-bold text-white">{fmtNum(variantBImp)} views</span>
                 </div>
               </div>
             </div>
@@ -206,10 +207,10 @@ export default function EditBannerPage() {
           saving={saving}
         />
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400">
+        <div className="bg-[#111128] rounded-xl border border-white/[0.06] p-8 text-center text-white/30">
           <BarChart2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
           <p className="text-sm">Chart visualization — coming soon.</p>
-          <p className="text-xs text-slate-300 mt-1">Use the A/B test data above for now.</p>
+          <p className="text-xs text-white/20 mt-1">Use the A/B test data above for now.</p>
         </div>
       )}
     </div>

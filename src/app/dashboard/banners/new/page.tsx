@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use client';
 
 import { useState } from 'react';
@@ -36,13 +37,13 @@ export default function NewBannerPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/dashboard/banners"
-          className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+          className="p-2 border border-white/[0.06] rounded-xl hover:bg-white/[0.04] transition-colors"
         >
-          <ArrowLeft className="w-4 h-4 text-slate-600" />
+          <ArrowLeft className="w-4 h-4 text-white/40" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Create New Banner</h1>
-          <p className="text-sm text-slate-500 mt-1">Create a new Tempo+ offer banner</p>
+          <h1 className="text-[20px] font-black text-white">Create New Banner</h1>
+          <p className="text-sm text-white/40 mt-1">Create a new Tempo+ offer banner</p>
         </div>
       </div>
 

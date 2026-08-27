@@ -2,17 +2,14 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   Plus, RefreshCw, BarChart2, Eye, MousePointerClick, TrendingUp,
   CheckCircle, XCircle, ChevronRight, Trash2, Edit3, LayoutGrid,
-  Zap
+  Zap, TrendingDown, ArrowUpRight
 } from 'lucide-react';
 import type { BannerWithStats, BannerType, BannerStats, OfferBanner, BannerTheme } from '@/domain/types';
 import { BANNER_TYPE_LABELS, BANNER_TYPE_COLORS } from '@/domain/types';
 import { BannerIcon } from '@/components/banner/BannerIcons';
-
-// ── Helpers ────────────────────────────────────────────────────
 
 function fmtRp(n: number) {
   if (!n) return '—';
@@ -26,171 +23,72 @@ function fmtNum(n: number | null | undefined) {
   return String(n);
 }
 
-// ── Stats Card ─────────────────────────────────────────────────
-
-function StatsCard({ label, value, icon: Icon, color = 'blue' }: {
-  label: string; value: string | number; icon: React.ElementType; color?: string;
-}) {
-  const colorMap: Record<string, string> = {
-    blue: 'text-blue-600 bg-blue-50', red: 'text-red-600 bg-red-50',
-    emerald: 'text-emerald-600 bg-emerald-50', amber: 'text-amber-600 bg-amber-50',
-    purple: 'text-purple-600 bg-purple-50', slate: 'text-slate-600 bg-slate-50',
-  };
-  return (
-    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100">
-      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${colorMap[color]}`}>
-        <Icon className="w-4 h-4" />
-      </div>
-      <div>
-        <div className="text-xs text-slate-500">{label}</div>
-        <div className="text-sm font-bold text-slate-900">{value}</div>
-      </div>
-    </div>
-  );
-}
-
-// ── Banner Visual Preview ───────────────────────────────────────
-
-const THEME_TOKENS: Record<BannerTheme, {
-  bg: string; text: string; muted: string;
-  btnBg: string; btnText: string;
-}> = {
-  dark: { bg: 'bg-slate-900', text: 'text-white', muted: 'text-slate-300', btnBg: 'bg-red-600', btnText: 'text-white' },
-  light: { bg: 'bg-white', text: 'text-slate-900', muted: 'text-slate-500', btnBg: 'bg-slate-900', btnText: 'text-white' },
-  red: { bg: 'bg-red-600', text: 'text-white', muted: 'text-red-100', btnBg: 'bg-white', btnText: 'text-red-700' },
-  emerald: { bg: 'bg-emerald-600', text: 'text-white', muted: 'text-emerald-100', btnBg: 'bg-white', btnText: 'text-emerald-700' },
+const TYPE_ICONS: Record<string, { icon: string; bg: string; text: string }> = {
+  PROMO_OFFER:   { icon: '🔥', bg: 'bg-[#C41230]/15', text: 'text-[#FF6B7A]' },
+  REGISTRATION:  { icon: '📝', bg: 'bg-blue-500/15', text: 'text-blue-400' },
+  NEWSLETTER:    { icon: '✉️', bg: 'bg-purple-500/15', text: 'text-purple-400' },
+  WINBACK:       { icon: '♻️', bg: 'bg-amber-500/15', text: 'text-amber-400' },
+  TRIAL:         { icon: '⏱️', bg: 'bg-emerald-500/15', text: 'text-emerald-400' },
+  SAVE_OFFER:    { icon: '⚡', bg: 'bg-red-500/15', text: 'text-red-400' },
 };
+
+const THEME_TOKENS: Record<BannerTheme, { bg: string; text: string; muted: string; btnBg: string; btnText: string }> = {
+  dark: { bg: 'bg-[#111128]', text: 'text-white', muted: 'text-white/40', btnBg: 'bg-[#C41230]', btnText: 'text-white' },
+  light: { bg: 'bg-white/[0.05]', text: 'text-white/80', muted: 'text-white/40', btnBg: 'bg-white text-[#111128] font-bold', btnText: 'text-[#111128]' },
+  red: { bg: 'bg-[#C41230]', text: 'text-white', muted: 'text-red-200', btnBg: 'bg-white/20 border border-white/30 text-white font-bold', btnText: 'text-white' },
+  emerald: { bg: 'bg-emerald-600', text: 'text-white', muted: 'text-emerald-200', btnBg: 'bg-white/20 border border-white/30 text-white font-bold', btnText: 'text-white' },
+};
+
+function X({ className }: { className?: string }) {
+  return <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
+}
 
 function BannerVisual({ banner }: { banner: OfferBanner }) {
   const tokens = THEME_TOKENS[banner.theme as BannerTheme] ?? THEME_TOKENS.dark;
-  const accent = banner.accent_color ?? '#DC2626';
-
-  if (banner.layout === 'modal') {
-    return (
-      <div className="bg-slate-100 rounded-xl p-6 flex items-center justify-center min-h-[260px]">
-        <div className={`relative w-full max-w-sm ${tokens.bg} rounded-2xl border border-white/20 shadow-2xl overflow-hidden`}>
-          {/* Top accent */}
-          <div className="h-1.5 w-full" style={{ backgroundColor: accent }} />
-          <div className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-3">
-                {banner.icon && (
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${accent}25` }}>
-                    <div style={{ color: accent }}><BannerIcon name={banner.icon} size={20} /></div>
-                  </div>
-                )}
-                <div>
-                  {banner.badge_label && (
-                    <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full text-white mb-1" style={{ backgroundColor: banner.badge_color ?? accent }}>
-                      {banner.badge_label}
-                    </span>
-                  )}
-                  <h3 className={`text-base font-black ${tokens.text} leading-tight`}>{banner.headline}</h3>
-                </div>
-              </div>
-              <button className={`p-1.5 ${tokens.muted}`}><X className="w-4 h-4" /></button>
-            </div>
-            {banner.body_copy && (
-              <p className={`text-xs ${tokens.muted} leading-relaxed mb-4`}>{banner.body_copy}</p>
-            )}
-            {banner.show_price && (banner.original_price || banner.discounted_price) && (
-              <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: `${accent}15` }}>
-                <div className="flex items-baseline gap-1.5">
-                  {banner.discounted_price && banner.original_price && banner.original_price > banner.discounted_price && (
-                    <span className={`text-xs line-through ${tokens.muted}`}>{fmtRp(banner.original_price)}</span>
-                  )}
-                  <span className={`text-xl font-black ${tokens.text}`}>
-                    {fmtRp(banner.discounted_price ?? banner.original_price ?? 0)}
-                  </span>
-                  <span className={`text-xs ${tokens.muted}`}>{banner.billing_period ?? '/month'}</span>
-                </div>
-              </div>
-            )}
-            <div className="flex flex-col gap-2">
-              <button className={`w-full py-2.5 rounded-xl text-sm font-bold ${tokens.btnBg} ${tokens.btnText} shadow-lg`}>
-                {banner.cta_label}
-              </button>
-              <button className={`w-full py-1.5 text-xs ${tokens.muted} text-center`}>
-                Not now
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (banner.layout === 'slide_in') {
-    return (
-      <div className="bg-slate-100 rounded-xl p-6 flex items-center justify-center min-h-[260px]">
-        <div className="w-full max-w-2xl">
-          <div className="flex items-center gap-4 p-4 rounded-xl shadow-2xl" style={{ backgroundColor: tokens.bg === 'bg-slate-900' ? '#0f172a' : tokens.bg === 'bg-white' ? '#ffffff' : tokens.bg === 'bg-red-600' ? '#dc2626' : '#059669', borderTop: `3px solid ${accent}` }}>
-            {banner.icon && (
-              <div className="flex-shrink-0" style={{ color: accent }}><BannerIcon name={banner.icon} size={28} /></div>
-            )}
-            <div className="flex-1 min-w-0">
-              {banner.badge_label && (
-                <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full text-white mb-1" style={{ backgroundColor: banner.badge_color ?? accent }}>
-                  {banner.badge_label}
-                </span>
-              )}
-              <p className={`text-sm font-bold ${tokens.text}`}>{banner.headline}</p>
-              {banner.body_copy && <p className={`text-xs ${tokens.muted} mt-0.5`}>{banner.body_copy}</p>}
-            </div>
-            {banner.show_price && (banner.original_price || banner.discounted_price) && (
-              <div className="hidden md:block flex-shrink-0">
-                <div className="flex items-baseline gap-1">
-                  <span className={`text-lg font-black ${tokens.text}`}>{fmtRp(banner.discounted_price ?? banner.original_price ?? 0)}</span>
-                  <span className={`text-xs ${tokens.muted}`}>{banner.billing_period ?? '/month'}</span>
-                </div>
-              </div>
-            )}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <button className={`px-4 py-2 rounded-xl text-sm font-bold ${tokens.btnBg} ${tokens.btnText}`}>
-                {banner.cta_label}
-              </button>
-              <button className={`p-2 ${tokens.muted}`}><X className="w-4 h-4" /></button>
-            </div>
-          </div>
-          <div className="text-center text-xs text-slate-400 mt-2">Slide-in preview — appears at bottom of screen</div>
-        </div>
-      </div>
-    );
-  }
-
-  // inline / banner
+  const accent = banner.accent_color ?? '#C41230';
   return (
-    <div className="bg-slate-100 rounded-xl p-6 flex items-center justify-center min-h-[260px]">
-      <div className="w-full max-w-xl" style={{ borderLeft: `4px solid ${accent}` }}>
-        <div className={`p-4 rounded-r-xl ${tokens.bg === 'bg-slate-900' ? 'bg-slate-900' : tokens.bg === 'bg-white' ? 'bg-white' : tokens.bg === 'bg-red-600' ? 'bg-red-600' : 'bg-emerald-600'}`}>
-          <div className="flex items-center gap-4">
-            {banner.icon && <div className="flex-shrink-0" style={{ color: accent }}><BannerIcon name={banner.icon} size={22} /></div>}
-            <div className="flex-1">
-              <p className={`text-sm font-bold ${tokens.text}`}>{banner.headline}</p>
-              {banner.body_copy && <p className={`text-xs ${tokens.muted} mt-0.5`}>{banner.body_copy}</p>}
+    <div className="bg-white/[0.03] rounded-xl p-6 flex items-center justify-center min-h-[240px]">
+      <div className={`relative w-full max-w-sm ${tokens.bg} rounded-2xl border border-white/20 shadow-2xl overflow-hidden`}>
+        <div className="h-1.5 w-full" style={{ backgroundColor: accent }} />
+        <div className="p-5">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-3">
+              {banner.icon && (
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${accent}25` }}>
+                  <div style={{ color: accent }}><BannerIcon name={banner.icon} size={18} /></div>
+                </div>
+              )}
+              <div>
+                {banner.badge_label && (
+                  <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full text-white mb-1" style={{ backgroundColor: banner.badge_color ?? accent }}>
+                    {banner.badge_label}
+                  </span>
+                )}
+                <h3 className={`text-[14px] font-black ${tokens.text} leading-tight`}>{banner.headline}</h3>
+              </div>
             </div>
-            <button className={`px-4 py-2 rounded-xl text-sm font-bold ${tokens.btnBg} ${tokens.btnText}`}>
-              {banner.cta_label}
-            </button>
+            <button className={`p-1 ${tokens.muted}`}><X className="w-4 h-4" /></button>
           </div>
+          {banner.body_copy && <p className={`text-[11px] ${tokens.muted} leading-relaxed mb-3`}>{banner.body_copy}</p>}
+          {banner.show_price && (banner.original_price || banner.discounted_price) && (
+            <div className="mb-3 p-2.5 rounded-lg" style={{ backgroundColor: `${accent}15` }}>
+              <div className="flex items-baseline gap-1.5">
+                {banner.discounted_price && banner.original_price && banner.original_price > banner.discounted_price && (
+                  <span className={`text-[11px] line-through ${tokens.muted}`}>{fmtRp(banner.original_price)}</span>
+                )}
+                <span className={`text-[18px] font-black ${tokens.text}`}>{fmtRp(banner.discounted_price ?? banner.original_price ?? 0)}</span>
+                <span className={`text-[10px] ${tokens.muted}`}>{banner.billing_period ?? '/month'}</span>
+              </div>
+            </div>
+          )}
+          <button className={`w-full py-2.5 rounded-xl text-[12px] font-bold ${tokens.btnBg} ${tokens.btnText} shadow-lg`}>
+            {banner.cta_label}
+          </button>
         </div>
-        <div className="text-center text-xs text-slate-400 mt-2">Inline preview — embedded in article content</div>
       </div>
     </div>
   );
 }
-
-// ── X icon inline ──────────────────────────────────────────────
-
-function X({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
-  );
-}
-
-// ── Preview Modal ──────────────────────────────────────────────
 
 function PreviewModal({ banner, onClose }: { banner: OfferBanner; onClose: () => void }) {
   useEffect(() => {
@@ -201,37 +99,30 @@ function PreviewModal({ banner, onClose }: { banner: OfferBanner; onClose: () =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-      <div className="relative z-10 w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
-        {/* Modal header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div className="relative z-10 w-full max-w-2xl bg-[#111128] border border-white/[0.1] rounded-2xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <div>
-            <h2 className="text-sm font-bold text-slate-900">Banner Preview</h2>
-            <p className="text-xs text-slate-500">{banner.name}</p>
+            <h2 className="text-[13px] font-bold text-white">{banner.name}</h2>
+            <p className="text-[11px] text-white/30">{banner.headline}</p>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs px-2 py-1 bg-slate-100 text-slate-500 rounded-lg capitalize">{banner.layout}</span>
-            <span className="text-xs px-2 py-1 bg-slate-100 text-slate-500 rounded-lg capitalize">{banner.theme}</span>
-            <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] px-2.5 py-1 rounded-lg bg-white/[0.05] text-white/40 border border-white/[0.08] capitalize">{banner.layout}</span>
+            <span className="text-[10px] px-2.5 py-1 rounded-lg bg-white/[0.05] text-white/40 border border-white/[0.08] capitalize">{banner.theme}</span>
+            <button onClick={onClose} className="p-2 text-white/30 hover:text-white/70 hover:bg-white/[0.05] rounded-lg transition-all">
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
-        {/* Banner visual */}
-        <div className="p-6">
-          <BannerVisual banner={banner} />
-        </div>
-        {/* Footer info */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-          <div className="flex items-center gap-4 text-xs text-slate-500">
+        <div className="p-6"><BannerVisual banner={banner} /></div>
+        <div className="px-6 py-4 border-t border-white/[0.05] bg-[#0D0D1F]/50 flex items-center justify-between">
+          <div className="flex items-center gap-4 text-[11px] text-white/25">
             <span>Type: {BANNER_TYPE_LABELS[banner.banner_type as BannerType] ?? banner.banner_type}</span>
             <span>Priority: {banner.priority}</span>
-            <span>A/B: {banner.is_ab_test ? `${banner.variant_allocation_percentage ?? 50}% → B` : 'No'}</span>
+            {banner.is_ab_test && <span>A/B: {banner.variant_allocation_percentage ?? 50}% → B</span>}
           </div>
-          <Link
-            href={`/dashboard/banners/${banner.id}`}
-            className="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
-          >
+          <Link href={`/dashboard/banners/${banner.id}`}
+            className="text-[11px] px-3 py-1.5 bg-[#C41230]/15 border border-[#C41230]/25 text-[#FF6B7A] rounded-lg font-semibold hover:bg-[#C41230]/25 transition-all">
             Edit Banner
           </Link>
         </div>
@@ -240,114 +131,87 @@ function PreviewModal({ banner, onClose }: { banner: OfferBanner; onClose: () =>
   );
 }
 
-// ── Banner Row ────────────────────────────────────────────────
-
-function BannerRow({ banner, onDelete, onPreview }: {
-  banner: BannerWithStats;
-  onDelete: (id: string) => void;
-  onPreview: (banner: OfferBanner) => void;
-}) {
-  const colors = BANNER_TYPE_COLORS[banner.banner_type as BannerType] ?? BANNER_TYPE_COLORS.PROMO_OFFER;
+function BannerRow({ banner, onDelete, onPreview }: { banner: BannerWithStats; onDelete: (id: string) => void; onPreview: (banner: OfferBanner) => void }) {
+  const colors = TYPE_ICONS[banner.banner_type] ?? { icon: '📊', bg: 'bg-white/[0.05]', text: 'text-white/30' };
   const stats = banner.stats as BannerStats | null;
-  const clickRate = stats && stats.total_impressions > 0
-    ? ((stats.total_clicks / stats.total_impressions) * 100).toFixed(1)
-    : null;
-  const convRate = stats && stats.total_clicks > 0
-    ? ((stats.total_conversions / stats.total_clicks) * 100).toFixed(1)
-    : null;
+  const clickRate = stats && stats.total_impressions > 0 ? ((stats.total_clicks / stats.total_impressions) * 100).toFixed(1) : null;
+  const convRate = stats && stats.total_clicks > 0 ? ((stats.total_conversions / stats.total_clicks) * 100).toFixed(1) : null;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 hover:border-slate-300 transition-colors group">
+    <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5 hover:border-white/[0.1] transition-all group">
       <div className="flex items-start gap-4">
-        {/* Type icon */}
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-base flex-shrink-0 ${colors.bg}`}>
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-base flex-shrink-0 ${colors.bg}`}>
           <span>{colors.icon}</span>
         </div>
-
-        {/* Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-sm font-bold text-slate-900">{banner.name}</h3>
+          <div className="flex items-center gap-2.5 flex-wrap mb-1.5">
+            <h3 className="text-[13px] font-bold text-white/80">{banner.name}</h3>
             {banner.is_ab_test && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-semibold">A/B</span>
+              <span className="text-[9px] px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/20 font-bold">A/B</span>
             )}
-            <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${colors.bg} ${colors.text}`}>
+            <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${colors.bg} ${colors.text}`}>
               {BANNER_TYPE_LABELS[banner.banner_type as BannerType] ?? banner.banner_type}
             </span>
-            <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-              banner.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
+            <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
+              banner.is_active
+                ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                : 'bg-white/[0.04] text-white/20 border border-white/[0.06]'
             }`}>
               {banner.is_active ? 'Active' : 'Inactive'}
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1 line-clamp-1">{banner.headline}</p>
-
-          {/* Stats */}
-          <div className="flex items-center gap-4 mt-3 flex-wrap">
+          <p className="text-[11px] text-white/25 line-clamp-1 mb-3">{banner.headline}</p>
+          <div className="flex items-center gap-4 flex-wrap">
             {stats ? (
               <>
-                <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                <div className="flex items-center gap-1.5 text-[11px] text-white/30">
                   <Eye className="w-3.5 h-3.5" />
-                  <span className="font-medium">{fmtNum(stats.total_impressions)}</span>
-                  <span className="text-slate-400">views</span>
+                  <span className="font-mono font-semibold text-white/50">{fmtNum(stats.total_impressions)}</span>
+                  <span className="text-white/20">views</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                <div className="flex items-center gap-1.5 text-[11px] text-white/30">
                   <MousePointerClick className="w-3.5 h-3.5" />
-                  <span className="font-medium">{fmtNum(stats.total_clicks)}</span>
-                  {clickRate && <span className="text-emerald-600 font-semibold">({clickRate}%)</span>}
+                  <span className="font-mono font-semibold text-white/50">{fmtNum(stats.total_clicks)}</span>
+                  {clickRate && <span className="text-blue-400 font-bold">{clickRate}%</span>}
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                <div className="flex items-center gap-1.5 text-[11px] text-white/30">
                   <CheckCircle className="w-3.5 h-3.5" />
-                  <span className="font-medium">{fmtNum(stats.total_conversions)}</span>
-                  {convRate && <span className="text-emerald-600 font-semibold">({convRate}%)</span>}
+                  <span className="font-mono font-semibold text-white/50">{fmtNum(stats.total_conversions)}</span>
+                  {convRate && <span className="text-emerald-400 font-bold">{convRate}%</span>}
                 </div>
                 {stats.total_revenue > 0 && (
-                  <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                    <TrendingUp className="w-3.5 h-3.5" />
-                    <span className="font-medium text-emerald-700">{fmtRp(stats.total_revenue)}</span>
+                  <div className="flex items-center gap-1.5 text-[11px] text-white/30">
+                    <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="font-mono font-bold text-emerald-400">{fmtRp(stats.total_revenue)}</span>
                   </div>
                 )}
               </>
             ) : (
-              <span className="text-xs text-slate-400">No data yet</span>
+              <span className="text-[11px] text-white/15">No data yet</span>
             )}
           </div>
         </div>
-
-        {/* Actions */}
         <div className="flex items-center gap-1.5 flex-shrink-0">
-          <span className="text-xs px-2 py-1 bg-slate-100 text-slate-500 rounded-lg capitalize hidden sm:block">
-            {banner.layout}
-          </span>
-          <button
-            onClick={() => onPreview(banner as OfferBanner)}
-            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            title="Preview banner"
-          >
+          <span className="text-[10px] px-2 py-1 bg-white/[0.04] text-white/25 rounded-lg capitalize hidden sm:block">{banner.layout}</span>
+          <button onClick={() => onPreview(banner as OfferBanner)}
+            className="p-2 text-white/20 hover:text-white/60 hover:bg-white/[0.05] rounded-lg transition-all"
+            title="Preview">
             <Eye className="w-4 h-4" />
           </button>
-          <Link
-            href={`/dashboard/banners/${banner.id}`}
-            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            title="Edit banner"
-          >
+          <Link href={`/dashboard/banners/${banner.id}`}
+            className="p-2 text-white/20 hover:text-white/60 hover:bg-white/[0.05] rounded-lg transition-all" title="Edit">
             <Edit3 className="w-4 h-4" />
           </Link>
-          <button
-            onClick={() => onDelete(banner.id)}
-            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            title="Delete banner"
-          >
+          <button onClick={() => onDelete(banner.id)}
+            className="p-2 text-white/15 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all" title="Delete">
             <Trash2 className="w-4 h-4" />
           </button>
-          <ChevronRight className="w-4 h-4 text-slate-300" />
+          <ChevronRight className="w-4 h-4 text-white/10" />
         </div>
       </div>
     </div>
   );
 }
-
-// ── Main Page ─────────────────────────────────────────────────
 
 export default function BannersPage() {
   const [banners, setBanners] = useState<BannerWithStats[]>([]);
@@ -384,63 +248,93 @@ export default function BannersPage() {
   const avgCVR = totalClicks > 0 ? ((totalConversions / totalClicks) * 100).toFixed(1) : '0';
   const activeCount = banners.filter(b => b.is_active).length;
 
+  const displayedBanners = banners.filter(b => {
+    if (typeFilter !== 'all' && b.banner_type !== typeFilter) return false;
+    if (filter === 'active' && !b.is_active) return false;
+    if (filter === 'inactive' && b.is_active) return false;
+    return true;
+  });
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Offer Banner Manager</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage all Tempo+ offer banners</p>
+          <h1 className="text-[22px] font-black text-white tracking-tight leading-none">Offer Banners</h1>
+          <p className="text-[11px] text-white/30 mt-2 flex items-center gap-2">
+            <LayoutGrid className="w-3.5 h-3.5 text-[#C41230]/50" />
+            Manage all Tempo+ offer banners
+          </p>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={fetchBanners} className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50">
-            <RefreshCw className="w-4 h-4" /> Refresh
+          <button onClick={fetchBanners}
+            className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold text-white/50 bg-white/[0.04] border border-white/[0.08] rounded-xl hover:bg-white/[0.08] hover:text-white/80 transition-all group">
+            <RefreshCw className={`w-3.5 h-3.5 group-hover:rotate-45 transition-transform duration-300 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
           </button>
-          <Link href="/dashboard/banners/new" className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">
-            <Plus className="w-4 h-4" /> New Banner
+          <Link href="/dashboard/banners/new"
+            className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-bold text-white bg-[#C41230] rounded-xl hover:bg-[#B01028] transition-colors shadow-lg shadow-red-900/20">
+            <Plus className="w-3.5 h-3.5" /> New Banner
           </Link>
         </div>
       </div>
 
-      {/* Overview Stats */}
+      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <StatsCard label="Total Impressions" value={fmtNum(totalImpressions)} icon={Eye} color="blue" />
-        <StatsCard label="Total Clicks" value={fmtNum(totalClicks)} icon={MousePointerClick} color="purple" />
-        <StatsCard label="Avg CTR" value={`${avgCTR}%`} icon={BarChart2} color="amber" />
-        <StatsCard label="Avg CVR" value={`${avgCVR}%`} icon={CheckCircle} color="emerald" />
-        <StatsCard label="Est. Revenue" value={fmtRp(totalRevenue)} icon={TrendingUp} color="emerald" />
+        {[
+          { label: 'Total Impressions', value: fmtNum(totalImpressions), icon: Eye, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+          { label: 'Total Clicks', value: fmtNum(totalClicks), icon: MousePointerClick, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+          { label: 'Avg CTR', value: `${avgCTR}%`, icon: BarChart2, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+          { label: 'Avg CVR', value: `${avgCVR}%`, icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+          { label: 'Est. Revenue', value: totalRevenue > 0 ? fmtRp(totalRevenue) : '—', icon: TrendingUp, color: 'text-[#FF6B7A]', bg: 'bg-[#C41230]/10' },
+        ].map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div key={stat.label} className="bg-[#111128] border border-white/[0.06] rounded-xl p-4 hover:border-white/[0.1] transition-all">
+              <div className={`w-8 h-8 rounded-lg ${stat.bg} flex items-center justify-center mb-3`}>
+                <Icon className={`w-4 h-4 ${stat.color}`} />
+              </div>
+              <div className="text-[18px] font-black text-white font-mono leading-none mb-1">{stat.value}</div>
+              <div className="text-[10px] text-white/30">{stat.label}</div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Active Banners Summary */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-5 text-white">
+      {/* Active Summary */}
+      <div className="bg-gradient-to-r from-[#C41230]/10 to-[#C41230]/5 border border-[#C41230]/20 rounded-2xl p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-              <LayoutGrid className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-[#C41230]/15 flex items-center justify-center">
+              <LayoutGrid className="w-5 h-5 text-[#FF6B7A]" />
             </div>
             <div>
-              <div className="text-lg font-bold">{activeCount} Active Banners</div>
-              <div className="text-xs text-blue-200">{banners.length} total banners</div>
+              <div className="text-[16px] font-black text-white">{activeCount} Active Banners</div>
+              <div className="text-[11px] text-white/30">{banners.length} total banners</div>
             </div>
           </div>
-          <Link href="/dashboard/banners/new" className="flex items-center gap-2 px-4 py-2 bg-white text-blue-700 rounded-lg text-sm font-bold hover:bg-blue-50">
-            <Plus className="w-4 h-4" /> Create Banner
+          <Link href="/dashboard/banners/new"
+            className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-bold text-white bg-[#C41230] rounded-xl hover:bg-[#B01028] transition-colors">
+            <Plus className="w-3.5 h-3.5" /> Create Banner
           </Link>
         </div>
       </div>
 
       {/* Filters */}
       <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg p-1">
+        <div className="flex items-center gap-1 bg-[#111128] border border-white/[0.06] rounded-xl p-1">
           {(['all', 'active', 'inactive'] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${filter === f ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-50'}`}>
+              className={`px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-all ${
+                filter === f ? 'bg-[#C41230]/20 text-[#FF6B7A] border border-[#C41230]/25' : 'text-white/30 hover:text-white/60 hover:bg-white/[0.04]'
+              }`}>
               {f === 'all' ? 'All' : f === 'active' ? 'Active' : 'Inactive'}
             </button>
           ))}
         </div>
         <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-          className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-700">
+          className="px-4 py-2.5 text-[12px] bg-[#111128] border border-white/[0.08] rounded-xl text-white/70 focus:outline-none focus:border-[#C41230]/40 appearance-none cursor-pointer hover:bg-[#141430] transition-all">
           <option value="all">All Types</option>
           {Object.entries(BANNER_TYPE_LABELS).map(([v, l]) => (
             <option key={v} value={v}>{l}</option>
@@ -451,46 +345,41 @@ export default function BannersPage() {
       {/* Banner List */}
       {loading ? (
         <div className="space-y-3">
-          {[1,2,3].map(i => (
-            <div key={i} className="bg-white rounded-xl border border-slate-200 p-5 animate-pulse">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-slate-200" />
+                <div className="w-11 h-11 rounded-xl bg-white/[0.04]" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-3 bg-slate-200 rounded w-1/3" />
-                  <div className="h-2 bg-slate-100 rounded w-1/2" />
+                  <div className="h-3 bg-white/[0.04] rounded w-1/3" />
+                  <div className="h-2 bg-white/[0.04] rounded w-1/2" />
                 </div>
               </div>
             </div>
           ))}
         </div>
-      ) : banners.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <LayoutGrid className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <h3 className="text-slate-600 font-semibold mb-1">No banners yet</h3>
-          <p className="text-slate-400 text-sm mb-4">Create your first banner to start monetizing readers</p>
-          <Link href="/dashboard/banners/new" className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold">
-            <Plus className="w-4 h-4" /> Create First Banner
+      ) : displayedBanners.length === 0 ? (
+        <div className="text-center py-16">
+          <div className="w-14 h-14 rounded-2xl bg-[#111128] border border-white/[0.06] flex items-center justify-center mx-auto mb-4">
+            <LayoutGrid className="w-7 h-7 text-white/20" />
+          </div>
+          <h3 className="text-[13px] font-semibold text-white/30 mb-1">No banners found</h3>
+          <p className="text-[11px] text-white/15 mb-4">Create your first banner to start monetizing readers</p>
+          <Link href="/dashboard/banners/new"
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-[12px] font-bold text-white bg-[#C41230] rounded-xl hover:bg-[#B01028] transition-colors">
+            <Plus className="w-3.5 h-3.5" /> Create First Banner
           </Link>
         </div>
       ) : (
         <div className="space-y-3">
-          {banners.map(banner => (
-            <BannerRow
-              key={banner.id}
-              banner={banner}
-              onDelete={handleDelete}
-              onPreview={setPreviewBanner}
-            />
+          {displayedBanners.map(banner => (
+            <BannerRow key={banner.id} banner={banner} onDelete={handleDelete} onPreview={setPreviewBanner} />
           ))}
         </div>
       )}
 
       {/* Preview Modal */}
       {previewBanner && (
-        <PreviewModal
-          banner={previewBanner}
-          onClose={() => setPreviewBanner(null)}
-        />
+        <PreviewModal banner={previewBanner} onClose={() => setPreviewBanner(null)} />
       )}
     </div>
   );
