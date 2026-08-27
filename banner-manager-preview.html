@@ -6,15 +6,14 @@
   <title>Offer Banner Manager — Tempo Revenue Brain</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #FAFAF7;
+      --bg: #F7F5F0;
       --surface: #FFFFFF;
-      --surface-alt: #F4F4F1;
+      --surface-alt: #F0EEE8;
       --ink: #18181B;
       --ink-secondary: #52525B;
       --muted: #A1A1AA;
@@ -23,7 +22,6 @@
       --accent: #C41230;
       --accent-hover: #A30F27;
       --accent-light: #FEF2F2;
-      --accent-border: #FECACA;
       --blue: #1E40AF;
       --blue-light: #EFF6FF;
       --emerald: #065F46;
@@ -41,46 +39,6 @@
       --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.08), 0 4px 6px -2px rgba(0,0,0,.04);
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) {
-        --bg: #0F0F12;
-        --surface: #18181B;
-        --surface-alt: #1F1F24;
-        --ink: #FAFAFA;
-        --ink-secondary: #A1A1AA;
-        --muted: #71717A;
-        --border: #27272A;
-        --border-strong: #3F3F46;
-        --accent-light: #2D1218;
-        --accent-border: #7F1D2B;
-        --blue-light: #172554;
-        --emerald-light: #022C22;
-        --amber-light: #1C1407;
-        --purple-light: #2E1065;
-        --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
-        --shadow: 0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
-        --shadow-md: 0 4px 6px -1px rgba(0,0,0,.4), 0 2px 4px -1px rgba(0,0,0,.3);
-        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.5), 0 4px 6px -2px rgba(0,0,0,.4);
-      }
-    }
-
-    :root[data-theme="dark"] {
-      --bg: #0F0F12;
-      --surface: #18181B;
-      --surface-alt: #1F1F24;
-      --ink: #FAFAFA;
-      --ink-secondary: #A1A1AA;
-      --muted: #71717A;
-      --border: #27272A;
-      --border-strong: #3F3F46;
-      --accent-light: #2D1218;
-      --accent-border: #7F1D2B;
-      --blue-light: #172554;
-      --emerald-light: #022C22;
-      --amber-light: #1C1407;
-      --purple-light: #2E1065;
-    }
-
     body {
       font-family: 'DM Sans', system-ui, sans-serif;
       background: var(--bg);
@@ -92,205 +50,95 @@
     }
 
     /* ── Layout ── */
-    .layout {
-      display: flex;
-      min-height: 100vh;
-    }
+    .layout { display: flex; min-height: 100vh; }
 
     .sidebar {
-      width: 248px;
+      width: 252px; flex-shrink: 0;
       background: var(--ink);
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      z-index: 40;
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0; z-index: 40;
     }
 
-    .main {
-      flex: 1;
-      margin-left: 248px;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+    .main { flex: 1; margin-left: 252px; display: flex; flex-direction: column; min-height: 100vh; }
 
     .topbar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0 32px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 30;
+      padding: 0 32px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 30;
     }
 
-    .content {
-      padding: 36px 32px;
-      flex: 1;
-    }
+    .content { padding: 36px 32px; flex: 1; }
 
     /* ── Sidebar ── */
-    .sidebar-brand {
-      padding: 24px 20px 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .sidebar-brand { padding: 24px 20px 18px; display: flex; align-items: center; gap: 10px; }
     .sidebar-logo {
-      width: 34px;
-      height: 34px;
+      width: 34px; height: 34px;
       background: linear-gradient(135deg, var(--accent) 0%, #8B0000 100%);
       border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-
     .sidebar-logo svg { color: white; }
-
-    .sidebar-brand-text {
-      line-height: 1.2;
-    }
-
-    .sidebar-brand-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: #FFFFFF;
-    }
-
-    .sidebar-brand-sub {
-      font-size: 10px;
-      color: rgba(255,255,255,.35);
-    }
+    .sidebar-brand-name { font-size: 13px; font-weight: 600; color: #FFFFFF; }
+    .sidebar-brand-sub { font-size: 10px; color: rgba(255,255,255,.35); }
 
     .sidebar-status {
-      margin: 0 16px 4px;
+      margin: 0 16px 6px;
       padding: 7px 10px;
       background: rgba(255,255,255,.04);
       border: 1px solid rgba(255,255,255,.08);
       border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      display: flex; align-items: center; gap: 6px;
     }
-
     .sidebar-status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #34D399;
-      flex-shrink: 0;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #34D399; flex-shrink: 0;
       box-shadow: 0 0 6px rgba(52,211,153,.5);
     }
+    .sidebar-status-text { font-size: 11px; color: rgba(255,255,255,.45); }
 
-    .sidebar-status-text {
-      font-size: 11px;
-      color: rgba(255,255,255,.45);
-    }
-
-    .sidebar-divider {
-      height: 1px;
-      background: rgba(255,255,255,.06);
-      margin: 4px 16px;
-    }
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,.06); margin: 4px 16px; }
 
     .sidebar-nav { padding: 8px 12px; flex: 1; }
-
     .sidebar-nav-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      font-weight: 600;
-      color: rgba(255,255,255,.2);
-      padding: 8px 8px 4px;
+      font-size: 10px; text-transform: uppercase; letter-spacing: .08em;
+      font-weight: 600; color: rgba(255,255,255,.2); padding: 8px 8px 4px;
     }
-
     .sidebar-nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 8px;
-      border-radius: var(--radius-sm);
-      color: rgba(255,255,255,.45);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background .12s, color .12s;
-      text-decoration: none;
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 8px; border-radius: var(--radius-sm);
+      color: rgba(255,255,255,.45); font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: background .12s, color .12s; text-decoration: none;
     }
-
     .sidebar-nav-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.75); }
-
-    .sidebar-nav-item.active {
-      background: rgba(255,255,255,.1);
-      color: #FFFFFF;
-    }
-
+    .sidebar-nav-item.active { background: rgba(255,255,255,.1); color: #FFFFFF; }
     .sidebar-nav-item.active svg { color: var(--accent); }
-
     .sidebar-nav-item svg { flex-shrink: 0; opacity: .6; }
     .sidebar-nav-item.active svg { opacity: 1; }
 
-    .sidebar-footer {
-      padding: 16px 20px;
-      border-top: 1px solid rgba(255,255,255,.06);
-    }
-
-    .sidebar-version {
-      font-size: 11px;
-      color: rgba(255,255,255,.2);
-      line-height: 1.6;
-    }
+    .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.06); }
+    .sidebar-version { font-size: 11px; color: rgba(255,255,255,.2); line-height: 1.6; }
 
     /* ── Typography ── */
     .page-title {
       font-family: 'Playfair Display', Georgia, serif;
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--ink);
-      letter-spacing: -.02em;
-      line-height: 1.1;
+      font-size: 30px; font-weight: 800;
+      color: var(--ink); letter-spacing: -.02em; line-height: 1.1;
     }
-
-    .page-sub {
-      font-size: 14px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
+    .page-sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
 
     /* ── KPI Cards ── */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-bottom: 28px;
-    }
-
+    .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
     .kpi-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 18px 20px;
-      box-shadow: var(--shadow-sm);
-      position: relative;
-      overflow: hidden;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 18px 20px;
+      box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
     }
-
     .kpi-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
       border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
-
     .kpi-card.accent::before { background: var(--accent); }
     .kpi-card.blue::before { background: var(--blue); }
     .kpi-card.purple::before { background: var(--purple); }
@@ -298,648 +146,462 @@
     .kpi-card.amber::before { background: #D97706; }
 
     .kpi-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--muted);
-      margin-bottom: 8px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--muted); margin-bottom: 8px;
     }
-
     .kpi-value {
       font-family: 'Playfair Display', Georgia, serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--ink);
-      letter-spacing: -.02em;
-      line-height: 1;
+      font-size: 26px; font-weight: 700; color: var(--ink);
+      letter-spacing: -.02em; line-height: 1;
     }
-
-    .kpi-sub {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
+    .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
     /* ── Active Banner Banner ── */
     .active-banner-card {
       background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
-      border-radius: var(--radius-lg);
-      padding: 24px 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
-      position: relative;
-      overflow: hidden;
+      border-radius: var(--radius-lg); padding: 24px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px; position: relative; overflow: hidden;
     }
-
     .active-banner-card::after {
-      content: '';
-      position: absolute;
-      right: -40px; top: -40px;
-      width: 200px; height: 200px;
-      border-radius: 50%;
-      background: rgba(196,18,48,.15);
-      pointer-events: none;
+      content: ''; position: absolute; right: -40px; top: -40px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: rgba(196,18,48,.15); pointer-events: none;
     }
-
-    .active-banner-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
+    .active-banner-left { display: flex; align-items: center; gap: 16px; }
     .active-banner-icon {
       width: 48px; height: 48px;
       background: rgba(255,255,255,.1);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+      border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-
     .active-banner-count {
       font-family: 'Playfair Display', Georgia, serif;
-      font-size: 36px;
-      font-weight: 800;
-      color: #FFFFFF;
-      letter-spacing: -.03em;
-      line-height: 1;
+      font-size: 36px; font-weight: 800; color: #FFFFFF;
+      letter-spacing: -.03em; line-height: 1;
     }
-
-    .active-banner-label {
-      font-size: 13px;
-      color: rgba(255,255,255,.6);
-      margin-top: 2px;
-    }
+    .active-banner-label { font-size: 13px; color: rgba(255,255,255,.6); margin-top: 2px; }
 
     .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 9px 18px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: var(--radius);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background .15s, transform .1s;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; background: var(--accent); color: white;
+      border: none; border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background .15s, transform .1s;
       box-shadow: 0 2px 8px rgba(196,18,48,.3);
     }
-
     .btn-primary:hover { background: var(--accent-hover); }
     .btn-primary:active { transform: scale(.98); }
-
     .btn-ghost {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      background: rgba(255,255,255,.08);
-      color: rgba(255,255,255,.8);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: var(--radius);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background .12s;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius); font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 500; cursor: pointer; transition: background .12s;
     }
-
     .btn-ghost:hover { background: rgba(255,255,255,.14); }
 
     /* ── Filters ── */
-    .filters-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
+    .filters-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
     .filter-tabs {
-      display: flex;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 3px;
-      gap: 2px;
+      display: flex; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 3px; gap: 2px;
     }
-
     .filter-tab {
-      padding: 6px 14px;
-      border-radius: calc(var(--radius) - 2px);
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ink-secondary);
-      cursor: pointer;
-      border: none;
-      background: none;
-      font-family: 'DM Sans', sans-serif;
-      transition: background .12s, color .12s;
+      padding: 6px 14px; border-radius: calc(var(--radius) - 2px);
+      font-size: 12px; font-weight: 600; color: var(--ink-secondary);
+      cursor: pointer; border: none; background: none;
+      font-family: 'DM Sans', sans-serif; transition: background .12s, color .12s;
     }
-
     .filter-tab:hover { color: var(--ink); }
-
-    .filter-tab.active {
-      background: var(--ink);
-      color: #FFFFFF;
-    }
-
+    .filter-tab.active { background: var(--ink); color: #FFFFFF; }
     .filter-select {
-      padding: 7px 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--surface);
-      color: var(--ink);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      outline: none;
+      padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface); color: var(--ink);
+      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+      cursor: pointer; outline: none;
     }
-
     .filter-select:focus { border-color: var(--accent); }
-
     .btn-refresh {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 7px 12px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--ink-secondary);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background .12s;
-      margin-left: auto;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 12px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--ink-secondary);
+      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: background .12s; margin-left: auto;
     }
-
     .btn-refresh:hover { background: var(--surface-alt); }
 
-    /* ── Banner Cards ── */
+    /* ── Banner List ── */
     .banners-list { display: flex; flex-direction: column; gap: 10px; }
-
     .banner-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px 22px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 18px 22px;
       box-shadow: var(--shadow-sm);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      transition: border-color .15s, box-shadow .15s;
-      cursor: pointer;
+      display: flex; align-items: center; gap: 16px;
+      transition: border-color .15s, box-shadow .15s; cursor: pointer;
     }
-
-    .banner-card:hover {
-      border-color: var(--border-strong);
-      box-shadow: var(--shadow-md);
-    }
-
+    .banner-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); }
     .banner-type-icon {
-      width: 44px; height: 44px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 18px;
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px;
     }
-
     .banner-info { flex: 1; min-width: 0; }
-
     .banner-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: 2px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
+      font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px;
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
     }
-
-    .banner-headline {
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 400px;
-    }
+    .banner-headline { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px; }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 7px;
-      border-radius: 20px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .03em;
-      text-transform: uppercase;
+      display: inline-flex; align-items: center; padding: 2px 7px;
+      border-radius: 20px; font-size: 10px; font-weight: 700;
+      letter-spacing: .03em; text-transform: uppercase;
     }
+    .badge-ab { background: var(--purple-light); color: var(--purple); }
+    .badge-type { background: var(--surface-alt); color: var(--ink-secondary); border: 1px solid var(--border); }
+    .badge-active { background: var(--emerald-light); color: var(--emerald); }
+    .badge-inactive { background: var(--surface-alt); color: var(--muted); }
 
-    .badge-ab {
-      background: var(--purple-light);
-      color: var(--purple);
-    }
-
-    .badge-type {
-      background: var(--surface-alt);
-      color: var(--ink-secondary);
-      border: 1px solid var(--border);
-    }
-
-    .badge-active {
-      background: var(--emerald-light);
-      color: var(--emerald);
-    }
-
-    .badge-inactive {
-      background: var(--surface-alt);
-      color: var(--muted);
-    }
-
-    /* ── Banner Stats ── */
-    .banner-stats {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-shrink: 0;
-    }
-
-    .stat-item {
-      text-align: center;
-      min-width: 52px;
-    }
-
-    .stat-value {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--ink);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .stat-label {
-      font-size: 10px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      font-weight: 600;
-      margin-top: 1px;
-    }
-
+    .banner-stats { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+    .stat-item { text-align: center; min-width: 52px; }
+    .stat-value { font-size: 14px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+    .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; font-weight: 600; margin-top: 1px; }
     .stat-value.highlight { color: var(--accent); }
-
-    /* ── Layout Badge ── */
     .layout-badge {
-      padding: 3px 8px;
-      background: var(--surface-alt);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--ink-secondary);
-      text-transform: capitalize;
-      flex-shrink: 0;
+      padding: 3px 8px; background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 6px; font-size: 11px; font-weight: 500;
+      color: var(--ink-secondary); text-transform: capitalize; flex-shrink: 0;
     }
-
-    /* ── Action Buttons ── */
-    .banner-actions {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-
+    .banner-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
     .action-btn {
-      width: 32px; height: 32px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all .12s;
+      width: 32px; height: 32px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--muted); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all .12s;
     }
-
     .action-btn:hover { color: var(--ink); border-color: var(--border-strong); background: var(--surface-alt); }
     .action-btn.danger:hover { color: #DC2626; border-color: #FECACA; background: #FEF2F2; }
     .action-btn.primary:hover { color: var(--accent); border-color: var(--accent-border); background: var(--accent-light); }
-
-    /* ── Preview Button ── */
     .btn-preview {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 5px 10px;
-      background: var(--blue-light);
-      border: 1px solid rgba(30,64,175,.15);
-      border-radius: var(--radius-sm);
-      color: var(--blue);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all .12s;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 10px; background: var(--blue-light);
+      border: 1px solid rgba(30,64,175,.15); border-radius: var(--radius-sm);
+      color: var(--blue); font-family: 'DM Sans', sans-serif;
+      font-size: 11px; font-weight: 600; cursor: pointer; transition: all .12s;
     }
-
     .btn-preview:hover { background: rgba(30,64,175,.12); }
 
-    /* ── Preview Modal ── */
+    /* ── Modal ── */
     .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.55);
-      backdrop-filter: blur(4px);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      position: fixed; inset: 0; background: rgba(0,0,0,.6);
+      backdrop-filter: blur(6px); z-index: 100;
+      display: flex; align-items: center; justify-content: center; padding: 24px;
     }
-
     .modal-box {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      width: 100%;
-      max-width: 560px;
-      box-shadow: var(--shadow-lg);
+      background: var(--surface); border-radius: var(--radius-lg);
+      width: 100%; max-width: 580px; box-shadow: 0 25px 50px rgba(0,0,0,.3);
       overflow: hidden;
     }
-
     .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
     }
-
     .modal-title { font-size: 13px; font-weight: 600; color: var(--ink); }
     .modal-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-
-    .modal-meta {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
+    .modal-meta { display: flex; align-items: center; gap: 6px; }
     .modal-meta .layout-badge { font-size: 10px; padding: 2px 6px; }
-
     .modal-close {
-      width: 28px; height: 28px;
-      border-radius: var(--radius-sm);
-      border: none;
-      background: var(--surface-alt);
-      color: var(--muted);
+      width: 28px; height: 28px; border-radius: var(--radius-sm); border: none;
+      background: var(--surface-alt); color: var(--muted);
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      transition: all .12s;
+      cursor: pointer; transition: all .12s;
     }
-
     .modal-close:hover { background: var(--border); color: var(--ink); }
 
-    .modal-preview-area {
-      padding: 28px 24px;
-      background: var(--bg);
-    }
+    .modal-preview-area { padding: 24px; background: var(--bg); }
 
     .modal-footer {
-      padding: 14px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 14px 20px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
       background: var(--surface-alt);
     }
-
-    .modal-footer-info {
-      display: flex;
-      gap: 16px;
-    }
-
-    .modal-footer-info span {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
+    .modal-footer-info { display: flex; gap: 16px; }
+    .modal-footer-info span { font-size: 11px; color: var(--muted); }
     .modal-footer-info span strong { color: var(--ink-secondary); }
 
-    /* ── Banner Visuals ── */
-    .bv-bg { border-radius: var(--radius); overflow: hidden; }
+    /* ── REAL BANNER DESIGNS ── */
+    /* Each banner is a full editorial spread — photo dominant, strong type */
 
-    .bv-dark { background: #0F172A; }
-    .bv-light { background: #FFFFFF; }
-    .bv-red { background: #DC2626; }
-    .bv-emerald { background: #059669; }
-
-    .bv-bar { height: 3px; width: 100%; }
-    .bv-bar-red { background: #DC2626; }
-    .bv-bar-dark { background: #334155; }
-    .bv-bar-emerald { background: #10B981; }
-
-    .bv-pad { padding: 20px; }
-
-    .bv-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
+    .real-banner {
+      border-radius: 10px; overflow: hidden;
+      position: relative; cursor: pointer;
     }
 
-    .bv-icon-wrap {
-      width: 38px; height: 38px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+    /* Promo Banner — Discount Offer with journalist photo */
+    .bn-promo {
+      background: #1A1A2E; color: white;
+    }
+    .bn-promo-img {
+      width: 100%; height: 200px; object-fit: cover; display: block;
+      filter: brightness(0.7);
+    }
+    .bn-promo-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(26,26,46,0.2) 0%, rgba(26,26,46,0.85) 100%);
+    }
+    .bn-promo-content {
+      position: absolute; bottom: 0; left: 0; right: 0; padding: 20px;
+    }
+    .bn-promo-eyebrow {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--accent); color: white;
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; padding: 3px 8px; border-radius: 3px; margin-bottom: 8px;
+    }
+    .bn-promo-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 800; line-height: 1.2;
+      color: #FFFFFF; margin-bottom: 6px;
+    }
+    .bn-promo-body {
+      font-size: 12px; color: rgba(255,255,255,.7); line-height: 1.5; margin-bottom: 12px;
+    }
+    .bn-promo-price-row {
+      display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px;
+    }
+    .bn-promo-old { font-size: 13px; text-decoration: line-through; opacity: .5; color: rgba(255,255,255,.6); }
+    .bn-promo-new { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 800; color: #FFFFFF; }
+    .bn-promo-period { font-size: 11px; opacity: .6; color: rgba(255,255,255,.7); }
+    .bn-promo-cta-row { display: flex; flex-direction: column; gap: 6px; }
+    .bn-promo-cta {
+      width: 100%; padding: 10px; border-radius: 8px;
+      background: var(--accent); color: white;
+      border: none; font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(196,18,48,.4);
+    }
+    .bn-promo-skip {
+      width: 100%; padding: 7px; text-align: center; background: none; border: none;
+      color: rgba(255,255,255,.45); font-size: 11px; cursor: pointer;
+    }
+    .bn-promo-close {
+      position: absolute; top: 10px; right: 10px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(0,0,0,.4); border: none;
+      color: white; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
     }
 
-    .bv-icon-red { background: rgba(220,38,38,.2); color: #FCA5A5; }
-    .bv-icon-dark { background: rgba(255,255,255,.1); color: rgba(255,255,255,.7); }
-    .bv-icon-emerald { background: rgba(16,185,129,.2); color: #6EE7B7; }
-    .bv-icon-white { background: rgba(0,0,0,.08); color: rgba(0,0,0,.5); }
-
-    .bv-content { flex: 1; min-width: 0; }
-
-    .bv-eyebrow {
-      font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      padding: 2px 5px;
-      border-radius: 3px;
-      display: inline-block;
-      margin-bottom: 4px;
+    /* Winback Banner — warm editorial photo */
+    .bn-winback {
+      background: #0C0C1E; color: white;
+    }
+    .bn-winback-img {
+      width: 100%; height: 180px; object-fit: cover; display: block;
+      filter: brightness(0.6) sepia(0.2);
+    }
+    .bn-winback-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(12,12,30,0.7) 0%, rgba(30,20,60,0.8) 100%);
+    }
+    .bn-winback-content {
+      position: absolute; bottom: 0; left: 0; right: 0; padding: 20px;
+    }
+    .bn-winback-kicker {
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: #C4B5FD; margin-bottom: 8px;
+    }
+    .bn-winback-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px; font-weight: 800; font-style: italic;
+      color: #FFFFFF; line-height: 1.25; margin-bottom: 8px;
+    }
+    .bn-winback-body { font-size: 12px; color: rgba(255,255,255,.6); line-height: 1.5; margin-bottom: 12px; }
+    .bn-winback-price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+    .bn-winback-old { font-size: 13px; text-decoration: line-through; opacity: .5; color: rgba(255,255,255,.5); }
+    .bn-winback-new { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 800; color: #F8FAFC; }
+    .bn-winback-cta-row { display: flex; flex-direction: column; gap: 6px; }
+    .bn-winback-cta {
+      width: 100%; padding: 10px; border-radius: 8px;
+      background: #8B5CF6; color: white; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .bn-winback-skip {
+      width: 100%; padding: 7px; text-align: center; background: none; border: none;
+      color: rgba(255,255,255,.4); font-size: 11px; cursor: pointer;
+    }
+    .bn-winback-close {
+      position: absolute; top: 10px; right: 10px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(0,0,0,.4); border: none;
+      color: white; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .bv-eyebrow-red { background: rgba(220,38,38,.3); color: #FCA5A5; }
-    .bv-eyebrow-dark { background: rgba(255,255,255,.12); color: rgba(255,255,255,.7); }
-    .bv-eyebrow-emerald { background: rgba(16,185,129,.25); color: #6EE7B7; }
-    .bv-eyebrow-white { background: rgba(0,0,0,.06); color: rgba(0,0,0,.4); }
-
-    .bv-headline {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.25;
-      margin-bottom: 4px;
+    /* Soft Paywall Banner — newspaper feel */
+    .bn-paywall {
+      background: #F5F0E8; color: #18181B;
+    }
+    .bn-paywall-header {
+      background: var(--ink); padding: 10px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .bn-paywall-logo {
+      font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 800; color: white;
+    }
+    .bn-paywall-logo span { color: var(--accent); }
+    .bn-paywall-date { font-size: 10px; color: rgba(255,255,255,.4); }
+    .bn-paywall-rule { height: 3px; background: var(--accent); }
+    .bn-paywall-body { padding: 20px; }
+    .bn-paywall-kicker {
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--accent); margin-bottom: 6px;
+    }
+    .bn-paywall-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 800; color: #18181B; line-height: 1.3; margin-bottom: 8px;
+    }
+    .bn-paywall-meter {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+    }
+    .bn-paywall-meter-label { font-size: 12px; color: var(--ink-secondary); flex: 1; }
+    .bn-paywall-meter-dots { display: flex; gap: 4px; }
+    .bn-paywall-meter-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      border: 2px solid var(--accent);
+    }
+    .bn-paywall-meter-dot.filled { background: var(--accent); }
+    .bn-paywall-cta-row { display: flex; gap: 8px; align-items: center; }
+    .bn-paywall-cta {
+      flex: 1; padding: 10px; border-radius: 8px;
+      background: var(--ink); color: white; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .bn-paywall-skip {
+      padding: 10px; background: none; border: none;
+      color: var(--muted); font-size: 12px; cursor: pointer;
+    }
+    .bn-paywall-close {
+      position: absolute; top: 44px; right: 10px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(0,0,0,.1); border: none;
+      color: var(--ink); font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .bv-headline-white { color: #FFFFFF; }
-    .bv-headline-dark { color: #F8FAFC; }
-
-    .bv-body {
-      font-size: 11px;
-      line-height: 1.5;
+    /* Annual Banner — premium editorial feel with photo */
+    .bn-annual {
+      background: #0F2417; color: white;
+    }
+    .bn-annual-img {
+      width: 100%; height: 180px; object-fit: cover; display: block;
+      filter: brightness(0.6) saturate(0.8);
+    }
+    .bn-annual-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(15,36,23,0.1) 0%, rgba(15,36,23,0.85) 100%);
+    }
+    .bn-annual-content {
+      position: absolute; bottom: 0; left: 0; right: 0; padding: 20px;
+    }
+    .bn-annual-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(52,211,153,.2); color: #6EE7B7;
+      border: 1px solid rgba(52,211,153,.3);
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; padding: 3px 8px; border-radius: 3px; margin-bottom: 8px;
+    }
+    .bn-annual-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 19px; font-weight: 800; color: #FFFFFF; line-height: 1.25; margin-bottom: 6px;
+    }
+    .bn-annual-body { font-size: 12px; color: rgba(255,255,255,.6); line-height: 1.5; margin-bottom: 10px; }
+    .bn-annual-perks { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+    .bn-annual-perk { display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(255,255,255,.7); }
+    .bn-annual-perk-dot { width: 5px; height: 5px; border-radius: 50%; background: #34D399; flex-shrink: 0; }
+    .bn-annual-price-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 10px; }
+    .bn-annual-old { font-size: 12px; text-decoration: line-through; opacity: .5; color: rgba(255,255,255,.5); }
+    .bn-annual-new { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 800; color: #FFFFFF; }
+    .bn-annual-cta-row { display: flex; flex-direction: column; gap: 6px; }
+    .bn-annual-cta {
+      width: 100%; padding: 10px; border-radius: 8px;
+      background: #10B981; color: white; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .bn-annual-skip {
+      width: 100%; padding: 7px; text-align: center; background: none; border: none;
+      color: rgba(255,255,255,.4); font-size: 11px; cursor: pointer;
+    }
+    .bn-annual-close {
+      position: absolute; top: 10px; right: 10px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(0,0,0,.4); border: none;
+      color: white; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .bv-body-light { color: rgba(255,255,255,.55); }
-    .bv-body-dark { color: rgba(255,255,255,.6); }
-
-    .bv-price-box {
-      background: rgba(220,38,38,.15);
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin-top: 12px;
+    /* Free Trial Banner — warm, inviting */
+    .bn-trial {
+      background: #FFFBF5; color: #18181B; border: 1px solid #FDE68A;
+    }
+    .bn-trial-img {
+      width: 100%; height: 160px; object-fit: cover; display: block;
+      filter: brightness(1.05) saturate(1.1);
+    }
+    .bn-trial-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(255,251,245,0.2) 0%, rgba(255,251,245,0.85) 100%);
+    }
+    .bn-trial-content {
+      position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 20px;
+    }
+    .bn-trial-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #FFFBEB; color: #92400E;
+      border: 1px solid #FDE68A;
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; padding: 3px 8px; border-radius: 3px; margin-bottom: 6px;
+    }
+    .bn-trial-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 800; color: #18181B; line-height: 1.25; margin-bottom: 4px;
+    }
+    .bn-trial-body { font-size: 11px; color: #71717A; line-height: 1.5; margin-bottom: 10px; }
+    .bn-trial-free {
+      font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 800; color: #18181B; margin-bottom: 10px;
+    }
+    .bn-trial-free span { font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 500; color: #A1A1AA; }
+    .bn-trial-cta-row { display: flex; flex-direction: column; gap: 5px; }
+    .bn-trial-cta {
+      width: 100%; padding: 10px; border-radius: 8px;
+      background: #18181B; color: white; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .bn-trial-skip {
+      width: 100%; padding: 6px; text-align: center; background: none; border: none;
+      color: #A1A1AA; font-size: 11px; cursor: pointer;
+    }
+    .bn-trial-close {
+      position: absolute; top: 10px; right: 10px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(0,0,0,.08); border: none;
+      color: #18181B; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .bv-price-row {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-    }
-
-    .bv-price-old {
-      font-size: 11px;
-      text-decoration: line-through;
-      opacity: .5;
-    }
-
-    .bv-price-new {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -.02em;
-    }
-
-    .bv-price-period {
-      font-size: 11px;
-      opacity: .6;
-    }
-
-    .bv-cta-row {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 12px;
-    }
-
-    .bv-cta-primary {
-      width: 100%;
-      padding: 9px;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      text-align: center;
-      border: none;
-      cursor: pointer;
-    }
-
-    .bv-cta-primary.red { background: #FFFFFF; color: #DC2626; }
-    .bv-cta-primary.dark { background: #DC2626; color: #FFFFFF; }
-    .bv-cta-primary.emerald { background: #FFFFFF; color: #059669; }
-    .bv-cta-primary.white { background: #18181B; color: #FFFFFF; }
-
-    .bv-cta-secondary {
-      width: 100%;
-      padding: 6px;
-      text-align: center;
-      font-size: 11px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      opacity: .5;
-    }
-
-    .bv-cta-secondary.white { color: rgba(255,255,255,.7); }
-    .bv-cta-secondary.dark { color: rgba(255,255,255,.6); }
-
-    .bv-modal-note {
-      text-align: center;
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 8px;
-    }
-
-    /* ── Empty State ── */
-    .empty-state {
-      background: var(--surface);
-      border: 1px dashed var(--border-strong);
-      border-radius: var(--radius-lg);
-      padding: 56px 24px;
-      text-align: center;
-    }
-
-    .empty-icon {
-      width: 56px; height: 56px;
-      border-radius: 14px;
-      background: var(--surface-alt);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-      color: var(--muted);
-    }
-
-    .empty-title {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--ink);
-      margin-bottom: 6px;
-    }
-
-    .empty-body {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
-
-    /* ── Theme Toggle ── */
+    /* Theme Toggle */
     .theme-toggle {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 10px;
-      background: var(--surface-alt);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--muted);
-      transition: all .12s;
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 10px; background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: var(--radius); cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+      color: var(--muted); transition: all .12s;
     }
-
     .theme-toggle:hover { color: var(--ink); }
 
-    /* ── Responsive ── */
-    @media (max-width: 1100px) {
-      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .modal-note {
+      text-align: center; font-size: 10px; color: var(--muted); margin-top: 10px;
+      font-style: italic;
     }
 
     @media (max-width: 768px) {
@@ -963,19 +625,16 @@
           <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
         </svg>
       </div>
-      <div class="sidebar-brand-text">
+      <div>
         <div class="sidebar-brand-name">Tempo Revenue Brain</div>
         <div class="sidebar-brand-sub">Powered by Rectoverso</div>
       </div>
     </div>
-
     <div class="sidebar-status">
       <div class="sidebar-status-dot"></div>
       <span class="sidebar-status-text">Sistem aktif</span>
     </div>
-
     <div class="sidebar-divider"></div>
-
     <nav class="sidebar-nav">
       <div class="sidebar-nav-label">Navigasi</div>
       <a href="#" class="sidebar-nav-item">
@@ -999,7 +658,7 @@
         Peluang
       </a>
       <a href="#" class="sidebar-nav-item">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         Pendapatan Konten
       </a>
       <a href="#" class="sidebar-nav-item">
@@ -1023,12 +682,8 @@
         Konfigurasi
       </a>
     </nav>
-
     <div class="sidebar-footer">
-      <div class="sidebar-version">
-        v1.0 MVP · Shadow Mode<br/>
-        <span style="color:rgba(255,255,255,.15)">Supabase terhubung</span>
-      </div>
+      <div class="sidebar-version">v1.0 MVP · Shadow Mode<br/><span style="color:rgba(255,255,255,.15)">Supabase terhubung</span></div>
     </div>
   </aside>
 
@@ -1041,7 +696,7 @@
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <button class="theme-toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
           Tema
         </button>
         <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--emerald-light);border:1px solid rgba(5,150,105,.2);border-radius:20px;">
@@ -1094,7 +749,7 @@
         </div>
       </div>
 
-      <!-- Active Banners Banner -->
+      <!-- Active Banner Card -->
       <div class="active-banner-card">
         <div class="active-banner-left">
           <div class="active-banner-icon">
@@ -1146,17 +801,15 @@
 
         <!-- Banner 1: Promo -->
         <div class="banner-card" onclick="openPreview('promo')">
-          <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <span style="font-size:18px;">%</span>
-          </div>
+          <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">📰</div>
           <div class="banner-info">
             <div class="banner-name">
-              Promo Bulan Ini — Diskon 30%
+              Promo Spesial — Diskon 30%
               <span class="badge badge-ab">A/B</span>
               <span class="badge badge-type">Promo Offer</span>
               <span class="badge badge-active">Aktif</span>
             </div>
-            <div class="banner-headline">Penawaran Spesial: Diskon 30% untuk 3 Bulan Pertama</div>
+            <div class="banner-headline">Penawaran Eksklusif: Diskon 30% untuk 3 Bulan Berlangganan Tempo+</div>
             <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
               <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -1173,18 +826,9 @@
             </div>
           </div>
           <div class="banner-stats">
-            <div class="stat-item">
-              <div class="stat-value">0%</div>
-              <div class="stat-label">CTR</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value">0%</div>
-              <div class="stat-label">CVR</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value highlight">Rp 0</div>
-              <div class="stat-label">Pendapatan</div>
-            </div>
+            <div class="stat-item"><div class="stat-value">0%</div><div class="stat-label">CTR</div></div>
+            <div class="stat-item"><div class="stat-value">0%</div><div class="stat-label">CVR</div></div>
+            <div class="stat-item"><div class="stat-value highlight">Rp 0</div><div class="stat-label">Pendapatan</div></div>
           </div>
           <span class="layout-badge">Modal</span>
           <button class="btn-preview" onclick="event.stopPropagation();openPreview('promo')">
@@ -1192,31 +836,23 @@
             Preview
           </button>
           <div class="banner-actions">
-            <button class="action-btn primary" title="Edit">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
-            <button class="action-btn danger" title="Hapus">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-            </button>
-            <button class="action-btn" title="Detail">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
+            <button class="action-btn primary" title="Edit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="action-btn danger" title="Hapus"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            <button class="action-btn" title="Detail"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
           </div>
         </div>
 
         <!-- Banner 2: Winback -->
         <div class="banner-card" onclick="openPreview('winback')">
-          <div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <span style="font-size:18px;">♥</span>
-          </div>
+          <div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">❤️</div>
           <div class="banner-info">
             <div class="banner-name">
-              Winback — Kami Kangen Kamu
+              Kami Kangen Kamu
               <span class="badge badge-ab">A/B</span>
               <span class="badge badge-type">Winback</span>
               <span class="badge badge-active">Aktif</span>
             </div>
-            <div class="banner-headline">Kami Sudah Menunggu Kamu Kembali</div>
+            <div class="banner-headline">Kami Sudah Menunggu Kamu Kembali, reader setia</div>
             <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
               <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -1233,18 +869,9 @@
             </div>
           </div>
           <div class="banner-stats">
-            <div class="stat-item">
-              <div class="stat-value">0%</div>
-              <div class="stat-label">CTR</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value">0%</div>
-              <div class="stat-label">CVR</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value highlight">Rp 0</div>
-              <div class="stat-label">Pendapatan</div>
-            </div>
+            <div class="stat-item"><div class="stat-value">0%</div><div class="stat-label">CTR</div></div>
+            <div class="stat-item"><div class="stat-value">0%</div><div class="stat-label">CVR</div></div>
+            <div class="stat-item"><div class="stat-value highlight">Rp 0</div><div class="stat-label">Pendapatan</div></div>
           </div>
           <span class="layout-badge">Modal</span>
           <button class="btn-preview" onclick="event.stopPropagation();openPreview('winback')">
@@ -1252,23 +879,15 @@
             Preview
           </button>
           <div class="banner-actions">
-            <button class="action-btn primary" title="Edit">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
-            <button class="action-btn danger" title="Hapus">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-            </button>
-            <button class="action-btn" title="Detail">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
+            <button class="action-btn primary" title="Edit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="action-btn danger" title="Hapus"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            <button class="action-btn" title="Detail"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
           </div>
         </div>
 
         <!-- Banner 3: Soft Paywall -->
         <div class="banner-card" onclick="openPreview('paywall')">
-          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <span style="font-size:18px;">🔒</span>
-          </div>
+          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">🔒</div>
           <div class="banner-info">
             <div class="banner-name">
               Soft Paywall — Meter Gratis
@@ -1276,7 +895,7 @@
               <span class="badge badge-type">Soft Paywall</span>
               <span class="badge badge-active">Aktif</span>
             </div>
-            <div class="banner-headline">Kamu sudah membaca {{free_articles_read}} dari 3 artikel gratis</div>
+            <div class="banner-headline">Kamu sudah membaca 3 dari 3 artikel gratis —langganan untuk akses tanpa batas</div>
             <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
               <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -1293,18 +912,9 @@
             </div>
           </div>
           <div class="banner-stats">
-            <div class="stat-item">
-              <div class="stat-value">0%</div>
-              <div class="stat-label">CTR</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value">0%</div>
-              <div class="stat-label">CVR</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value highlight">Rp 0</div>
-              <div class="stat-label">Pendapatan</div>
-            </div>
+            <div class="stat-item"><div class="stat-value">0%</div><div class="stat-label">CTR</div></div>
+            <div class="stat-item"><div class="stat-value">0%</div><div class="stat-label">CVR</div></div>
+            <div class="stat-item"><div class="stat-value highlight">Rp 0</div><div class="stat-label">Pendapatan</div></div>
           </div>
           <span class="layout-badge">Slide-in</span>
           <button class="btn-preview" onclick="event.stopPropagation();openPreview('paywall')">
@@ -1312,30 +922,22 @@
             Preview
           </button>
           <div class="banner-actions">
-            <button class="action-btn primary" title="Edit">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
-            <button class="action-btn danger" title="Hapus">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-            </button>
-            <button class="action-btn" title="Detail">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
+            <button class="action-btn primary" title="Edit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="action-btn danger" title="Hapus"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            <button class="action-btn" title="Detail"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
           </div>
         </div>
 
         <!-- Banner 4: Annual -->
         <div class="banner-card" onclick="openPreview('annual')">
-          <div style="background:#ECFDF5;border:1px solid #A7F3D0;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <span style="font-size:18px;">🎁</span>
-          </div>
+          <div style="background:#ECFDF5;border:1px solid #A7F3D0;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">🎁</div>
           <div class="banner-info">
             <div class="banner-name">
-              Paket Annual — Nilai Terbaik
+              Paket Tahunan — Nilai Terbaik
               <span class="badge badge-type">Annual Promo</span>
               <span class="badge badge-active">Aktif</span>
             </div>
-            <div class="banner-headline">Buka Pengalaman Tempo+ Penuh — 2 Bulan Gratis</div>
+            <div class="banner-headline">Buka Pengalaman Tempo+ Penuh — 2 Bulan Gratis untuk Paket Tahunan</div>
             <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
               <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -1352,18 +954,9 @@
             </div>
           </div>
           <div class="banner-stats">
-            <div class="stat-item">
-              <div class="stat-value">0%</div>
-              <div class="stat-label">CTR</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value">0%</div>
-              <div class="stat-label">CVR</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value highlight">Rp 0</div>
-              <div class="stat-label">Pendapatan</div>
-            </div>
+            <div class="stat-item"><div class="stat-value">0%</div><div class="stat-label">CTR</div></div>
+            <div class="stat-item"><div class="stat-value">0%</div><div class="stat-label">CVR</div></div>
+            <div class="stat-item"><div class="stat-value highlight">Rp 0</div><div class="stat-label">Pendapatan</div></div>
           </div>
           <span class="layout-badge">Modal</span>
           <button class="btn-preview" onclick="event.stopPropagation();openPreview('annual')">
@@ -1371,30 +964,22 @@
             Preview
           </button>
           <div class="banner-actions">
-            <button class="action-btn primary" title="Edit">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
-            <button class="action-btn danger" title="Hapus">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-            </button>
-            <button class="action-btn" title="Detail">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
+            <button class="action-btn primary" title="Edit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="action-btn danger" title="Hapus"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            <button class="action-btn" title="Detail"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
           </div>
         </div>
 
         <!-- Banner 5: Trial -->
         <div class="banner-card" onclick="openPreview('trial')">
-          <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <span style="font-size:18px;">✨</span>
-          </div>
+          <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">✨</div>
           <div class="banner-info">
             <div class="banner-name">
               Free Trial 7 Hari
               <span class="badge badge-type">Free Trial</span>
               <span class="badge badge-active">Aktif</span>
             </div>
-            <div class="banner-headline">Coba Tempo+ Gratis 7 Hari — Tanpa Kartu Kredit</div>
+            <div class="banner-headline">Coba Tempo+ Gratis 7 Hari — Tanpa Kartu Kredit, Batal Kapan Saja</div>
             <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
               <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -1411,18 +996,9 @@
             </div>
           </div>
           <div class="banner-stats">
-            <div class="stat-item">
-              <div class="stat-value">0%</div>
-              <div class="stat-label">CTR</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value">0%</div>
-              <div class="stat-label">CVR</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value highlight">Rp 0</div>
-              <div class="stat-label">Pendapatan</div>
-            </div>
+            <div class="stat-item"><div class="stat-value">0%</div><div class="stat-label">CTR</div></div>
+            <div class="stat-item"><div class="stat-value">0%</div><div class="stat-label">CVR</div></div>
+            <div class="stat-item"><div class="stat-value highlight">Rp 0</div><div class="stat-label">Pendapatan</div></div>
           </div>
           <span class="layout-badge">Modal</span>
           <button class="btn-preview" onclick="event.stopPropagation();openPreview('trial')">
@@ -1430,15 +1006,9 @@
             Preview
           </button>
           <div class="banner-actions">
-            <button class="action-btn primary" title="Edit">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
-            <button class="action-btn danger" title="Hapus">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-            </button>
-            <button class="action-btn" title="Detail">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
+            <button class="action-btn primary" title="Edit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="action-btn danger" title="Hapus"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            <button class="action-btn" title="Detail"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
           </div>
         </div>
 
@@ -1448,39 +1018,33 @@
 </div>
 
 <!-- Preview Modal -->
-<div id="previewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center;padding:24px;" onclick="closePreview()">
-  <div style="background:var(--surface);border-radius:16px;width:100%;max-width:560px;box-shadow:0 25px 50px rgba(0,0,0,.25);overflow:hidden;" onclick="event.stopPropagation()">
-
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);">
-      <div>
-        <div style="font-size:13px;font-weight:600;color:var(--ink);" id="modalTitle">Preview Banner</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:1px;" id="modalSub">—</div>
+<div id="previewModal" style="display:none;" onclick="closePreview()">
+  <div style="position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;" onclick="closePreview()">
+    <div style="background:var(--surface);border-radius:16px;width:100%;max-width:580px;box-shadow:0 25px 50px rgba(0,0,0,.3);overflow:hidden;" onclick="event.stopPropagation()">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink);" id="modalTitle">Preview Banner</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px;" id="modalSub">—</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span id="modalLayout" style="padding:2px 6px;background:var(--surface-alt);border:1px solid var(--border);border-radius:4px;font-size:10px;font-weight:500;color:var(--ink-secondary);">Modal</span>
+          <span id="modalTheme" style="padding:2px 6px;background:var(--surface-alt);border:1px solid var(--border);border-radius:4px;font-size:10px;font-weight:500;color:var(--ink-secondary);">Dark</span>
+          <button onclick="closePreview()" style="width:28px;height:28px;border-radius:6px;border:none;background:var(--surface-alt);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <span id="modalLayout" class="layout-badge" style="font-size:10px;padding:2px 6px;">Modal</span>
-        <span id="modalTheme" style="padding:2px 6px;background:var(--surface-alt);border:1px solid var(--border);border-radius:4px;font-size:10px;font-weight:500;color:var(--ink-secondary);">Dark</span>
-        <button onclick="closePreview()" style="width:28px;height:28px;border-radius:6px;border:none;background:var(--surface-alt);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .12s;" onmouseover="this.style.background='var(--border)';this.style.color='var(--ink)'" onmouseout="this.style.background='var(--surface-alt)';this.style.color='var(--muted)'">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <div style="padding:24px;background:var(--bg);" id="bannerPreviewArea"></div>
+      <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface-alt);">
+        <div style="display:flex;gap:16px;">
+          <span style="font-size:11px;color:var(--muted);">Tipe: <strong id="footerType" style="color:var(--ink-secondary);">—</strong></span>
+          <span style="font-size:11px;color:var(--muted);">Prioritas: <strong id="footerPriority" style="color:var(--ink-secondary);">—</strong></span>
+          <span style="font-size:11px;color:var(--muted);">A/B: <strong id="footerAB" style="color:var(--ink-secondary);">—</strong></span>
+        </div>
+        <button style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:var(--accent);color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(196,18,48,.25);">
+          Edit Banner
         </button>
       </div>
-    </div>
-
-    <!-- Preview Content -->
-    <div style="padding:28px 24px;background:var(--bg);" id="bannerPreviewArea">
-      <!-- Filled by JS -->
-    </div>
-
-    <!-- Footer -->
-    <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface-alt);">
-      <div id="modalFooterInfo" style="display:flex;gap:16px;">
-        <span style="font-size:11px;color:var(--muted);">Tipe: <strong id="footerType" style="color:var(--ink-secondary);">—</strong></span>
-        <span style="font-size:11px;color:var(--muted);">Prioritas: <strong id="footerPriority" style="color:var(--ink-secondary);">—</strong></span>
-        <span style="font-size:11px;color:var(--muted);">A/B: <strong id="footerAB" style="color:var(--ink-secondary);">—</strong></span>
-      </div>
-      <button style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:var(--accent);color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(196,18,48,.25);">
-        Edit Banner
-      </button>
     </div>
   </div>
 </div>
@@ -1488,176 +1052,144 @@
 <script>
 const banners = {
   promo: {
-    title: 'Promo Bulan Ini — Diskon 30%',
-    layout: 'Modal', theme: 'Merah',
+    title: 'Promo Spesial — Diskon 30%',
+    layout: 'Modal', theme: 'Dark',
     type: 'Promo Offer', priority: 95, ab: 'Ya (50% → B)',
     visual: `
-      <div style="background:#DC2626;border-radius:10px;overflow:hidden;">
-        <div style="height:3px;background:#B91C1C;"></div>
-        <div style="padding:20px;">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;">
-                <span style="font-size:18px;">%</span>
-              </div>
-              <div>
-                <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:rgba(255,255,255,.2);color:rgba(255,255,255,.9);padding:2px 5px;border-radius:3px;display:inline-block;margin-bottom:4px;">Diskon 30%</span>
-                <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#FFFFFF;line-height:1.25;">Penawaran Spesial:<br>Diskon 30% untuk 3 Bulan</div>
-              </div>
-            </div>
-            <button style="width:24px;height:24px;border-radius:4px;border:none;background:rgba(255,255,255,.15);color:rgba(255,255,255,.7);cursor:pointer;font-size:14px;line-height:1;">×</button>
+      <div class="real-banner bn-promo" style="position:relative;">
+        <img class="bn-promo-img" src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&h=200&fit=crop&q=80" alt="jurnalistik" />
+        <div class="bn-promo-overlay"></div>
+        <button class="bn-promo-close">×</button>
+        <div class="bn-promo-content">
+          <div class="bn-promo-eyebrow">🔥 Diskon 30% — Terbatas!</div>
+          <div class="bn-promo-headline">Jurnalisme Independen,<br>Sekarang Lebih Terjangkau</div>
+          <div class="bn-promo-body">Akses tanpa batas ke seluruh investigasi, laporan mendalam, dan konten premium Tempo+. Mulai hanya Rp 44.800/bulan.</div>
+          <div class="bn-promo-price-row">
+            <span class="bn-promo-old">Rp 64.000/bulan</span>
+            <span class="bn-promo-new">Rp 44.800</span>
+            <span class="bn-promo-period">/bulan</span>
           </div>
-          <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.5;margin-bottom:14px;">Dapatkan akses penuh ke semua artikel Tempo+, investigasi, dan konten eksklusif hanya Rp 44.800/bulan.</div>
-          <div style="background:rgba(0,0,0,.2);border-radius:8px;padding:10px 12px;margin-bottom:12px;">
-            <div style="display:flex;align-items:baseline;gap:6px;">
-              <span style="font-size:11px;text-decoration:line-through;opacity:.5;color:rgba(255,255,255,.6);">Rp 64.000</span>
-              <span style="font-size:20px;font-weight:800;color:#FFFFFF;">Rp 44.800</span>
-              <span style="font-size:11px;opacity:.6;color:rgba(255,255,255,.7);">/bulan</span>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <button style="width:100%;padding:9px;border-radius:8px;background:#FFFFFF;color:#DC2626;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Ambil Penawaran Ini</button>
-            <button style="width:100%;padding:6px;text-align:center;background:none;border:none;color:rgba(255,255,255,.6);font-size:11px;cursor:pointer;">Tidak sekarang</button>
+          <div class="bn-promo-cta-row">
+            <button class="bn-promo-cta">Ambil Penawaran Ini</button>
+            <button class="bn-promo-skip">Tidak, mungkin lain waktu</button>
           </div>
         </div>
       </div>
+      <p class="modal-note">Banner promo — muncul setelah 3 artikel gratis selesai. Foto: jurnalis Tempo saat liputan lapangan.</p>
     `
   },
   winback: {
-    title: 'Winback — Kami Kangen Kamu',
-    layout: 'Modal', theme: 'Gelap',
+    title: 'Kami Kangen Kamu',
+    layout: 'Modal', theme: 'Dark',
     type: 'Winback', priority: 85, ab: 'Ya (40% → B)',
     visual: `
-      <div style="background:#0F172A;border-radius:10px;overflow:hidden;">
-        <div style="height:3px;background:#334155;"></div>
-        <div style="padding:20px;">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;">
-                <span style="font-size:18px;">♥</span>
-              </div>
-              <div>
-                <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:rgba(168,85,247,.3);color:#C4B5FD;padding:2px 5px;border-radius:3px;display:inline-block;margin-bottom:4px;">Selamat Datang Kembali</span>
-                <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#F8FAFC;line-height:1.25;">Kami Sudah Menunggu<br>Kamu Kembali</div>
-              </div>
-            </div>
-            <button style="width:24px;height:24px;border-radius:4px;border:none;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);cursor:pointer;font-size:14px;line-height:1;">×</button>
+      <div class="real-banner bn-winback" style="position:relative;">
+        <img class="bn-winback-img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=180&fit=crop&q=80" alt="pembaca" />
+        <div class="bn-winback-overlay"></div>
+        <button class="bn-winback-close">×</button>
+        <div class="bn-winback-content">
+          <div class="bn-winback-kicker">✦ Selamat Datang Kembali</div>
+          <div class="bn-winback-headline">"Kami sudah menunggu<br>kamu kembali..."</div>
+          <div class="bn-winback-body">Investigasi dan liputan yang kamu butuhkan tetap ada di sini. Penawaran spesial untuk pembaca setia: hanya Rp 49.000/bulan.</div>
+          <div class="bn-winback-price-row">
+            <span class="bn-winback-old">Rp 64.000/bulan</span>
+            <span class="bn-winback-new">Rp 49.000</span>
+            <span class="bn-promo-period">/bulan</span>
           </div>
-          <div style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:14px;">Penawaran kembali: Rp 49.000/bulan untuk semua konten favorit Tempo+. Aktifkan kembali hari ini.</div>
-          <div style="background:rgba(168,85,247,.12);border-radius:8px;padding:10px 12px;margin-bottom:12px;">
-            <div style="display:flex;align-items:baseline;gap:6px;">
-              <span style="font-size:11px;text-decoration:line-through;opacity:.5;color:rgba(255,255,255,.5);">Rp 64.000</span>
-              <span style="font-size:20px;font-weight:800;color:#FFFFFF;">Rp 49.000</span>
-              <span style="font-size:11px;opacity:.6;color:rgba(255,255,255,.7);">/bulan</span>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <button style="width:100%;padding:9px;border-radius:8px;background:#DC2626;color:#FFFFFF;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Selamat Datang Kembali</button>
-            <button style="width:100%;padding:6px;text-align:center;background:none;border:none;color:rgba(255,255,255,.5);font-size:11px;cursor:pointer;">Tidak sekarang</button>
+          <div class="bn-winback-cta-row">
+            <button class="bn-winback-cta">Saya Kembali</button>
+            <button class="bn-winback-skip">Belum siap</button>
           </div>
         </div>
       </div>
+      <p class="modal-note">Banner winback — untuk pembaca yang sudah tidak aktif 14+ hari. Personal & emosional.</p>
     `
   },
   paywall: {
     title: 'Soft Paywall — Meter Gratis',
-    layout: 'Slide-in', theme: 'Gelap',
+    layout: 'Slide-in', theme: 'Newsprint',
     type: 'Soft Paywall', priority: 80, ab: 'Ya (50% → B)',
     visual: `
-      <div style="background:linear-gradient(135deg,#1E293B 0%,#0F172A 100%);border-radius:10px;overflow:hidden;">
-        <div style="height:3px;background:#DC2626;"></div>
-        <div style="padding:16px 20px;display:flex;align-items:center;gap:12px;">
-          <div style="width:36px;height:36px;border-radius:8px;background:rgba(220,38,38,.2);display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="real-banner bn-paywall" style="position:relative;">
+        <div class="bn-paywall-header">
+          <div class="bn-paywall-logo">TEMPO<span>+</span></div>
+          <div class="bn-paywall-date">Rabu, 27 Agustus 2026</div>
+        </div>
+        <div class="bn-paywall-rule"></div>
+        <button class="bn-paywall-close">×</button>
+        <div class="bn-paywall-body">
+          <div class="bn-paywall-kicker">⚠ Batas Akses Gratis Tercapai</div>
+          <div class="bn-paywall-headline">Kamu sudah membaca<br>3 dari 3 artikel gratis</div>
+          <div class="bn-paywall-meter">
+            <span class="bn-paywall-meter-label">Mulai langganan untuk akses tanpa batas ke seluruh berita:</span>
+            <div class="bn-paywall-meter-dots">
+              <div class="bn-paywall-meter-dot filled"></div>
+              <div class="bn-paywall-meter-dot filled"></div>
+              <div class="bn-paywall-meter-dot filled"></div>
+            </div>
           </div>
-          <div style="flex:1;min-width:0;">
-            <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:rgba(220,38,38,.3);color:#FCA5A5;padding:2px 5px;border-radius:3px;display:inline-block;margin-bottom:3px;">Akses Terbatas</span>
-            <div style="font-size:13px;font-weight:700;color:#F8FAFC;line-height:1.3;">Kamu sudah membaca {{free_articles_read}} dari 3 artikel gratis</div>
-          </div>
-          <div style="flex-shrink:0;text-align:right;display:none;" class="show-md">
-            <div style="font-size:16px;font-weight:800;color:#FFFFFF;">Rp 64.000</div>
-            <div style="font-size:10px;color:rgba(255,255,255,.5);">/bulan</div>
-          </div>
-          <div style="flex-shrink:0;display:flex;gap:6px;align-items:center;">
-            <button style="padding:7px 14px;border-radius:8px;background:#DC2626;color:#FFFFFF;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Berlangganan</button>
-            <button style="width:28px;height:28px;border-radius:6px;border:none;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
+          <div class="bn-paywall-cta-row">
+            <button class="bn-paywall-cta">Berlangganan Tempo+ — Rp 64.000/bulan</button>
+            <button class="bn-paywall-skip">Baca 1 artikel lagi gratis ›</button>
           </div>
         </div>
-        <div style="text-align:center;font-size:10px;color:rgba(255,255,255,.3);padding:0 20px 8px;">Slide-in — muncul dari bawah layar</div>
       </div>
+      <p class="modal-note">Soft paywall — tampil setelah pembaca menghabiskan kuota 3 artikel gratis. Nuansa koran Tempo.</p>
     `
   },
   annual: {
-    title: 'Paket Annual — Nilai Terbaik',
-    layout: 'Modal', theme: 'Emerald',
+    title: 'Paket Tahunan — Nilai Terbaik',
+    layout: 'Modal', theme: 'Dark',
     type: 'Annual Promo', priority: 75, ab: 'Tidak',
     visual: `
-      <div style="background:#059669;border-radius:10px;overflow:hidden;">
-        <div style="height:3px;background:#047857;"></div>
-        <div style="padding:20px;">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;">
-                <span style="font-size:18px;">🎁</span>
-              </div>
-              <div>
-                <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:rgba(255,255,255,.2);color:rgba(255,255,255,.9);padding:2px 5px;border-radius:3px;display:inline-block;margin-bottom:4px;">Nilai Terbaik</span>
-                <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#FFFFFF;line-height:1.25;">Buka Pengalaman Tempo+<br>Penuh — 2 Bulan Gratis</div>
-              </div>
-            </div>
-            <button style="width:24px;height:24px;border-radius:4px;border:none;background:rgba(255,255,255,.15);color:rgba(255,255,255,.7);cursor:pointer;font-size:14px;line-height:1;">×</button>
+      <div class="real-banner bn-annual" style="position:relative;">
+        <img class="bn-annual-img" src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&h=180&fit=crop&q=80&sat=-30" alt="tempo newsroom" />
+        <div class="bn-annual-overlay"></div>
+        <button class="bn-annual-close">×</button>
+        <div class="bn-annual-content">
+          <div class="bn-annual-badge">🎁 2 Bulan Gratis</div>
+          <div class="bn-annual-headline">Buka Pengalaman Tempo+ Penuh — Berlangganan Tahunan</div>
+          <div class="bn-annual-body">Semua investigasi, opini, dan laporan mendalam. Tanpa batas.</div>
+          <div class="bn-annual-perks">
+            <div class="bn-annual-perk"><div class="bn-annual-perk-dot"></div>Akses ke seluruh arsip sejak 1971</div>
+            <div class="bn-annual-perk"><div class="bn-annual-perk-dot"></div>Investigasi eksklusif hanya untuk subscriber</div>
+            <div class="bn-annual-perk"><div class="bn-annual-perk-dot"></div>2 bulan pertama gratis — потом Rp 640.000/tahun</div>
           </div>
-          <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.5;margin-bottom:14px;">Berlangganan tahunan dan hemat. Akses penuh ke setiap artikel, arsip, dan investigasi eksklusif.</div>
-          <div style="background:rgba(0,0,0,.15);border-radius:8px;padding:10px 12px;margin-bottom:12px;">
-            <div style="display:flex;align-items:baseline;gap:6px;">
-              <span style="font-size:11px;text-decoration:line-through;opacity:.5;color:rgba(255,255,255,.6);">Rp 768.000</span>
-              <span style="font-size:20px;font-weight:800;color:#FFFFFF;">Rp 640.000</span>
-              <span style="font-size:11px;opacity:.6;color:rgba(255,255,255,.7);">/tahun</span>
-            </div>
+          <div class="bn-annual-price-row">
+            <span class="bn-annual-old">Rp 768.000</span>
+            <span class="bn-annual-new">Rp 640.000</span>
+            <span class="bn-promo-period">/tahun</span>
           </div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <button style="width:100%;padding:9px;border-radius:8px;background:#FFFFFF;color:#059669;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Berlangganan Tahunan</button>
-            <button style="width:100%;padding:6px;text-align:center;background:none;border:none;color:rgba(255,255,255,.6);font-size:11px;cursor:pointer;">Tidak sekarang</button>
+          <div class="bn-annual-cta-row">
+            <button class="bn-annual-cta">Berlangganan Tahunan</button>
+            <button class="bn-annual-skip">Mau coba bulanan saja</button>
           </div>
         </div>
       </div>
+      <p class="modal-note">Banner annual — untuk pembaca high-intent. Tunjukkan value proposition penuh.</p>
     `
   },
   trial: {
     title: 'Free Trial 7 Hari',
-    layout: 'Modal', theme: 'Emerald',
+    layout: 'Modal', theme: 'Light',
     type: 'Free Trial', priority: 65, ab: 'Tidak',
     visual: `
-      <div style="background:#FFFFFF;border-radius:10px;overflow:hidden;border:1px solid #E5E7EB;box-shadow:0 4px 24px rgba(0,0,0,.08);">
-        <div style="height:3px;background:#10B981;"></div>
-        <div style="padding:20px;">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:38px;height:38px;border-radius:8px;background:#ECFDF5;display:flex;align-items:center;justify-content:center;">
-                <span style="font-size:18px;">✨</span>
-              </div>
-              <div>
-                <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:#ECFDF5;color:#065F46;padding:2px 5px;border-radius:3px;display:inline-block;margin-bottom:4px;">Free Trial</span>
-                <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#18181B;line-height:1.25;">Coba Tempo+ Gratis<br>7 Hari</div>
-              </div>
-            </div>
-            <button style="width:24px;height:24px;border-radius:4px;border:none;background:#F4F4F5;color:#71717A;cursor:pointer;font-size:14px;line-height:1;">×</button>
-          </div>
-          <div style="font-size:12px;color:#71717A;line-height:1.5;margin-bottom:14px;">Jelajahi ribuan investigasi dan jurnalisme mendalam. Batalkan kapan saja, tanpa kartu kredit.</div>
-          <div style="background:#F9FAFB;border-radius:8px;padding:10px 12px;margin-bottom:12px;">
-            <div style="display:flex;align-items:baseline;gap:4px;">
-              <span style="font-size:20px;font-weight:800;color:#18181B;">Gratis</span>
-              <span style="font-size:11px;color:#A1A1AA;">untuk 7 hari pertama</span>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <button style="width:100%;padding:9px;border-radius:8px;background:#18181B;color:#FFFFFF;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Mulai Gratis 7 Hari</button>
-            <button style="width:100%;padding:6px;text-align:center;background:none;border:none;color:#A1A1AA;font-size:11px;cursor:pointer;">Tidak sekarang</button>
+      <div class="real-banner bn-trial" style="position:relative;">
+        <img class="bn-trial-img" src="https://images.unsplash.com/photo-1586339949216-35c2747cc36d?w=600&h=160&fit=crop&q=80" alt="jurnalisme" />
+        <div class="bn-trial-overlay"></div>
+        <button class="bn-trial-close">×</button>
+        <div class="bn-trial-content">
+          <div class="bn-trial-badge">✨ 7 Hari Gratis</div>
+          <div class="bn-trial-headline">Coba Tempo+ Dulu,<br>Bayar Kemudian</div>
+          <div class="bn-trial-body">7 hari akses penuh ke semua investigasi dan liputan. Tanpa kartu kredit. Batal kapan saja.</div>
+          <div class="bn-trial-free">GRATIS <span>untuk 7 hari pertama</span></div>
+          <div class="bn-trial-cta-row">
+            <button class="bn-trial-cta">Mulai 7 Hari Gratis</button>
+            <button class="bn-trial-skip">Tidak sekarang</button>
           </div>
         </div>
       </div>
+      <p class="modal-note">Free trial — untuk pembaca baru. Hapus semua hambatan, maksimalisasi conversion.</p>
     `
   }
 };
@@ -1672,7 +1204,7 @@ function openPreview(key) {
   document.getElementById('footerPriority').textContent = b.priority;
   document.getElementById('footerAB').textContent = b.ab;
   document.getElementById('bannerPreviewArea').innerHTML = b.visual;
-  document.getElementById('previewModal').style.display = 'flex';
+  document.getElementById('previewModal').style.display = 'block';
   document.body.style.overflow = 'hidden';
 }
 
