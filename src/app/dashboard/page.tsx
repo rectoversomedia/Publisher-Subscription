@@ -823,20 +823,6 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ── Page Header ──────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-4">
-        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">
-          Executive Dashboard
-        </h1>
-        <button
-          onClick={fetchData}
-          className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold text-slate-500 bg-slate-50 border border-slate-300 rounded-xl hover:bg-slate-100 hover:text-slate-800 transition-all flex-shrink-0 group"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 group-hover:rotate-45 transition-transform duration-300 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
-      </div>
-
       {/* ── KPI Row 1 ─────────────────────────────────────── */}
       <section>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
