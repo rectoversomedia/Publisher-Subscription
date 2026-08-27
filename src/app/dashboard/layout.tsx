@@ -230,10 +230,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       )}
 
       {/* ── Main Content Area ─────────────────────────────── */}
-      <div className="flex-1 lg:ml-[260px] min-h-screen flex flex-col min-w-0">
+      <div className="flex-1 lg:ml-[260px] min-h-screen flex flex-col min-w-0 bg-white">
 
         {/* Top bar */}
-        <header className="sticky top-0 z-30 bg-[#080810]/80 backdrop-blur-xl border-b border-white/[0.05] px-6 py-4 flex items-center justify-between gap-4">
+        <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3 min-w-0">
             {/* Mobile menu toggle */}
             <button
@@ -245,14 +245,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 min-w-0">
-              <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-white/25">
-                <Brain className="w-3.5 h-3.5 text-[#C41230]/50" />
+              <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-400">
+                <Brain className="w-3.5 h-3.5 text-[#C41230]" />
                 <span>Revenue Intelligence</span>
               </div>
               {activeItem && (
                 <>
-                  <span className="text-white/15 text-xs hidden sm:block">›</span>
-                  <h1 className="text-[14px] font-bold text-white truncate">
+                  <span className="text-slate-300 text-xs hidden sm:block">›</span>
+                  <h1 className="text-[14px] font-bold text-slate-900 truncate">
                     {activeItem.label}
                   </h1>
                 </>
@@ -272,14 +272,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Clock */}
             <div className="hidden md:block text-right">
-              <div className="text-[11px] font-semibold text-white/60" id="liveClock">--:--:--</div>
-              <div className="text-[9px] text-white/25" id="liveDate">---</div>
+              <div className="text-[11px] font-semibold text-slate-600" id="liveClock">--:--:--</div>
+              <div className="text-[9px] text-slate-400" id="liveDate">---</div>
             </div>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-6 min-w-0">
+        <main className="flex-1 p-6 min-w-0 bg-white">
           {children}
         </main>
       </div>

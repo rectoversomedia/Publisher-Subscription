@@ -171,19 +171,19 @@ function SectionHeader({
     <div className="flex items-end justify-between mb-5">
       <div className="flex items-center gap-3">
         {Icon && (
-          <div className="w-9 h-9 rounded-xl bg-[#C41230]/10 border border-[#C41230]/20 flex items-center justify-center">
-            <Icon className="w-4.5 h-4.5 text-[#C41230]" />
+          <div className="w-9 h-9 rounded-xl bg-red-50 border border-red-200 flex items-center justify-center">
+            <Icon className="w-4.5 h-4.5 text-red-600" />
           </div>
         )}
         <div>
-          <h2 className="text-[15px] font-bold text-white/90">{title}</h2>
-          {subtitle && <p className="text-[11px] text-white/30 mt-0.5">{subtitle}</p>}
+          <h2 className="text-[15px] font-bold text-slate-900">{title}</h2>
+          {subtitle && <p className="text-[11px] text-slate-400 mt-0.5">{subtitle}</p>}
         </div>
       </div>
       {action && (
         <Link
           href={action.href}
-          className="flex items-center gap-1 text-[11px] text-[#C41230]/80 hover:text-[#C41230] font-semibold transition-colors group"
+          className="flex items-center gap-1 text-[11px] text-red-500 hover:text-red-600 font-semibold transition-colors group"
         >
           {action.label}
           <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -222,8 +222,8 @@ const CARD_CONFIGS = {
     accent: '#EF4444',
   },
   slate: {
-    icon: 'bg-white/8 text-white/50 border border-white/10',
-    glow: 'group-hover:shadow-[0_0_30px_rgba(255,255,255,0.05)]',
+    icon: 'bg-slate-100 text-slate-500 border border-slate-200',
+    glow: 'group-hover:shadow-[0_0_30px_rgba(148,163,184,0.15)]',
     accent: '#94A3B8',
   },
 };
@@ -247,9 +247,9 @@ function MetricCard({
 }) {
   const cfg = CARD_CONFIGS[color];
   const inner = (
-    <div className={`group relative bg-[#111128] border border-white/[0.06] rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:border-white/[0.1] hover:-translate-y-0.5 ${cfg.glow} overflow-hidden`}>
+    <div className={`group relative bg-white border border-slate-200 rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:border-slate-300 hover:-translate-y-0.5 ${cfg.glow} overflow-hidden`}>
       {/* Subtle top glow */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
       <div className="flex items-start justify-between mb-4">
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${cfg.icon}`}>
@@ -265,17 +265,17 @@ function MetricCard({
         )}
       </div>
 
-      <div className="text-[26px] font-black text-white font-mono tracking-tight leading-none mb-1.5">
+      <div className="text-[26px] font-black text-slate-900 font-mono tracking-tight leading-none mb-1.5">
         {value}
       </div>
-      <div className="text-[13px] font-semibold text-white/70 leading-tight">{title}</div>
+      <div className="text-[13px] font-semibold text-slate-700 leading-tight">{title}</div>
       {subtitle && (
-        <div className="text-[11px] text-white/30 mt-1.5 leading-relaxed">{subtitle}</div>
+        <div className="text-[11px] text-slate-400 mt-1.5 leading-relaxed">{subtitle}</div>
       )}
 
       {/* Hover shimmer */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-        <div className="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/[0.03] to-transparent" />
+        <div className="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-slate-100 to-transparent" />
       </div>
     </div>
   );
@@ -290,7 +290,7 @@ const FUNNEL_STEPS = [
   { key: 'paywall_exposed', label: 'Paywall Shown', color: 'from-violet-500/80 to-violet-400/60', glow: 'shadow-violet-500/10' },
   { key: 'offer_clicks', label: 'Offer Clicks', color: 'from-purple-500/80 to-purple-400/60', glow: 'shadow-purple-500/10' },
   { key: 'checkout_starts', label: 'Checkout', color: 'from-pink-500/80 to-pink-400/60', glow: 'shadow-pink-500/10' },
-  { key: 'subscriptions', label: 'Conversions', color: 'from-[#C41230]/80 to-rose-400/60', glow: 'shadow-[#C41230]/20' },
+  { key: 'subscriptions', label: 'Conversions', color: 'from-red-500 to-rose-400', glow: 'shadow-red-200' },
 ];
 
 function FunnelCard({ funnel, funnelMax }: { funnel: FunnelData; funnelMax: number }) {
@@ -298,7 +298,7 @@ function FunnelCard({ funnel, funnelMax }: { funnel: FunnelData; funnelMax: numb
   const steps = expanded ? FUNNEL_STEPS : FUNNEL_STEPS.slice(-4);
 
   return (
-    <div className="bg-[#111128] border border-white/[0.06] rounded-2xl overflow-hidden transition-all">
+    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all">
       <div className="px-6 pt-5 pb-4">
         <SectionHeader
           title="Subscription Funnel"
@@ -313,14 +313,14 @@ function FunnelCard({ funnel, funnelMax }: { funnel: FunnelData; funnelMax: numb
               <div key={step.key} className="group">
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[12px] font-semibold text-white/60">{step.label}</span>
+                    <span className="text-[12px] font-semibold text-slate-600">{step.label}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-bold text-white font-mono">{fmt(raw)}</span>
-                    <span className="text-[10px] text-white/25 w-10 text-right">{pct.toFixed(1)}%</span>
+                    <span className="text-[13px] font-bold text-slate-900 font-mono">{fmt(raw)}</span>
+                    <span className="text-[10px] text-slate-300 w-10 text-right">{pct.toFixed(1)}%</span>
                   </div>
                 </div>
-                <div className="h-2 bg-white/[0.04] rounded-full overflow-hidden">
+                <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full bg-gradient-to-r ${step.color} shadow-lg ${step.glow} transition-all duration-1000 ease-out group-hover:shadow-xl`}
                     style={{ width: `${Math.max(pct, 0.5)}%` }}
@@ -332,14 +332,14 @@ function FunnelCard({ funnel, funnelMax }: { funnel: FunnelData; funnelMax: numb
         </div>
       </div>
 
-      <div className="border-t border-white/[0.05] px-6 py-4 flex items-center justify-between">
-        <span className="text-[12px] font-medium text-white/40">Overall conversion</span>
+      <div className="border-t border-slate-200 px-6 py-4 flex items-center justify-between">
+        <span className="text-[12px] font-medium text-slate-400">Overall conversion</span>
         <div className="flex items-center gap-3">
           {FUNNEL_STEPS.map((s) => {
             const r = funnel[s.key as keyof FunnelData] as number;
             return null;
           })}
-          <span className="text-[18px] font-black text-white font-mono">
+          <span className="text-[18px] font-black text-slate-900 font-mono">
             {funnelMax > 0 ? ((funnel.subscriptions / funnel.unique_readers) * 100).toFixed(2) : '0.00'}%
           </span>
         </div>
@@ -347,7 +347,7 @@ function FunnelCard({ funnel, funnelMax }: { funnel: FunnelData; funnelMax: numb
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full border-t border-white/[0.05] px-6 py-2.5 flex items-center justify-center gap-1.5 text-[11px] text-white/30 hover:text-white/60 hover:bg-white/[0.02] transition-all"
+        className="w-full border-t border-slate-200 px-6 py-2.5 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all"
       >
         {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         {expanded ? 'Show less' : `Show all ${FUNNEL_STEPS.length} steps`}
@@ -395,7 +395,7 @@ function AttributionCard({ attribution }: {
   ];
 
   return (
-    <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-6 h-full flex flex-col">
+    <div className="bg-white border border-slate-200 rounded-2xl p-6 h-full flex flex-col">
       <SectionHeader
         title="Revenue Attribution"
         subtitle="Where conversions come from"
@@ -407,14 +407,14 @@ function AttributionCard({ attribution }: {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <div className={`w-1.5 h-1.5 rounded-full ${item.dot} shadow-lg`} />
-                <span className="text-[12px] font-medium text-white/60">{item.label}</span>
+                <span className="text-[12px] font-medium text-slate-600">{item.label}</span>
               </div>
               <div className="text-right">
-                <div className="text-[14px] font-bold text-white font-mono">{fmtRp(item.value)}</div>
-                <div className="text-[10px] text-white/30">{(item.pct * 100).toFixed(1)}%</div>
+                <div className="text-[14px] font-bold text-slate-900 font-mono">{fmtRp(item.value)}</div>
+                <div className="text-[10px] text-slate-400">{(item.pct * 100).toFixed(1)}%</div>
               </div>
             </div>
-            <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
+            <div className="h-1.5 bg-slate-50 rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full bg-gradient-to-r ${item.bg} shadow-lg`}
                 style={{ width: `${Math.max(item.pct * 100, 1)}%` }}
@@ -423,9 +423,9 @@ function AttributionCard({ attribution }: {
           </div>
         ))}
       </div>
-      <div className="mt-auto pt-5 border-t border-white/[0.05] flex items-center justify-between">
-        <span className="text-[12px] font-semibold text-white/50">Total Revenue</span>
-        <span className="text-[20px] font-black text-white font-mono">{fmtRp(attribution.total_revenue)}</span>
+      <div className="mt-auto pt-5 border-t border-slate-200 flex items-center justify-between">
+        <span className="text-[12px] font-semibold text-slate-500">Total Revenue</span>
+        <span className="text-[20px] font-black text-slate-900 font-mono">{fmtRp(attribution.total_revenue)}</span>
       </div>
     </div>
   );
@@ -448,7 +448,7 @@ const ACTION_BG: Record<string, string> = {
   SHOW_ANNUAL: 'bg-purple-500/15 text-purple-300 border border-purple-500/20',
   SHOW_WINBACK: 'bg-amber-500/15 text-amber-300 border border-amber-500/20',
   SHOW_SAVE_OFFER: 'bg-red-500/15 text-red-300 border border-red-500/20',
-  ALLOW_FREE: 'bg-white/8 text-white/50 border border-white/10',
+  ALLOW_FREE: 'bg-slate-100 text-slate-500 border border-slate-200',
   SHOW_REGISTRATION: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/20',
   SHOW_TRIAL: 'bg-violet-500/15 text-violet-300 border border-violet-500/20',
 };
@@ -457,7 +457,7 @@ function SegmentCard({ segments }: { segments: SegmentData[] }) {
   const maxRevenue = Math.max(...segments.map((s) => s.estimated_revenue), 1);
 
   return (
-    <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-6">
+    <div className="bg-white border border-slate-200 rounded-2xl p-6">
       <SectionHeader
         title="Revenue Segments"
         subtitle="Highest-value reader cohorts"
@@ -468,17 +468,17 @@ function SegmentCard({ segments }: { segments: SegmentData[] }) {
         {segments.slice(0, 6).map((seg, i) => {
           const barPct = (seg.estimated_revenue / maxRevenue) * 100;
           return (
-            <div key={seg.key} className="group py-3 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.02] -mx-6 px-6 transition-colors rounded-xl cursor-pointer">
+            <div key={seg.key} className="group py-3 border-b border-slate-200 last:border-0 hover:bg-slate-50 -mx-6 px-6 transition-colors rounded-xl cursor-pointer">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-5 h-5 rounded-md bg-[#C41230]/10 border border-[#C41230]/20 flex items-center justify-center text-[10px] font-bold text-[#FF6B7A]">
+                  <div className="w-5 h-5 rounded-md bg-red-50 border border-red-200 flex items-center justify-center text-[10px] font-bold text-red-500">
                     {i + 1}
                   </div>
                   <div>
-                    <div className="text-[13px] font-bold text-white/90 leading-tight">{seg.name}</div>
+                    <div className="text-[13px] font-bold text-slate-900 leading-tight">{seg.name}</div>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] text-white/30">{fmt(seg.count)} readers</span>
-                      <span className="text-[10px] text-white/15">·</span>
+                      <span className="text-[10px] text-slate-400">{fmt(seg.count)} readers</span>
+                      <span className="text-[10px] text-slate-300">·</span>
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-semibold ${ACTION_BG[seg.recommended_treatment] ?? ACTION_BG.ALLOW_FREE}`}>
                         {ACTION_LABELS[seg.recommended_treatment] ?? seg.recommended_treatment}
                       </span>
@@ -486,13 +486,13 @@ function SegmentCard({ segments }: { segments: SegmentData[] }) {
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0 ml-3">
-                  <div className="text-[14px] font-black text-white font-mono">{fmtRp(seg.estimated_revenue)}</div>
-                  <div className="text-[10px] text-white/25">est. revenue</div>
+                  <div className="text-[14px] font-black text-slate-900 font-mono">{fmtRp(seg.estimated_revenue)}</div>
+                  <div className="text-[10px] text-slate-300">est. revenue</div>
                 </div>
               </div>
-              <div className="h-1 bg-white/[0.04] rounded-full overflow-hidden ml-7.5">
+              <div className="h-1 bg-slate-50 rounded-full overflow-hidden ml-7.5">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#C41230]/60 to-[#C41230]/30 shadow-lg shadow-[#C41230]/10 transition-all duration-1000"
+                  className="h-full rounded-full bg-gradient-to-r to-red-500/30 to-red-500/30 shadow-lg shadow-red-200 transition-all duration-1000"
                   style={{ width: `${Math.max(barPct, 2)}%` }}
                 />
               </div>
@@ -511,7 +511,7 @@ function DecisionsTable({ recent_decisions }: { recent_decisions: RecentDecision
   const visible = expanded ? recent_decisions : recent_decisions.slice(0, 8);
 
   return (
-    <div className="bg-[#111128] border border-white/[0.06] rounded-2xl overflow-hidden">
+    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
       <div className="px-6 pt-5 pb-4">
         <SectionHeader
           title="Revenue Brain Decisions"
@@ -525,9 +525,9 @@ function DecisionsTable({ recent_decisions }: { recent_decisions: RecentDecision
       <div className="overflow-x-auto">
         <table className="w-full min-w-[600px]">
           <thead>
-            <tr className="border-y border-white/[0.05]">
+            <tr className="border-y border-slate-200">
               {['Time', 'Reader ID', 'Decision', 'Confidence', 'Factors', 'Priority'].map((h) => (
-                <th key={h} className="text-left px-5 py-2.5 text-[9px] font-bold uppercase tracking-[0.12em] text-white/25">
+                <th key={h} className="text-left px-5 py-2.5 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-300">
                   {h}
                 </th>
               ))}
@@ -543,18 +543,18 @@ function DecisionsTable({ recent_decisions }: { recent_decisions: RecentDecision
               const confColor =
                 confidence >= 80 ? { bar: 'bg-emerald-400', text: 'text-emerald-400', label: 'High', bg: 'bg-emerald-400/10' } :
                 confidence >= 60 ? { bar: 'bg-blue-400', text: 'text-blue-400', label: 'Med', bg: 'bg-blue-400/10' } :
-                { bar: 'bg-white/20', text: 'text-white/40', label: 'Low', bg: 'bg-white/5' };
+                { bar: 'bg-slate-100', text: 'text-slate-400', label: 'Low', bg: 'bg-slate-50' };
 
               return (
-                <tr key={dec.id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors group">
+                <tr key={dec.id} className="border-b border-slate-200 hover:bg-slate-50 transition-colors group">
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-1.5">
-                      <Clock className="w-3 h-3 text-white/25" />
-                      <span className="text-[11px] text-white/40 font-mono">{timeAgo(dec.timestamp)}</span>
+                      <Clock className="w-3 h-3 text-slate-300" />
+                      <span className="text-[11px] text-slate-400 font-mono">{timeAgo(dec.timestamp)}</span>
                     </div>
                   </td>
                   <td className="px-5 py-3.5">
-                    <code className="text-[11px] font-mono text-white/40 bg-white/[0.05] px-2 py-1 rounded-lg border border-white/[0.06] group-hover:border-white/[0.1] transition-colors">
+                    <code className="text-[11px] font-mono text-slate-400 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200 group-hover:border-slate-300 transition-colors">
                       {shortId}
                     </code>
                   </td>
@@ -565,7 +565,7 @@ function DecisionsTable({ recent_decisions }: { recent_decisions: RecentDecision
                   </td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-20 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                      <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${confColor.bar} shadow-lg`}
                           style={{ width: `${confidence}%` }}
@@ -579,12 +579,12 @@ function DecisionsTable({ recent_decisions }: { recent_decisions: RecentDecision
                   <td className="px-5 py-3.5">
                     <div className="flex flex-wrap gap-1 max-w-[200px]">
                       {(dec.reason_codes ?? []).slice(0, 2).map((code) => (
-                        <span key={code} className="text-[10px] font-medium text-white/35 bg-white/[0.04] px-2 py-0.5 rounded-md border border-white/[0.05]">
+                        <span key={code} className="text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200">
                           {code.replace(/_/g, ' ').toLowerCase()}
                         </span>
                       ))}
                       {(dec.reason_codes ?? []).length > 2 && (
-                        <span className="text-[10px] text-white/20 px-1">+{dec.reason_codes.length - 2}</span>
+                        <span className="text-[10px] text-slate-300 px-1">+{dec.reason_codes.length - 2}</span>
                       )}
                     </div>
                   </td>
@@ -603,17 +603,17 @@ function DecisionsTable({ recent_decisions }: { recent_decisions: RecentDecision
 
       {recent_decisions.length === 0 && (
         <div className="py-16 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mx-auto mb-4">
-            <Activity className="w-7 h-7 text-white/20" />
+          <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center mx-auto mb-4">
+            <Activity className="w-7 h-7 text-slate-300" />
           </div>
-          <p className="text-[13px] font-semibold text-white/40">No decisions yet</p>
-          <p className="text-[11px] text-white/20 mt-1">Revenue decisions will appear here as events come in.</p>
+          <p className="text-[13px] font-semibold text-slate-400">No decisions yet</p>
+          <p className="text-[11px] text-slate-300 mt-1">Revenue decisions will appear here as events come in.</p>
         </div>
       )}
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full border-t border-white/[0.05] px-6 py-3 flex items-center justify-center gap-1.5 text-[11px] text-white/30 hover:text-white/60 hover:bg-white/[0.02] transition-all"
+        className="w-full border-t border-slate-200 px-6 py-3 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all"
       >
         {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         {expanded ? 'Show less' : `Show all ${recent_decisions.length} decisions`}
@@ -630,7 +630,7 @@ function ActivityFeed({ events }: { events: RecentDecision[] }) {
     { key: 'paywall_view', icon: Eye, color: 'text-blue-400', bg: 'bg-blue-400/10', label: 'Paywall' },
     { key: 'checkout_start', icon: ShoppingCart, color: 'text-purple-400', bg: 'bg-purple-400/10', label: 'Checkout' },
     { key: 'offer_click', icon: MousePointerClick, color: 'text-amber-400', bg: 'bg-amber-400/10', label: 'Offer click' },
-    { key: 'register', icon: Users, color: 'text-[#C41230]', bg: 'bg-[#C41230]/10', label: 'Register' },
+    { key: 'register', icon: Users, color: 'text-red-600', bg: 'bg-red-50', label: 'Register' },
   ];
 
   const mockEvents = events.length > 0 ? events.slice(0, 6).map((d) => ({
@@ -647,16 +647,16 @@ function ActivityFeed({ events }: { events: RecentDecision[] }) {
   ];
 
   return (
-    <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5">
+    <div className="bg-white border border-slate-200 rounded-2xl p-5">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <div className="relative">
-            <div className="w-2 h-2 rounded-full bg-[#C41230]" />
-            <div className="absolute inset-0 w-2 h-2 rounded-full bg-[#C41230] animate-ping opacity-60" />
+            <div className="w-2 h-2 rounded-full bg-red-600" />
+            <div className="absolute inset-0 w-2 h-2 rounded-full bg-red-600 animate-ping opacity-60" />
           </div>
-          <span className="text-[12px] font-bold text-white/70">Live Activity</span>
+          <span className="text-[12px] font-bold text-slate-700">Live Activity</span>
         </div>
-        <span className="text-[10px] text-white/25 font-mono">real-time</span>
+        <span className="text-[10px] text-slate-300 font-mono">real-time</span>
       </div>
       <div className="space-y-2.5">
         {mockEvents.map((ev, i) => {
@@ -669,10 +669,10 @@ function ActivityFeed({ events }: { events: RecentDecision[] }) {
                 <Icon className={`w-3.5 h-3.5 ${typeInfo.color}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[12px] font-medium text-white/60 leading-tight">
+                <div className="text-[12px] font-medium text-slate-600 leading-tight">
                   {evAny.action ? `Decision: ${ACTION_LABELS[evAny.action] ?? evAny.action}` : typeInfo.label}
                 </div>
-                <div className="text-[10px] text-white/25 mt-0.5">{timeAgo(ev.time as string)}</div>
+                <div className="text-[10px] text-slate-300 mt-0.5">{timeAgo(ev.time as string)}</div>
               </div>
               <div className={`w-1.5 h-1.5 rounded-full ${typeInfo.color.replace('text-', 'bg-')} opacity-60`} />
             </div>
@@ -759,19 +759,19 @@ export default function DashboardPage() {
         {/* Header skeleton */}
         <div className="flex items-center justify-between">
           <div>
-            <div className="h-8 w-72 bg-white/[0.05] rounded-xl animate-pulse mb-2" />
-            <div className="h-4 w-96 bg-white/[0.03] rounded-lg animate-pulse" />
+            <div className="h-8 w-72 bg-slate-50 rounded-xl animate-pulse mb-2" />
+            <div className="h-4 w-96 bg-slate-50 rounded-lg animate-pulse" />
           </div>
         </div>
         {/* Card skeletons */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5 h-36 animate-pulse" />
+            <div key={i} className="bg-white border border-slate-200 rounded-2xl p-5 h-36 animate-pulse" />
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-[#111128] border border-white/[0.06] rounded-2xl h-72 animate-pulse" />
+            <div key={i} className="bg-white border border-slate-200 rounded-2xl h-72 animate-pulse" />
           ))}
         </div>
       </div>
@@ -781,14 +781,14 @@ export default function DashboardPage() {
   if (error && !data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <div className="w-20 h-20 rounded-2xl bg-[#C41230]/10 border border-[#C41230]/20 flex items-center justify-center mb-6">
-          <AlertTriangle className="w-10 h-10 text-[#C41230]/60" />
+        <div className="w-20 h-20 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-center mb-6">
+          <AlertTriangle className="w-10 h-10 text-red-600/60" />
         </div>
-        <h2 className="text-xl font-bold text-white/80 mb-2">Unable to load dashboard</h2>
-        <p className="text-sm text-white/40 mb-6 max-w-sm">{error}</p>
+        <h2 className="text-xl font-bold text-slate-800 mb-2">Unable to load dashboard</h2>
+        <p className="text-sm text-slate-400 mb-6 max-w-sm">{error}</p>
         <button
           onClick={fetchData}
-          className="px-6 py-3 bg-[#C41230] hover:bg-[#8B0000] text-white rounded-xl text-sm font-bold transition-all"
+          className="px-6 py-3 bg-red-600 hover:bg-red-700 text-red-600 rounded-xl text-sm font-bold transition-all"
         >
           Retry Connection
         </button>
@@ -807,9 +807,9 @@ export default function DashboardPage() {
 
       {/* ── Demo Banner ────────────────────────────────────── */}
       {data._demo && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-[#C41230]/08 border border-[#C41230]/20 rounded-2xl text-sm">
-          <div className="w-2 h-2 rounded-full bg-[#C41230] animate-pulse flex-shrink-0" />
-          <span className="text-[#FF6B7A] text-[12px]">
+        <div className="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-2xl text-sm">
+          <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse flex-shrink-0" />
+          <span className="text-red-500 text-[12px]">
             <strong>Demo Mode</strong> — displaying sample data. Connect your Supabase database to see live metrics.
           </span>
         </div>
@@ -818,16 +818,16 @@ export default function DashboardPage() {
       {/* ── Page Header ──────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-[22px] font-black text-white tracking-tight leading-none">
+          <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">
             Executive Dashboard
           </h1>
-          <p className="text-[11px] text-white/30 mt-2 flex items-center gap-2">
+          <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
             <span>Revenue Intelligence</span>
-            <span className="text-white/15">·</span>
+            <span className="text-slate-300">·</span>
             <span>30-day window</span>
             {lastUpdated && (
               <>
-                <span className="text-white/15">·</span>
+                <span className="text-slate-300">·</span>
                 <span className="flex items-center gap-1">
                   <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
                   Updated {timeAgo(lastUpdated.toISOString())}
@@ -838,7 +838,7 @@ export default function DashboardPage() {
         </div>
         <button
           onClick={fetchData}
-          className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold text-white/50 bg-white/[0.04] border border-white/[0.08] rounded-xl hover:bg-white/[0.08] hover:text-white/80 transition-all flex-shrink-0 group"
+          className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold text-slate-500 bg-slate-50 border border-slate-300 rounded-xl hover:bg-slate-100 hover:text-slate-800 transition-all flex-shrink-0 group"
         >
           <RefreshCw className={`w-3.5 h-3.5 group-hover:rotate-45 transition-transform duration-300 ${loading ? 'animate-spin' : ''}`} />
           Refresh
