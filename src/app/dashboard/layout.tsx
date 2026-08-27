@@ -244,20 +244,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </button>
 
             {/* Breadcrumb */}
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-400">
-                <Brain className="w-3.5 h-3.5 text-[#C41230]" />
-                <span>Revenue Intelligence</span>
-              </div>
-              {activeItem && (
-                <>
-                  <span className="text-slate-300 text-xs hidden sm:block">›</span>
-                  <h1 className="text-[14px] font-bold text-slate-900 truncate">
-                    {activeItem.label}
-                  </h1>
-                </>
-              )}
-            </div>
+            <div className="flex items-center gap-2 min-w-0" />
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
