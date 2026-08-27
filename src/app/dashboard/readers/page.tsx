@@ -83,7 +83,7 @@ function ScorePill({ value, type }: { value: number; type: 'propensity' | 'churn
     if (value >= 80) return { bg: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20', label: 'Very High' };
     if (value >= 60) return { bg: 'bg-blue-500/15 text-blue-400 border border-blue-500/20', label: 'High' };
     if (value >= 30) return { bg: 'bg-amber-500/15 text-amber-400 border border-amber-500/20', label: 'Medium' };
-    return { bg: 'bg-white/[0.05] text-white/30 border border-white/[0.08]', label: 'Low' };
+    return { bg: 'bg-slate-50 text-slate-400 border border-slate-300', label: 'Low' };
   })();
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold ${color.bg}`}>
@@ -98,19 +98,19 @@ const SUB_STATUS: Record<string, { label: string; bg: string; dot: string }> = {
   ACTIVE:   { label: 'Active',   bg: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20', dot: 'bg-emerald-400' },
   EXPIRED:  { label: 'Expired',  bg: 'bg-red-500/15 text-red-400 border border-red-500/20', dot: 'bg-red-400' },
   TRIAL:    { label: 'Trial',    bg: 'bg-blue-500/15 text-blue-400 border border-blue-500/20', dot: 'bg-blue-400' },
-  NONE:     { label: 'Free',    bg: 'bg-white/[0.05] text-white/30 border border-white/[0.08]', dot: 'bg-white/20' },
+  NONE:     { label: 'Free',    bg: 'bg-slate-50 text-slate-400 border border-slate-300', dot: 'bg-white/20' },
 };
 
 const IDENTITY_STATUS: Record<string, { label: string; bg: string }> = {
   KNOWN:     { label: 'Known',    bg: 'bg-blue-500/15 text-blue-400 border border-blue-500/20' },
   REGISTERED:{ label: 'Registered', bg: 'bg-blue-500/15 text-blue-400 border border-blue-500/20' },
-  ANONYMOUS: { label: 'Anonymous', bg: 'bg-white/[0.05] text-white/25 border border-white/[0.08]' },
-  UNKNOWN:   { label: 'Unknown',  bg: 'bg-white/[0.05] text-white/20 border border-white/[0.06]' },
+  ANONYMOUS: { label: 'Anonymous', bg: 'bg-slate-50 text-slate-300 border border-slate-300' },
+  UNKNOWN:   { label: 'Unknown',  bg: 'bg-slate-50 text-slate-300 border border-slate-200' },
 };
 
 // ── Avatar ───────────────────────────────────────────────────
 
-const AV_COLORS = ['bg-blue-500/30', 'bg-purple-500/30', 'bg-emerald-500/30', 'bg-amber-500/30', 'bg-[#C41230]/30', 'bg-pink-500/30'];
+const AV_COLORS = ['bg-blue-500/30', 'bg-purple-500/30', 'bg-emerald-500/30', 'bg-amber-500/30', 'bg-red-100', 'bg-pink-500/30'];
 
 function Avatar({ name, size = 36 }: { name: string; size?: number }) {
   const initials = name
@@ -119,7 +119,7 @@ function Avatar({ name, size = 36 }: { name: string; size?: number }) {
   const colorIdx = name ? name.charCodeAt(0) % AV_COLORS.length : 0;
   return (
     <div
-      className={`${AV_COLORS[colorIdx]} rounded-lg flex items-center justify-center text-[11px] font-bold text-white border border-white/10 flex-shrink-0`}
+      className={`${AV_COLORS[colorIdx]} rounded-lg flex items-center justify-center text-[11px] font-bold text-slate-900 border border-slate-200 flex-shrink-0`}
       style={{ width: size, height: size, minWidth: size }}
     >
       {initials}
@@ -144,12 +144,12 @@ function ReaderRow({ reader, index }: { reader: Reader; index: number }) {
 
   return (
     <tr
-      className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-all group cursor-pointer"
+      className="border-b border-slate-200 hover:bg-slate-50 transition-all group cursor-pointer"
       onClick={() => window.location.href = `/dashboard/readers/${reader.id}`}
     >
       {/* ID */}
       <td className="px-4 py-3.5">
-        <code className="text-[10px] font-mono text-white/20">
+        <code className="text-[10px] font-mono text-slate-300">
           {reader.anonymous_id ? `anon_${reader.anonymous_id.slice(-8)}` : reader.id.slice(0, 10) + '…'}
         </code>
       </td>
@@ -159,16 +159,16 @@ function ReaderRow({ reader, index }: { reader: Reader; index: number }) {
         <div className="flex items-center gap-3">
           <Avatar name={name} />
           <div className="min-w-0">
-            <div className="text-[13px] font-bold text-white/90 truncate">{name}</div>
+            <div className="text-[13px] font-bold text-slate-900 truncate">{name}</div>
             <div className="flex items-center gap-2 mt-0.5">
               {reader.email && (
-                <span className="flex items-center gap-1 text-[10px] text-white/25 hover:text-blue-400 transition-colors">
+                <span className="flex items-center gap-1 text-[10px] text-slate-300 hover:text-blue-400 transition-colors">
                   <Mail className="w-2.5 h-2.5 flex-shrink-0" />
                   <span className="truncate max-w-[140px]">{reader.email}</span>
                 </span>
               )}
               {reader.phone && (
-                <span className="flex items-center gap-1 text-[10px] text-white/25 hover:text-emerald-400 transition-colors">
+                <span className="flex items-center gap-1 text-[10px] text-slate-300 hover:text-emerald-400 transition-colors">
                   <Phone className="w-2.5 h-2.5 flex-shrink-0" />
                   <span>{reader.phone}</span>
                 </span>
@@ -198,13 +198,13 @@ function ReaderRow({ reader, index }: { reader: Reader; index: number }) {
       {/* Engagement */}
       <td className="px-4 py-3.5">
         <div className="flex items-center gap-2">
-          <div className="w-16 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+          <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
             <div
               className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all"
               style={{ width: `${f?.engagement_score ?? 0}%` }}
             />
           </div>
-          <span className="text-[11px] font-mono text-white/50 w-6">{formatScore(f?.engagement_score ?? 0)}</span>
+          <span className="text-[11px] font-mono text-slate-500 w-6">{formatScore(f?.engagement_score ?? 0)}</span>
         </div>
       </td>
 
@@ -222,30 +222,30 @@ function ReaderRow({ reader, index }: { reader: Reader; index: number }) {
       <td className="px-4 py-3.5">
         {reader.subscription_status === 'ACTIVE' && f
           ? <ScorePill value={f.churn_risk} type="churn" />
-          : <span className="text-[10px] text-white/15">—</span>
+          : <span className="text-[10px] text-slate-300">—</span>
         }
       </td>
 
       {/* LTV */}
       <td className="px-4 py-3.5">
         {f?.predicted_ltv
-          ? <span className="text-[12px] font-mono font-bold text-white/60">Rp {fmt(f.predicted_ltv)}</span>
-          : <span className="text-[10px] text-white/15">—</span>
+          ? <span className="text-[12px] font-mono font-bold text-slate-600">Rp {fmt(f.predicted_ltv)}</span>
+          : <span className="text-[10px] text-slate-300">—</span>
         }
       </td>
 
       {/* Last seen */}
       <td className="px-4 py-3.5">
-        <span className="text-[11px] text-white/30 font-mono">{timeAgo(reader.last_seen_at)}</span>
+        <span className="text-[11px] text-slate-400 font-mono">{timeAgo(reader.last_seen_at)}</span>
       </td>
 
       {/* Decision */}
       <td className="px-4 py-3.5">
         <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold ${
-          decision === 'SHOW_MONTHLY' ? 'bg-[#C41230]/15 text-[#FF6B7A] border border-[#C41230]/20' :
+          decision === 'SHOW_MONTHLY' ? 'bg-red-50 text-red-500 border border-red-200' :
           decision === 'SHOW_ANNUAL' ? 'bg-purple-500/15 text-purple-400 border border-purple-500/20' :
           decision === 'SHOW_REGISTRATION' ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' :
-          'bg-white/[0.05] text-white/30 border border-white/[0.08]'
+          'bg-slate-50 text-slate-400 border border-slate-300'
         }`}>
           {decision.replace(/_/g, ' ')}
         </span>
@@ -253,7 +253,7 @@ function ReaderRow({ reader, index }: { reader: Reader; index: number }) {
 
       {/* Arrow */}
       <td className="px-4 py-3.5">
-        <ArrowUpRight className="w-4 h-4 text-white/15 group-hover:text-white/40 transition-colors" />
+        <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-slate-400 transition-colors" />
       </td>
     </tr>
   );
@@ -341,21 +341,21 @@ function ReadersContent() {
       {/* ── Header ──────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-[22px] font-black text-white tracking-tight leading-none">
+          <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">
             Reader Explorer
           </h1>
-          <p className="text-[11px] text-white/30 mt-2 flex items-center gap-2">
+          <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
             <span>{fmt(total)} total readers</span>
-            <span className="text-white/10">·</span>
+            <span className="text-slate-200">·</span>
             <span>{highIntent} high-intent</span>
-            <span className="text-white/10">·</span>
+            <span className="text-slate-200">·</span>
             <span className="flex items-center gap-1">
               <div className="w-1 h-1 rounded-full bg-emerald-400" />
               {activeSubs} active subscribers
             </span>
             {atRisk > 0 && (
               <>
-                <span className="text-white/10">·</span>
+                <span className="text-slate-200">·</span>
                 <span className="flex items-center gap-1 text-red-400/60">
                   <div className="w-1 h-1 rounded-full bg-red-400" />
                   {atRisk} at risk
@@ -366,7 +366,7 @@ function ReadersContent() {
         </div>
         <button
           onClick={fetchReaders}
-          className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold text-white/50 bg-white/[0.04] border border-white/[0.08] rounded-xl hover:bg-white/[0.08] hover:text-white/80 transition-all group"
+          className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold text-slate-500 bg-slate-50 border border-slate-300 rounded-xl hover:bg-slate-100 hover:text-slate-800 transition-all group"
         >
           <RefreshCw className={`w-3.5 h-3.5 group-hover:rotate-45 transition-transform duration-300 ${loading ? 'animate-spin' : ''}`} />
           Refresh
@@ -381,16 +381,16 @@ function ReadersContent() {
           { label: 'Active Subs', value: activeSubs, icon: Star, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
           { label: 'At Risk', value: atRisk, icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/10' },
           { label: 'Avg Propensity', value: filteredReaders.length > 0 ? Math.round(filteredReaders.reduce((a, r) => a + (r.features?.subscription_propensity ?? 0), 0) / filteredReaders.length) : 0, icon: Brain, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-          { label: 'New Today', value: '—', icon: TrendingUp, color: 'text-[#C41230]', bg: 'bg-[#C41230]/10' },
+          { label: 'New Today', value: '—', icon: TrendingUp, color: 'text-red-600', bg: 'bg-red-50' },
         ].map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="bg-[#111128] border border-white/[0.06] rounded-xl p-4 hover:border-white/[0.1] transition-all">
+            <div key={stat.label} className="bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-300 transition-all">
               <div className={`w-8 h-8 rounded-lg ${stat.bg} flex items-center justify-center mb-3`}>
                 <Icon className={`w-4 h-4 ${stat.color}`} />
               </div>
-              <div className="text-[20px] font-black text-white font-mono leading-none mb-1">{stat.value}</div>
-              <div className="text-[10px] text-white/30">{stat.label}</div>
+              <div className="text-[20px] font-black text-slate-900 font-mono leading-none mb-1">{stat.value}</div>
+              <div className="text-[10px] text-slate-400">{stat.label}</div>
             </div>
           );
         })}
@@ -399,22 +399,22 @@ function ReadersContent() {
       {/* ── Filters ────────────────────────────────────── */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-64">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25 pointer-events-none" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 pointer-events-none" />
           <input
             type="text"
             placeholder="Search name, email, phone, reader ID..."
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-[13px] bg-[#111128] border border-white/[0.08] rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[#C41230]/40 focus:bg-[#141430] transition-all"
+            className="w-full pl-10 pr-4 py-2.5 text-[13px] bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-white/20 focus:outline-none focus:border-red-600/40 focus:bg-[#141430] transition-all"
           />
         </div>
 
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/25 pointer-events-none" />
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 pointer-events-none" />
           <select
             value={filterStatus}
             onChange={(e) => handleStatusChange(e.target.value)}
-            className="pl-8 pr-4 py-2.5 text-[12px] bg-[#111128] border border-white/[0.08] rounded-xl text-white/70 focus:outline-none focus:border-[#C41230]/40 appearance-none cursor-pointer hover:bg-[#141430] transition-all"
+            className="pl-8 pr-4 py-2.5 text-[12px] bg-white border border-slate-300 rounded-xl text-slate-700 focus:outline-none focus:border-red-600/40 appearance-none cursor-pointer hover:bg-[#141430] transition-all"
           >
             <option value="">All Status</option>
             <option value="NONE">Non-subscriber</option>
@@ -427,7 +427,7 @@ function ReadersContent() {
         <select
           value={filterPropensity}
           onChange={(e) => handlePropensityChange(e.target.value)}
-          className="px-4 py-2.5 text-[12px] bg-[#111128] border border-white/[0.08] rounded-xl text-white/70 focus:outline-none focus:border-[#C41230]/40 appearance-none cursor-pointer hover:bg-[#141430] transition-all"
+          className="px-4 py-2.5 text-[12px] bg-white border border-slate-300 rounded-xl text-slate-700 focus:outline-none focus:border-red-600/40 appearance-none cursor-pointer hover:bg-[#141430] transition-all"
         >
           <option value="">All Propensity</option>
           <option value="80">Very High (≥80)</option>
@@ -437,13 +437,13 @@ function ReadersContent() {
       </div>
 
       {/* ── Table ──────────────────────────────────────── */}
-      <div className="bg-[#111128] border border-white/[0.06] rounded-2xl overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px]">
             <thead>
-              <tr className="border-b border-white/[0.05]">
+              <tr className="border-b border-slate-200">
                 {['Reader ID', 'Identity', 'Identity Status', 'Subscription', 'Engagement', 'Propensity', 'Price Sens.', 'Churn Risk', 'Est. LTV', 'Last Seen', 'Decision', ''].map((h) => (
-                  <th key={h} className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-[0.12em] text-white/20">
+                  <th key={h} className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-300">
                     {h}
                   </th>
                 ))}
@@ -452,10 +452,10 @@ function ReadersContent() {
             <tbody>
               {loading ? (
                 [...Array(8)].map((_, i) => (
-                  <tr key={i} className="border-b border-white/[0.04]">
+                  <tr key={i} className="border-b border-slate-200">
                     {[...Array(12)].map((_, j) => (
                       <td key={j} className="px-4 py-3.5">
-                        <div className="h-3 bg-white/[0.04] rounded animate-pulse" style={{ width: `${60 + Math.random() * 40}%` }} />
+                        <div className="h-3 bg-slate-50 rounded animate-pulse" style={{ width: `${60 + Math.random() * 40}%` }} />
                       </td>
                     ))}
                   </tr>
@@ -463,11 +463,11 @@ function ReadersContent() {
               ) : filteredReaders.length === 0 ? (
                 <tr>
                   <td colSpan={12} className="py-16 text-center">
-                    <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mx-auto mb-4">
-                      <Users className="w-7 h-7 text-white/20" />
+                    <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center mx-auto mb-4">
+                      <Users className="w-7 h-7 text-slate-300" />
                     </div>
-                    <p className="text-[13px] font-semibold text-white/40">No readers found</p>
-                    <p className="text-[11px] text-white/20 mt-1">Try adjusting your filters or search query.</p>
+                    <p className="text-[13px] font-semibold text-slate-400">No readers found</p>
+                    <p className="text-[11px] text-slate-300 mt-1">Try adjusting your filters or search query.</p>
                   </td>
                 </tr>
               ) : (
@@ -480,25 +480,25 @@ function ReadersContent() {
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between px-5 py-4 border-t border-white/[0.05] bg-[#0D0D1F]/50">
-          <span className="text-[11px] text-white/25">
+        <div className="flex items-center justify-between px-5 py-4 border-t border-slate-200 bg-slate-100">
+          <span className="text-[11px] text-slate-300">
             Showing {((page - 1) * limit) + 1}–{Math.min(page * limit, total)} of {fmt(total)}
           </span>
           <div className="flex items-center gap-2">
             <button
               onClick={() => goToPage(Math.max(1, page - 1))}
               disabled={page <= 1}
-              className="p-2 border border-white/[0.08] rounded-lg text-white/30 hover:text-white/60 hover:border-white/[0.15] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="p-2 border border-slate-300 rounded-lg text-slate-400 hover:text-slate-600 hover:border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-[12px] text-white/50 font-mono px-3">
+            <span className="text-[12px] text-slate-500 font-mono px-3">
               {page} / {totalPages}
             </span>
             <button
               onClick={() => goToPage(Math.min(totalPages, page + 1))}
               disabled={page >= totalPages}
-              className="p-2 border border-white/[0.08] rounded-lg text-white/30 hover:text-white/60 hover:border-white/[0.15] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="p-2 border border-slate-300 rounded-lg text-slate-400 hover:text-slate-600 hover:border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -511,7 +511,7 @@ function ReadersContent() {
 
 export default function ReadersPage() {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-white/30">Loading readers…</div>}>
+    <Suspense fallback={<div className="py-20 text-center text-slate-400">Loading readers…</div>}>
       <ReadersContent />
     </Suspense>
   );

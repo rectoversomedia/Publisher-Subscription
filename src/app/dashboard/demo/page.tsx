@@ -70,17 +70,17 @@ const JOURNEY_STEPS = [
 ];
 
 const LIFECYCLE_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
-  NEW:        { bg: 'bg-white/[0.05]', text: 'text-white/30', border: 'border-white/[0.08]' },
+  NEW:        { bg: 'bg-slate-50', text: 'text-slate-400', border: 'border-slate-300' },
   CASUAL:     { bg: 'bg-blue-500/15', text: 'text-blue-400', border: 'border-blue-500/20' },
   HIGH_INTENT:{ bg: 'bg-amber-500/15', text: 'text-amber-400', border: 'border-amber-500/20' },
-  CONVERTING: { bg: 'bg-[#C41230]/15', text: 'text-[#FF6B7A]', border: 'border-[#C41230]/20' },
+  CONVERTING: { bg: 'bg-red-50', text: 'text-red-500', border: 'border-red-200' },
   SUBSCRIBED: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/20' },
 };
 
 const ACTION_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
-  ALLOW_FREE:        { bg: 'bg-white/[0.05]', text: 'text-white/30', border: 'border-white/[0.08]' },
+  ALLOW_FREE:        { bg: 'bg-slate-50', text: 'text-slate-400', border: 'border-slate-300' },
   SHOW_SOFT_PAYWALL: { bg: 'bg-amber-500/15', text: 'text-amber-400', border: 'border-amber-500/20' },
-  SHOW_MONTHLY:      { bg: 'bg-[#C41230]/15', text: 'text-[#FF6B7A]', border: 'border-[#C41230]/20' },
+  SHOW_MONTHLY:      { bg: 'bg-red-50', text: 'text-red-500', border: 'border-red-200' },
   SHOW_SAVE_OFFER:   { bg: 'bg-red-500/15', text: 'text-red-400', border: 'border-red-500/20' },
   NO_ACTION:         { bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/20' },
 };
@@ -100,11 +100,11 @@ function MeterDisplay({ current, limit }: { current: number; limit: number }) {
   const color = current >= limit ? 'bg-red-500' : current === limit - 1 ? 'bg-amber-500' : 'bg-blue-500';
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[10px] text-white/30">Meter:</span>
+      <span className="text-[10px] text-slate-400">Meter:</span>
       {Array.from({ length: limit }).map((_, i) => (
-        <div key={i} className={`w-2.5 h-2.5 rounded-full border transition-all ${i < current ? `${color} border-transparent` : 'bg-white/10 border-white/20'}`} />
+        <div key={i} className={`w-2.5 h-2.5 rounded-full border transition-all ${i < current ? `${color} border-transparent` : 'bg-slate-100 border-slate-200'}`} />
       ))}
-      <span className="text-[10px] font-mono text-white/50 ml-1">{current}/{limit}</span>
+      <span className="text-[10px] font-mono text-slate-500 ml-1">{current}/{limit}</span>
     </div>
   );
 }
@@ -151,9 +151,9 @@ export default function DemoPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-[22px] font-black text-white tracking-tight leading-none">Demo: 6-Hari Journey ke Subscription</h1>
-          <p className="text-[11px] text-white/30 mt-2 flex items-center gap-2">
-            <Play className="w-3.5 h-3.5 text-[#C41230]/50" />
+          <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Demo: 6-Hari Journey ke Subscription</h1>
+          <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
+            <Play className="w-3.5 h-3.5 text-red-600/50" />
             Ikuti perjalanan "Andi" — dari pembaca baru → subscriber Tempo+
           </p>
         </div>
@@ -166,10 +166,10 @@ export default function DemoPage() {
       </div>
 
       {/* Timeline */}
-      <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[12px] font-bold text-white/70">6-Hari Subscription Journey</h2>
-          <span className="text-[10px] text-white/20">Revenue Brain decisions</span>
+          <h2 className="text-[12px] font-bold text-slate-700">6-Hari Subscription Journey</h2>
+          <span className="text-[10px] text-slate-300">Revenue Brain decisions</span>
         </div>
         <div className="flex items-center gap-2 overflow-x-auto pb-1">
           {JOURNEY_STEPS.map((s, i) => {
@@ -181,19 +181,19 @@ export default function DemoPage() {
                 key={i}
                 onClick={() => { setActiveStep(i); setPlaying(false); setShowResult(false); }}
                 className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl transition-all cursor-pointer ${
-                  isActive ? 'bg-[#C41230]/15 border-2 border-[#C41230]/30' :
+                  isActive ? 'bg-red-50 border-2 border-red-200' :
                   isDone ? 'bg-emerald-500/10 border border-emerald-500/20' :
-                  'bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.07]'
+                  'bg-slate-50 border border-slate-200 hover:bg-slate-100'
                 }`}
               >
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-black ${
-                  isActive ? 'bg-[#C41230] text-white' :
-                  isDone ? 'bg-emerald-500 text-white' :
-                  'bg-white/10 text-white/30'
+                  isActive ? 'bg-red-600 text-slate-900' :
+                  isDone ? 'bg-emerald-500 text-slate-900' :
+                  'bg-slate-100 text-slate-400'
                 }`}>
                   {isDone ? <CheckCircle className="w-4 h-4" /> : i + 1}
                 </div>
-                <span className="text-[10px] text-white/40">Day {s.day}</span>
+                <span className="text-[10px] text-slate-400">Day {s.day}</span>
                 <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${sLc.bg} ${sLc.text}`}>
                   {s.lifecycleStage}
                 </span>
@@ -208,39 +208,39 @@ export default function DemoPage() {
         <div className="xl:col-span-2 space-y-4">
 
           {/* Step Card */}
-          <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isLast ? 'bg-emerald-500/15' : 'bg-[#C41230]/15'}`}>
-                  <Clock className={`w-4 h-4 ${isLast ? 'text-emerald-400' : 'text-[#FF6B7A]'}`} />
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isLast ? 'bg-emerald-500/15' : 'bg-red-50'}`}>
+                  <Clock className={`w-4 h-4 ${isLast ? 'text-emerald-400' : 'text-red-500'}`} />
                 </div>
                 <div>
-                  <div className="text-[10px] text-white/25">Day {step.day}</div>
-                  <div className="text-[13px] font-bold text-white/90">{step.label}</div>
+                  <div className="text-[10px] text-slate-300">Day {step.day}</div>
+                  <div className="text-[13px] font-bold text-slate-900">{step.label}</div>
                 </div>
               </div>
               <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold ${lc.bg} ${lc.text} ${lc.border} border`}>
                 {step.lifecycleStage}
               </span>
             </div>
-            <p className="text-[12px] text-white/40 leading-relaxed">{step.description}</p>
+            <p className="text-[12px] text-slate-400 leading-relaxed">{step.description}</p>
           </div>
 
           {/* Revenue Brain Decision */}
-          <div className="bg-gradient-to-br from-[#0D0D1F] to-[#111128] border border-white/[0.06] rounded-2xl p-5">
+          <div className="bg-gradient-to-br from-[#0D0D1F] to-[#111128] border border-slate-200 rounded-2xl p-5">
             <div className="flex items-center gap-2 mb-4">
-              <Brain className="w-4 h-4 text-[#C41230]" />
-              <span className="text-[11px] font-bold text-white/50 uppercase tracking-widest">Revenue Brain Decision</span>
+              <Brain className="w-4 h-4 text-red-600" />
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Revenue Brain Decision</span>
             </div>
             <span className={`inline-flex items-center px-4 py-2 rounded-xl text-[13px] font-black border mb-4 ${ac.bg} ${ac.text} ${ac.border}`}>
               {ACTION_LABELS[step.action] ?? step.action}
             </span>
-            <div className="flex items-center gap-2 mb-4 text-[11px] text-white/30">
-              <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[#C41230] to-[#FF6B7A] rounded-full"
+            <div className="flex items-center gap-2 mb-4 text-[11px] text-slate-400">
+              <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-red-500 to-[#FF6B7A] rounded-full"
                   style={{ width: `${step.confidence * 100}%` }} />
               </div>
-              <span className="font-mono font-bold text-white/50">{Math.round(step.confidence * 100)}% confidence</span>
+              <span className="font-mono font-bold text-slate-500">{Math.round(step.confidence * 100)}% confidence</span>
             </div>
             {step.meterPosition && <MeterDisplay current={meterCurrent} limit={meterLimit} />}
             {!step.meterPosition && (
@@ -249,11 +249,11 @@ export default function DemoPage() {
                 <span className="text-[12px] font-bold text-emerald-300">Subscription Active!</span>
               </div>
             )}
-            <div className="mt-4 pt-4 border-t border-white/[0.06]">
-              <div className="text-[9px] uppercase tracking-widest text-white/20 mb-2">Reason Codes</div>
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <div className="text-[9px] uppercase tracking-widest text-slate-300 mb-2">Reason Codes</div>
               <div className="flex flex-wrap gap-1.5">
                 {step.reasonCodes.map((code) => (
-                  <span key={code} className="text-[10px] px-2 py-1 bg-white/[0.04] rounded-full text-white/40 border border-white/[0.06] font-mono">
+                  <span key={code} className="text-[10px] px-2 py-1 bg-slate-50 rounded-full text-slate-400 border border-slate-200 font-mono">
                     {code.replace(/_/g, ' ')}
                   </span>
                 ))}
@@ -264,28 +264,28 @@ export default function DemoPage() {
           {/* Controls */}
           <div className="flex gap-2">
             {!playing && !isLast && (
-              <button onClick={playJourney} className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#C41230] text-white rounded-xl text-[13px] font-bold hover:bg-[#B01028] transition-colors shadow-lg shadow-red-900/20">
+              <button onClick={playJourney} className="flex-1 flex items-center justify-center gap-2 py-3 bg-red-600 text-slate-900 rounded-xl text-[13px] font-bold hover:bg-[#B01028] transition-colors shadow-lg shadow-red-900/20">
                 <Play className="w-4 h-4" /> Play Journey
               </button>
             )}
             {playing && (
-              <button onClick={pauseJourney} className="flex-1 flex items-center justify-center gap-2 py-3 bg-amber-500 text-white rounded-xl text-[13px] font-bold hover:bg-amber-600 transition-colors">
+              <button onClick={pauseJourney} className="flex-1 flex items-center justify-center gap-2 py-3 bg-amber-500 text-slate-900 rounded-xl text-[13px] font-bold hover:bg-amber-600 transition-colors">
                 <Pause className="w-4 h-4" /> Pause
               </button>
             )}
-            <button onClick={resetJourney} className="flex items-center justify-center gap-1.5 py-3 px-4 border border-white/[0.08] rounded-xl text-[12px] text-white/40 hover:text-white/70 hover:bg-white/[0.04] transition-all">
+            <button onClick={resetJourney} className="flex items-center justify-center gap-1.5 py-3 px-4 border border-slate-300 rounded-xl text-[12px] text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-all">
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
           </div>
           <div className="flex gap-2">
             <button onClick={() => { if (activeStep > 0) setActiveStep(prev => prev - 1); }}
               disabled={activeStep === 0}
-              className="flex-1 flex items-center justify-center gap-1 py-2 border border-white/[0.06] rounded-xl text-[12px] text-white/30 hover:text-white/60 hover:bg-white/[0.04] disabled:opacity-20 disabled:cursor-not-allowed transition-all">
+              className="flex-1 flex items-center justify-center gap-1 py-2 border border-slate-200 rounded-xl text-[12px] text-slate-400 hover:text-slate-600 hover:bg-slate-50 disabled:opacity-20 disabled:cursor-not-allowed transition-all">
               ← Previous
             </button>
             <button onClick={() => { if (!isLast) setActiveStep(prev => prev + 1); }}
               disabled={isLast}
-              className="flex-1 flex items-center justify-center gap-1 py-2 border border-white/[0.06] rounded-xl text-[12px] text-white/30 hover:text-white/60 hover:bg-white/[0.04] disabled:opacity-20 disabled:cursor-not-allowed transition-all">
+              className="flex-1 flex items-center justify-center gap-1 py-2 border border-slate-200 rounded-xl text-[12px] text-slate-400 hover:text-slate-600 hover:bg-slate-50 disabled:opacity-20 disabled:cursor-not-allowed transition-all">
               Next →
             </button>
           </div>
@@ -295,31 +295,31 @@ export default function DemoPage() {
         <div className="xl:col-span-3 space-y-4">
 
           {/* Article Preview */}
-          <div className="bg-[#111128] border border-white/[0.06] rounded-2xl overflow-hidden">
-            <div className="px-6 pt-5 pb-4 border-b border-white/[0.05]">
+          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+            <div className="px-6 pt-5 pb-4 border-b border-slate-200">
               <div className="flex items-center gap-2 mb-3 flex-wrap">
-                <span className="text-[10px] font-bold text-[#C41230] uppercase tracking-wider">{DEMO_ARTICLE.category}</span>
-                <span className="text-white/15">·</span>
-                <span className="text-[10px] text-white/25">{DEMO_ARTICLE.readTime}</span>
-                <span className="text-white/15">·</span>
+                <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">{DEMO_ARTICLE.category}</span>
+                <span className="text-slate-300">·</span>
+                <span className="text-[10px] text-slate-300">{DEMO_ARTICLE.readTime}</span>
+                <span className="text-slate-300">·</span>
                 <span className="text-[10px] font-bold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/20">PREMIUM</span>
                 {step.meterPosition && (
                   <>
-                    <span className="text-white/15">·</span>
+                    <span className="text-slate-300">·</span>
                     <span className="text-[10px] font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded border border-blue-400/20">
                       {meterCurrent}/3 free
                     </span>
                   </>
                 )}
               </div>
-              <h1 className="text-[16px] font-black text-white/90 leading-tight">{DEMO_ARTICLE.title}</h1>
+              <h1 className="text-[16px] font-black text-slate-900 leading-tight">{DEMO_ARTICLE.title}</h1>
               <div className="flex items-center gap-2 mt-2">
-                <div className="w-6 h-6 rounded-full bg-white/10" />
-                <span className="text-[12px] text-white/40">{DEMO_ARTICLE.author}</span>
+                <div className="w-6 h-6 rounded-full bg-slate-100" />
+                <span className="text-[12px] text-slate-400">{DEMO_ARTICLE.author}</span>
               </div>
             </div>
             <div className="px-6 py-4">
-              <div className="text-[12px] text-white/35 leading-relaxed space-y-3">
+              <div className="text-[12px] text-slate-400 leading-relaxed space-y-3">
                 <p>Surat dari dokumen yang diperoleh Tempo menunjukkan bahwa sebagian besar anggaran proyek dialihkan ke rekening pribadi melalui jaringan perusahaan cangkang...</p>
                 <p>"Ini adalah salah satu kasus korupsi terbesar yang pernah kami dokumentasikan," kata seorang investigator...</p>
               </div>
@@ -327,16 +327,16 @@ export default function DemoPage() {
 
             {/* Paywall Treatment */}
             {activeStep >= 2 && (
-              <div className="mx-6 mb-5 bg-gradient-to-br from-[#0D0D1F] to-[#111128] border border-[#C41230]/20 rounded-xl p-5">
+              <div className="mx-6 mb-5 bg-gradient-to-br from-[#0D0D1F] to-[#111128] border border-red-200 rounded-xl p-5">
                 <div className="flex items-center gap-2 mb-3">
-                  <Target className="w-4 h-4 text-[#C41230]" />
-                  <span className="text-[12px] font-bold text-white/60">Tempo+ Offer</span>
+                  <Target className="w-4 h-4 text-red-600" />
+                  <span className="text-[12px] font-bold text-slate-600">Tempo+ Offer</span>
                   <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-md font-bold ${ac.bg} ${ac.text} border ${ac.border}`}>
                     {ACTION_LABELS[step.action]}
                   </span>
                 </div>
                 {step.action !== 'ALLOW_FREE' && step.action !== 'NO_ACTION' && (
-                  <div className="flex items-center gap-3 mb-3 text-[11px] text-white/30">
+                  <div className="flex items-center gap-3 mb-3 text-[11px] text-slate-400">
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" /> Akses tak terbatas investigative report
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" /> Tanpa batas waktu
                   </div>
@@ -347,14 +347,14 @@ export default function DemoPage() {
                   </div>
                 )}
                 {step.action === 'SHOW_MONTHLY' && (
-                  <div className="text-[18px] font-black text-white mb-1">Rp 64.000<span className="text-[12px] font-normal text-white/40">/bulan</span></div>
+                  <div className="text-[18px] font-black text-slate-900 mb-1">Rp 64.000<span className="text-[12px] font-normal text-slate-400">/bulan</span></div>
                 )}
                 {step.action === 'ALLOW_FREE' && (
-                  <div className="text-[12px] text-white/40">
+                  <div className="text-[12px] text-slate-400">
                     Masih <span className="font-bold text-blue-400">{3 - meterCurrent}</span> artikel gratis tersisa.
                   </div>
                 )}
-                <div className="text-[11px] text-white/30 bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2 italic">
+                <div className="text-[11px] text-slate-400 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 italic">
                   "{step.pitch}"
                 </div>
               </div>
@@ -362,8 +362,8 @@ export default function DemoPage() {
           </div>
 
           {/* Event Log */}
-          <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5">
-            <h3 className="text-[11px] font-bold text-white/50 mb-3 flex items-center gap-2">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5">
+            <h3 className="text-[11px] font-bold text-slate-500 mb-3 flex items-center gap-2">
               <Zap className="w-3.5 h-3.5 text-blue-400" />
               Event Log — Day {step.day}
             </h3>
@@ -371,10 +371,10 @@ export default function DemoPage() {
               {step.events.map((event, i) => {
                 const colorKey = event.split('_')[0];
                 return (
-                  <div key={i} className="flex items-center gap-2.5 text-[11px] text-white/40 bg-white/[0.03] rounded-lg px-3 py-2 border border-white/[0.04]">
+                  <div key={i} className="flex items-center gap-2.5 text-[11px] text-slate-400 bg-slate-50 rounded-lg px-3 py-2 border border-slate-200">
                     <div className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                       style={{ backgroundColor: EVENT_COLORS[colorKey] ?? '#6B7280' }} />
-                    <code className="font-mono text-white/50">{event}</code>
+                    <code className="font-mono text-slate-500">{event}</code>
                   </div>
                 );
               })}
@@ -395,25 +395,25 @@ export default function DemoPage() {
                   ['Lifecycle', 'SUBSCRIBED'],
                   ['Days to Convert', '6 days'],
                 ].map(([label, value]) => (
-                  <div key={String(label)} className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
+                  <div key={String(label)} className="bg-slate-50 rounded-xl p-3 border border-slate-200">
                     <div className="text-[9px] text-emerald-400/60 uppercase tracking-widest mb-1">{label}</div>
-                    <div className="text-[13px] font-bold text-white/80">{String(value)}</div>
+                    <div className="text-[13px] font-bold text-slate-800">{String(value)}</div>
                   </div>
                 ))}
               </div>
-              <p className="text-[12px] text-white/40 leading-relaxed">
-                Revenue Brain successfully converted Andi from <strong className="text-white/60">NEW</strong> → <strong className="text-emerald-400">SUBSCRIBED</strong> in 6 days. The investigative content paywall on Day 5 triggered conversion, with save-offer intervention on Day 6 preventing checkout abandonment.
+              <p className="text-[12px] text-slate-400 leading-relaxed">
+                Revenue Brain successfully converted Andi from <strong className="text-slate-600">NEW</strong> → <strong className="text-emerald-400">SUBSCRIBED</strong> in 6 days. The investigative content paywall on Day 5 triggered conversion, with save-offer intervention on Day 6 preventing checkout abandonment.
               </p>
             </div>
           )}
 
           {/* What Happens */}
-          <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5">
-            <h3 className="text-[11px] font-bold text-white/50 mb-2 flex items-center gap-2">
-              <User className="w-3.5 h-3.5 text-white/30" />
+          <div className="bg-white border border-slate-200 rounded-2xl p-5">
+            <h3 className="text-[11px] font-bold text-slate-500 mb-2 flex items-center gap-2">
+              <User className="w-3.5 h-3.5 text-slate-400" />
               Apa yang Terjadi?
             </h3>
-            <p className="text-[12px] text-white/35 leading-relaxed">{step.whatHappens}</p>
+            <p className="text-[12px] text-slate-400 leading-relaxed">{step.whatHappens}</p>
           </div>
         </div>
       </div>

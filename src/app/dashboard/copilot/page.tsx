@@ -109,20 +109,20 @@ export default function CopilotPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-[22px] font-black text-white tracking-tight leading-none">Revenue Copilot</h1>
-        <p className="text-[11px] text-white/30 mt-2 flex items-center gap-2">
-          <Brain className="w-3.5 h-3.5 text-[#C41230]/50" />
+        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Revenue Copilot</h1>
+        <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
+          <Brain className="w-3.5 h-3.5 text-red-600/50" />
           AI-powered revenue queries — all answers from live database
         </p>
       </div>
 
       {/* Suggested Questions */}
-      <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-4">
           <div className="w-7 h-7 rounded-lg bg-blue-500/15 flex items-center justify-center">
             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
           </div>
-          <h2 className="text-[12px] font-bold text-white/70">Suggested Questions</h2>
+          <h2 className="text-[12px] font-bold text-slate-700">Suggested Questions</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {SUGGESTED_QUESTIONS.map(({ q, fn, icon: Icon }) => (
@@ -130,13 +130,13 @@ export default function CopilotPage() {
               key={fn}
               onClick={() => askQuestion(q, fn)}
               disabled={loading}
-              className="flex items-center gap-3 p-3.5 text-left bg-white/[0.03] border border-white/[0.06] rounded-xl hover:bg-[#C41230]/10 hover:border-[#C41230]/20 transition-all disabled:opacity-40 group"
+              className="flex items-center gap-3 p-3.5 text-left bg-slate-50 border border-slate-200 rounded-xl hover:bg-red-50 hover:border-red-200 transition-all disabled:opacity-40 group"
             >
-              <div className="w-8 h-8 rounded-lg bg-white/[0.05] flex items-center justify-center flex-shrink-0 group-hover:bg-[#C41230]/20 transition-colors">
-                <Icon className="w-4 h-4 text-white/40 group-hover:text-[#FF6B7A] transition-colors" />
+              <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center flex-shrink-0 group-hover:bg-red-100 transition-colors">
+                <Icon className="w-4 h-4 text-slate-400 group-hover:text-red-500 transition-colors" />
               </div>
-              <span className="text-[12px] text-white/50 group-hover:text-white/70 transition-colors leading-snug">{q}</span>
-              <ChevronRight className="w-3.5 h-3.5 text-white/15 group-hover:text-white/30 ml-auto flex-shrink-0 transition-colors" />
+              <span className="text-[12px] text-slate-500 group-hover:text-slate-700 transition-colors leading-snug">{q}</span>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-400 ml-auto flex-shrink-0 transition-colors" />
             </button>
           ))}
         </div>
@@ -146,11 +146,11 @@ export default function CopilotPage() {
       <div className="space-y-4">
         {messages.length === 0 && (
           <div className="text-center py-12">
-            <div className="w-14 h-14 rounded-2xl bg-[#111128] border border-white/[0.06] flex items-center justify-center mx-auto mb-4">
-              <Bot className="w-7 h-7 text-white/20" />
+            <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mx-auto mb-4">
+              <Bot className="w-7 h-7 text-slate-300" />
             </div>
-            <p className="text-[13px] font-semibold text-white/30">Ask a question above to get started</p>
-            <p className="text-[11px] text-white/15 mt-1">Revenue Copilot answers questions using live Supabase data</p>
+            <p className="text-[13px] font-semibold text-slate-400">Ask a question above to get started</p>
+            <p className="text-[11px] text-slate-300 mt-1">Revenue Copilot answers questions using live Supabase data</p>
           </div>
         )}
 
@@ -159,11 +159,11 @@ export default function CopilotPage() {
 
             {/* Question */}
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#C41230]/20 border border-[#C41230]/20 flex items-center justify-center flex-shrink-0">
-                <MessageSquare className="w-3.5 h-3.5 text-[#FF6B7A]" />
+              <div className="w-8 h-8 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center flex-shrink-0">
+                <MessageSquare className="w-3.5 h-3.5 text-red-500" />
               </div>
-              <div className="bg-[#111128] border border-white/[0.06] rounded-xl rounded-tl-sm px-4 py-3 flex-1">
-                <p className="text-[13px] font-medium text-white/70">{msg.q}</p>
+              <div className="bg-white border border-slate-200 rounded-xl rounded-tl-sm px-4 py-3 flex-1">
+                <p className="text-[13px] font-medium text-slate-700">{msg.q}</p>
               </div>
             </div>
 
@@ -173,9 +173,9 @@ export default function CopilotPage() {
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
                   <Bot className="w-3.5 h-3.5 text-emerald-400" />
                 </div>
-                <div className="bg-[#111128] border border-white/[0.06] rounded-xl rounded-tl-sm px-4 py-3.5 flex-1">
-                  <div className="flex items-center gap-2.5 text-[12px] text-white/30">
-                    <div className="w-4 h-4 border-2 border-white/10 border-t-[#C41230] rounded-full animate-spin" />
+                <div className="bg-white border border-slate-200 rounded-xl rounded-tl-sm px-4 py-3.5 flex-1">
+                  <div className="flex items-center gap-2.5 text-[12px] text-slate-400">
+                    <div className="w-4 h-4 border-2 border-slate-200 border-t-red-500 rounded-full animate-spin" />
                     Analyzing reader revenue data…
                   </div>
                 </div>
@@ -185,16 +185,16 @@ export default function CopilotPage() {
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
                   <Bot className="w-3.5 h-3.5 text-emerald-400" />
                 </div>
-                <div className="bg-[#111128] border border-white/[0.06] rounded-xl rounded-tl-sm px-5 py-4 flex-1">
-                  <div className="text-[18px] font-black text-white leading-tight mb-2">
+                <div className="bg-white border border-slate-200 rounded-xl rounded-tl-sm px-5 py-4 flex-1">
+                  <div className="text-[18px] font-black text-slate-900 leading-tight mb-2">
                     {msg.a.summary}
                   </div>
                   {msg.a.result && typeof msg.a.result === 'object' && 'detail' in msg.a.result && (
-                    <p className="text-[12px] text-white/40 leading-relaxed mb-3">
+                    <p className="text-[12px] text-slate-400 leading-relaxed mb-3">
                       {(msg.a.result as { detail: string }).detail}
                     </p>
                   )}
-                  <div className="flex items-center gap-2 text-[10px] text-white/20">
+                  <div className="flex items-center gap-2 text-[10px] text-slate-300">
                     <Database className="w-3 h-3" />
                     {msg.a.sources.join(' · ')}
                   </div>

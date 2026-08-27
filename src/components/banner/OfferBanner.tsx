@@ -22,31 +22,31 @@ const THEME_TOKENS: Record<BannerTheme, {
   overlay: string;
 }> = {
   dark: {
-    bg: 'bg-[#111128]', surface: 'bg-[#0D0D1F]', text: 'text-white',
-    muted: 'text-white/40', border: 'border-white/[0.08]',
-    btnBg: 'bg-[#C41230] hover:bg-[#A30F26]', btnText: 'text-white',
+    bg: 'bg-[#0D0D1F]', surface: 'bg-[#0D0D1F]', text: 'text-white',
+    muted: 'text-white/50', border: 'border-white/[0.08]',
+    btnBg: 'bg-red-600 hover:bg-[#A30F26]', btnText: 'text-white',
     btnHover: 'bg-[#A30F26]',
     overlay: 'rgba(0,0,0,0.85)',
   },
   light: {
-    bg: 'bg-white/[0.05]', surface: 'bg-white/[0.03]', text: 'text-white/80',
-    muted: 'text-white/40', border: 'border-white/[0.10]',
-    btnBg: 'bg-white hover:bg-white/90', btnText: 'text-[#111128]',
-    btnHover: 'bg-white/90',
+    bg: 'bg-white', surface: 'bg-slate-50', text: 'text-slate-900',
+    muted: 'text-slate-500', border: 'border-slate-200',
+    btnBg: 'bg-red-600 text-white', btnText: 'text-white',
+    btnHover: 'bg-red-700',
     overlay: 'rgba(255,255,255,0.95)',
   },
   red: {
     bg: 'bg-red-600', surface: 'bg-red-700', text: 'text-white',
     muted: 'text-red-100', border: 'border-red-500',
-    btnBg: 'bg-white hover:bg-white/90', btnText: 'text-red-700',
-    btnHover: 'bg-white/90',
+    btnBg: 'bg-white text-red-700 hover:bg-red-50', btnText: 'text-red-700',
+    btnHover: 'bg-red-50',
     overlay: 'rgba(220,38,38,0.92)',
   },
   emerald: {
     bg: 'bg-emerald-600', surface: 'bg-emerald-700', text: 'text-white',
     muted: 'text-emerald-100', border: 'border-emerald-500',
-    btnBg: 'bg-white hover:bg-white/90', btnText: 'text-emerald-700',
-    btnHover: 'bg-white/90',
+    btnBg: 'bg-white text-emerald-700 hover:bg-emerald-50', btnText: 'text-emerald-700',
+    btnHover: 'bg-emerald-50',
     overlay: 'rgba(5,150,105,0.92)',
   },
 };

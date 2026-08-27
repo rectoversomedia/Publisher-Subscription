@@ -27,7 +27,7 @@ function fmtRp(value: number): string {
 
 const CLASS_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
   CONVERSION_CONTENT:   { bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/20' },
-  TRAFFIC_CONTENT:      { bg: 'bg-white/[0.04]', text: 'text-white/30', border: 'border-white/[0.07]' },
+  TRAFFIC_CONTENT:      { bg: 'bg-slate-50', text: 'text-slate-400', border: 'border-slate-300' },
   RETENTION_CONTENT:    { bg: 'bg-blue-500/15', text: 'text-blue-400', border: 'border-blue-500/20' },
   BALANCED_CONTENT:    { bg: 'bg-purple-500/15', text: 'text-purple-400', border: 'border-purple-500/20' },
 };
@@ -59,9 +59,9 @@ export default function ContentPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-[22px] font-black text-white tracking-tight leading-none">Content Revenue Intelligence</h1>
-        <p className="text-[11px] text-white/30 mt-2 flex items-center gap-2">
-          <BookOpen className="w-3.5 h-3.5 text-[#C41230]/50" />
+        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Content Revenue Intelligence</h1>
+        <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
+          <BookOpen className="w-3.5 h-3.5 text-red-600/50" />
           Article-level revenue attribution and content performance
         </p>
       </div>
@@ -70,18 +70,18 @@ export default function ContentPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
           { label: 'Total Revenue', value: totalRevenue ? fmtRp(totalRevenue) : '—', icon: DollarSign, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'Direct Subscriptions', value: totalConversions, icon: Target, color: 'text-[#FF6B7A]', bg: 'bg-[#C41230]/10' },
+          { label: 'Direct Subscriptions', value: totalConversions, icon: Target, color: 'text-red-500', bg: 'bg-red-50' },
           { label: 'Total Pageviews', value: fmt(totalPageviews), icon: TrendingUp, color: 'text-blue-400', bg: 'bg-blue-500/10' },
           { label: 'Avg per Article', value: metrics.length > 0 ? fmtRp(Math.round(totalRevenue / metrics.length)) : '—', icon: FileText, color: 'text-purple-400', bg: 'bg-purple-500/10' },
         ].map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="bg-[#111128] border border-white/[0.06] rounded-xl p-4 hover:border-white/[0.1] transition-all">
+            <div key={stat.label} className="bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-300 transition-all">
               <div className={`w-8 h-8 rounded-lg ${stat.bg} flex items-center justify-center mb-3`}>
                 <Icon className={`w-4 h-4 ${stat.color}`} />
               </div>
-              <div className="text-[18px] font-black text-white font-mono leading-none mb-1">{stat.value}</div>
-              <div className="text-[10px] text-white/30">{stat.label}</div>
+              <div className="text-[18px] font-black text-slate-900 font-mono leading-none mb-1">{stat.value}</div>
+              <div className="text-[10px] text-slate-400">{stat.label}</div>
             </div>
           );
         })}
@@ -89,7 +89,7 @@ export default function ContentPage() {
 
       {/* Classification Legend */}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-[10px] text-white/20 uppercase tracking-widest mr-1">Legend:</span>
+        <span className="text-[10px] text-slate-300 uppercase tracking-widest mr-1">Legend:</span>
         {Object.entries(CLASS_CONFIG).map(([cls, cfg]) => (
           <span key={cls} className={`text-[10px] px-2.5 py-1 rounded-lg font-semibold border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
             {cls.replace(/_/g, ' ')}
@@ -99,7 +99,7 @@ export default function ContentPage() {
 
       {/* Sort Controls */}
       <div className="flex items-center gap-2">
-        <span className="text-[11px] text-white/30">Sort by:</span>
+        <span className="text-[11px] text-slate-400">Sort by:</span>
         {([
           ['revenue', 'Revenue'],
           ['pageviews', 'Pageviews'],
@@ -110,8 +110,8 @@ export default function ContentPage() {
             onClick={() => setSortBy(key)}
             className={`px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-all ${
               sortBy === key
-                ? 'bg-[#C41230]/20 text-[#FF6B7A] border border-[#C41230]/25'
-                : 'text-white/30 hover:text-white/60 bg-white/[0.04] border border-white/[0.06]'
+                ? 'bg-red-100 text-red-500 border border-red-200'
+                : 'text-slate-400 hover:text-slate-600 bg-slate-50 border border-slate-200'
             }`}
           >
             {label}
@@ -120,13 +120,13 @@ export default function ContentPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-[#111128] border border-white/[0.06] rounded-2xl overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[800px]">
             <thead>
-              <tr className="border-b border-white/[0.05]">
+              <tr className="border-b border-slate-200">
                 {['Article', 'Topic', 'Pageviews', 'Subscribers', 'Direct Subs', 'Revenue', 'Est. LTV', 'Classification', ''].map((h) => (
-                  <th key={h} className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-[0.12em] text-white/20">
+                  <th key={h} className="text-left px-4 py-3 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-300">
                     {h}
                   </th>
                 ))}
@@ -135,10 +135,10 @@ export default function ContentPage() {
             <tbody>
               {loading ? (
                 [...Array(8)].map((_, i) => (
-                  <tr key={i} className="border-b border-white/[0.04]">
+                  <tr key={i} className="border-b border-slate-200">
                     {[...Array(8)].map((_, j) => (
                       <td key={j} className="px-4 py-3.5">
-                        <div className="h-3 bg-white/[0.04] rounded animate-pulse" style={{ width: `${50 + Math.random() * 50}%` }} />
+                        <div className="h-3 bg-slate-50 rounded animate-pulse" style={{ width: `${50 + Math.random() * 50}%` }} />
                       </td>
                     ))}
                   </tr>
@@ -146,8 +146,8 @@ export default function ContentPage() {
               ) : sorted.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-16 text-center">
-                    <FileText className="w-10 h-10 text-white/10 mx-auto mb-3" />
-                    <p className="text-[13px] font-semibold text-white/30">No content metrics yet</p>
+                    <FileText className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+                    <p className="text-[13px] font-semibold text-slate-400">No content metrics yet</p>
                   </td>
                 </tr>
               ) : (
@@ -155,34 +155,34 @@ export default function ContentPage() {
                   const cls = CLASS_CONFIG[m.classification] ?? CLASS_CONFIG.TRAFFIC_CONTENT;
                   const hasRevenue = m.revenue > 0;
                   return (
-                    <tr key={m.article_id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
+                    <tr key={m.article_id} className="border-b border-slate-200 hover:bg-slate-50 transition-colors">
                       <td className="px-4 py-3.5 max-w-[200px]">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-white/15 w-5 flex-shrink-0">#{idx + 1}</span>
+                          <span className="text-[10px] font-mono text-slate-300 w-5 flex-shrink-0">#{idx + 1}</span>
                           <div className="min-w-0">
-                            <div className="text-[12px] font-semibold text-white/60 truncate">{m.articles?.title ?? m.article_id.slice(0, 20) + '…'}</div>
+                            <div className="text-[12px] font-semibold text-slate-600 truncate">{m.articles?.title ?? m.article_id.slice(0, 20) + '…'}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="text-[11px] text-white/30">{m.articles?.topic ?? '—'}</span>
+                        <span className="text-[11px] text-slate-400">{m.articles?.topic ?? '—'}</span>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="text-[12px] font-mono text-white/60">{fmt(m.pageviews)}</span>
+                        <span className="text-[12px] font-mono text-slate-600">{fmt(m.pageviews)}</span>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="text-[12px] font-mono text-white/40">{fmt(m.subscriber_readers)}</span>
+                        <span className="text-[12px] font-mono text-slate-400">{fmt(m.subscriber_readers)}</span>
                       </td>
                       <td className="px-4 py-3.5">
                         <span className="text-[12px] font-mono font-bold text-emerald-400">{m.direct_subscriptions}</span>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className={`text-[12px] font-mono font-bold ${hasRevenue ? 'text-white/70' : 'text-white/20'}`}>
+                        <span className={`text-[12px] font-mono font-bold ${hasRevenue ? 'text-slate-700' : 'text-slate-300'}`}>
                           {hasRevenue ? fmtRp(m.revenue) : '—'}
                         </span>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="text-[12px] font-mono text-white/30">{fmt(m.estimated_ltv_generated)}</span>
+                        <span className="text-[12px] font-mono text-slate-400">{fmt(m.estimated_ltv_generated)}</span>
                       </td>
                       <td className="px-4 py-3.5">
                         <span className={`text-[10px] px-2.5 py-1 rounded-lg font-bold border ${cls.bg} ${cls.text} ${cls.border}`}>
@@ -190,7 +190,7 @@ export default function ContentPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3.5">
-                        <ArrowUpRight className="w-3.5 h-3.5 text-white/15" />
+                        <ArrowUpRight className="w-3.5 h-3.5 text-slate-300" />
                       </td>
                     </tr>
                   );

@@ -40,7 +40,7 @@ const SEV_CONFIG: Record<string, { bg: string; text: string; border: string; ico
   CRITICAL: { bg: 'bg-red-500/10', text: 'text-red-400', border: 'border-red-500/20', icon: <Zap className="w-5 h-5" />, bar: 'bg-red-500' },
   HIGH:     { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', icon: <TrendingUp className="w-5 h-5" />, bar: 'bg-amber-500' },
   MEDIUM:   { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20', icon: <TrendingUp className="w-5 h-5" />, bar: 'bg-blue-500' },
-  LOW:      { bg: 'bg-white/[0.04]', text: 'text-white/30', border: 'border-white/[0.07]', icon: <Newspaper className="w-5 h-5" />, bar: 'bg-white/20' },
+  LOW:      { bg: 'bg-slate-50', text: 'text-slate-400', border: 'border-slate-300', icon: <Newspaper className="w-5 h-5" />, bar: 'bg-white/20' },
 };
 
 export default function NewsMomentsPage() {
@@ -63,9 +63,9 @@ export default function NewsMomentsPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-[22px] font-black text-white tracking-tight leading-none">News Moment Intelligence</h1>
-        <p className="text-[11px] text-white/30 mt-2 flex items-center gap-2">
-          <Newspaper className="w-3.5 h-3.5 text-[#C41230]/50" />
+        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">News Moment Intelligence</h1>
+        <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
+          <Newspaper className="w-3.5 h-3.5 text-red-600/50" />
           Traffic anomalies and breaking news monetization opportunities
         </p>
       </div>
@@ -73,19 +73,19 @@ export default function NewsMomentsPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: 'Active Moments', value: moments.length, icon: Newspaper, color: 'text-[#FF6B7A]', bg: 'bg-[#C41230]/10' },
+          { label: 'Active Moments', value: moments.length, icon: Newspaper, color: 'text-red-500', bg: 'bg-red-50' },
           { label: 'Avg Traffic Lift', value: moments.length > 0 ? `+${Math.round(totalLift)}%` : '—', icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
           { label: 'High-Intent Readers', value: fmt(moments.reduce((a, m) => a + m.high_propensity_readers, 0)), icon: Target, color: 'text-amber-400', bg: 'bg-amber-500/10' },
           { label: 'Est. Incremental Revenue', value: totalRevenue > 0 ? fmtRp(totalRevenue) : '—', icon: DollarSign, color: 'text-purple-400', bg: 'bg-purple-500/10' },
         ].map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="bg-[#111128] border border-white/[0.06] rounded-xl p-4 hover:border-white/[0.1] transition-all">
+            <div key={stat.label} className="bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-300 transition-all">
               <div className={`w-8 h-8 rounded-lg ${stat.bg} flex items-center justify-center mb-3`}>
                 <Icon className={`w-4 h-4 ${stat.color}`} />
               </div>
-              <div className="text-[18px] font-black text-white font-mono leading-none mb-1">{stat.value}</div>
-              <div className="text-[10px] text-white/30">{stat.label}</div>
+              <div className="text-[18px] font-black text-slate-900 font-mono leading-none mb-1">{stat.value}</div>
+              <div className="text-[10px] text-slate-400">{stat.label}</div>
             </div>
           );
         })}
@@ -95,17 +95,17 @@ export default function NewsMomentsPage() {
       <div className="space-y-3">
         {loading ? (
           [...Array(3)].map((_, i) => (
-            <div key={i} className="bg-[#111128] border border-white/[0.06] rounded-2xl p-6">
-              <div className="h-24 bg-white/[0.04] rounded-xl animate-pulse" />
+            <div key={i} className="bg-white border border-slate-200 rounded-2xl p-6">
+              <div className="h-24 bg-slate-50 rounded-xl animate-pulse" />
             </div>
           ))
         ) : moments.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-14 h-14 rounded-2xl bg-[#111128] border border-white/[0.06] flex items-center justify-center mx-auto mb-4">
-              <Newspaper className="w-7 h-7 text-white/20" />
+            <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mx-auto mb-4">
+              <Newspaper className="w-7 h-7 text-slate-300" />
             </div>
-            <p className="text-[13px] font-semibold text-white/30">No active news moments</p>
-            <p className="text-[11px] text-white/15 mt-1">Moments detected when traffic exceeds 3× rolling baseline</p>
+            <p className="text-[13px] font-semibold text-slate-400">No active news moments</p>
+            <p className="text-[11px] text-slate-300 mt-1">Moments detected when traffic exceeds 3× rolling baseline</p>
           </div>
         ) : (
           moments.map((moment) => {
@@ -114,14 +114,14 @@ export default function NewsMomentsPage() {
             const lift = moment.traffic_lift_percentage;
 
             return (
-              <div key={moment.id} className={`bg-[#111128] border rounded-2xl overflow-hidden transition-all ${isExpanded ? 'border-white/[0.1]' : 'border-white/[0.06]'}`}>
+              <div key={moment.id} className={`bg-white border rounded-2xl overflow-hidden transition-all ${isExpanded ? 'border-slate-200' : 'border-slate-200'}`}>
                 {/* Lift bar at top */}
-                <div className="h-1 w-full bg-white/[0.04]">
+                <div className="h-1 w-full bg-slate-50">
                   <div className={`h-full ${cfg.bar} opacity-60 transition-all`} style={{ width: `${Math.min(100, lift)}%` }} />
                 </div>
 
                 <div
-                  className="p-5 cursor-pointer hover:bg-white/[0.02] transition-colors"
+                  className="p-5 cursor-pointer hover:bg-slate-50 transition-colors"
                   onClick={() => setExpanded(isExpanded ? null : moment.id)}
                 >
                   <div className="flex items-start gap-4">
@@ -134,24 +134,24 @@ export default function NewsMomentsPage() {
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <div className="flex items-center gap-2.5 flex-wrap mb-1.5">
-                            <h3 className="text-[14px] font-bold text-white/90">
+                            <h3 className="text-[14px] font-bold text-slate-900">
                               {moment.topic ?? moment.category ?? 'Breaking News'}
                             </h3>
                             <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold ${cfg.bg} ${cfg.text} border ${cfg.border}`}>
                               {moment.severity} SEVERITY
                             </span>
                             {moment.category && (
-                              <span className="text-[10px] text-white/25">{moment.category}</span>
+                              <span className="text-[10px] text-slate-300">{moment.category}</span>
                             )}
                           </div>
                         </div>
 
                         {/* Lift badge */}
                         <div className="flex-shrink-0 text-right">
-                          <div className="text-[24px] font-black text-white/90 font-mono leading-none">
+                          <div className="text-[24px] font-black text-slate-900 font-mono leading-none">
                             +{lift.toFixed(0)}%
                           </div>
-                          <div className="text-[10px] text-white/25">traffic lift</div>
+                          <div className="text-[10px] text-slate-300">traffic lift</div>
                         </div>
                       </div>
 
@@ -165,13 +165,13 @@ export default function NewsMomentsPage() {
                           [moment.new_readers, 'New', 'readers'],
                         ].map(([val, label, unit]) => (
                           <div key={String(label)} className="text-center">
-                            <div className="text-[13px] font-mono font-bold text-white/60">{fmt(Number(val))}{unit}</div>
-                            <div className="text-[9px] text-white/25">{label}</div>
+                            <div className="text-[13px] font-mono font-bold text-slate-600">{fmt(Number(val))}{unit}</div>
+                            <div className="text-[9px] text-slate-300">{label}</div>
                           </div>
                         ))}
                         <div className="text-center">
                           <div className="text-[13px] font-mono font-bold text-emerald-400">{fmtRp(moment.estimated_incremental_revenue)}</div>
-                          <div className="text-[9px] text-white/25">Est. Revenue</div>
+                          <div className="text-[9px] text-slate-300">Est. Revenue</div>
                         </div>
                       </div>
                     </div>
@@ -180,16 +180,16 @@ export default function NewsMomentsPage() {
 
                 {/* Expanded */}
                 {isExpanded && (
-                  <div className="px-5 pb-5 border-t border-white/[0.05] bg-[#0D0D1F]/40 pt-4">
+                  <div className="px-5 pb-5 border-t border-slate-200 bg-white/40 pt-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <p className="text-[12px] text-white/35 leading-relaxed">
+                        <p className="text-[12px] text-slate-400 leading-relaxed">
                           Recommended: Activate contextual subscription treatment for high-propensity readers in this topic. Breaking news readers show elevated conversion intent — offer Tempo+ with urgency framing.
                         </p>
                       </div>
                       <Link
                         href={`/dashboard/news-moments/${moment.id}`}
-                        className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold text-white bg-[#C41230]/15 border border-[#C41230]/25 rounded-xl hover:bg-[#C41230]/25 transition-all flex-shrink-0"
+                        className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold text-slate-900 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-all flex-shrink-0"
                       >
                         View Details <ArrowRight className="w-3.5 h-3.5" />
                       </Link>

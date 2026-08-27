@@ -63,14 +63,14 @@ export default function OpportunityDetailPage() {
     setResolving(false);
   };
 
-  if (loading) return <div className="py-20 text-center text-white/30">Loading opportunity…</div>;
-  if (!opportunity) return <div className="py-20 text-center text-white/30">Opportunity not found</div>;
+  if (loading) return <div className="py-20 text-center text-slate-400">Loading opportunity…</div>;
+  if (!opportunity) return <div className="py-20 text-center text-slate-400">Opportunity not found</div>;
 
   const severityColors: Record<string, { bg: string; text: string; icon: typeof AlertTriangle }> = {
     CRITICAL: { bg: 'bg-red-500/10', text: 'text-red-400', icon: AlertTriangle },
     HIGH: { bg: 'bg-amber-500/10', text: 'text-amber-400', icon: Zap },
     MEDIUM: { bg: 'bg-blue-500/10', text: 'text-blue-400', icon: TrendingUp },
-    LOW: { bg: 'bg-white/[0.04]', text: 'text-white/30', icon: CheckCircle },
+    LOW: { bg: 'bg-slate-50', text: 'text-slate-400', icon: CheckCircle },
   };
 
   const sev = severityColors[opportunity.severity] ?? severityColors.LOW!;
@@ -81,18 +81,18 @@ export default function OpportunityDetailPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/opportunities" className="p-2 border border-white/[0.08] rounded-xl hover:bg-[#111128]/[0.05]">
-            <ArrowLeft className="w-4 h-4 text-white/50" />
+          <Link href="/dashboard/opportunities" className="p-2 border border-slate-300 rounded-xl hover:bg-slate-50">
+            <ArrowLeft className="w-4 h-4 text-slate-500" />
           </Link>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-white/80">{opportunity.title}</h1>
+              <h1 className="text-2xl font-bold text-slate-800">{opportunity.title}</h1>
               <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${sev.bg} ${sev.text}`}>
                 <SeverityIcon className="w-3.5 h-3.5" />
                 {opportunity.severity}
               </span>
             </div>
-            <div className="flex items-center gap-3 mt-1 text-xs text-white/30">
+            <div className="flex items-center gap-3 mt-1 text-xs text-slate-400">
               <span className="font-mono">{opportunity.type.replace(/_/g, ' ')}</span>
               <span>·</span>
               <span>Detected {timeAgo(opportunity.detected_at)}</span>
@@ -119,26 +119,26 @@ export default function OpportunityDetailPage() {
 
       {/* Description */}
       {opportunity.description && (
-        <div className="bg-[#111128] border border-white/[0.06] rounded-xl p-6">
-          <p className="text-sm text-white/60 leading-relaxed">{opportunity.description}</p>
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <p className="text-sm text-slate-600 leading-relaxed">{opportunity.description}</p>
         </div>
       )}
 
       {/* Key Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="bg-[#111128] border border-white/[0.06] rounded-xl p-5 text-center">
-          <div className="text-2xl font-bold text-white/80">{fmt(opportunity.estimated_audience)}</div>
-          <div className="text-xs text-white/40 mt-1">Estimated Audience</div>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 text-center">
+          <div className="text-2xl font-bold text-slate-800">{fmt(opportunity.estimated_audience)}</div>
+          <div className="text-xs text-slate-400 mt-1">Estimated Audience</div>
         </div>
-        <div className="bg-[#111128] border border-white/[0.06] rounded-xl p-5 text-center">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 text-center">
           <div className="text-2xl font-bold text-emerald-400">{fmt(opportunity.estimated_incremental_revenue)}</div>
-          <div className="text-xs text-white/40 mt-1">Est. Incremental Revenue</div>
+          <div className="text-xs text-slate-400 mt-1">Est. Incremental Revenue</div>
         </div>
-        <div className="bg-[#111128] border border-white/[0.06] rounded-xl p-5 text-center">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 text-center">
           <div className={`text-sm font-semibold ${opportunity.status === 'RESOLVED' ? 'text-emerald-400' : 'text-amber-400'}`}>
             {opportunity.status}
           </div>
-          <div className="text-xs text-white/40 mt-1">Status</div>
+          <div className="text-xs text-slate-400 mt-1">Status</div>
         </div>
       </div>
 
@@ -146,19 +146,19 @@ export default function OpportunityDetailPage() {
       {opportunity.recommended_action && (
         <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-5">
           <div className="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">Recommended Action</div>
-          <div className="text-sm text-white/80 font-medium">{opportunity.recommended_action}</div>
+          <div className="text-sm text-slate-800 font-medium">{opportunity.recommended_action}</div>
         </div>
       )}
 
       {/* Supporting Metrics */}
       {opportunity.supporting_metrics && Object.keys(opportunity.supporting_metrics).length > 0 && (
-        <div className="bg-[#111128] border border-white/[0.06] rounded-xl p-6">
-          <h2 className="font-semibold text-white/80 mb-4">Supporting Metrics</h2>
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <h2 className="font-semibold text-slate-800 mb-4">Supporting Metrics</h2>
           <div className="grid grid-cols-2 gap-4">
             {Object.entries(opportunity.supporting_metrics).map(([key, val]) => (
               <div key={key} className="flex justify-between text-sm">
-                <span className="text-white/40">{key.replace(/_/g, ' ')}</span>
-                <span className="font-semibold text-white/80">
+                <span className="text-slate-400">{key.replace(/_/g, ' ')}</span>
+                <span className="font-semibold text-slate-800">
                   {typeof val === 'number' ? fmt(val) : String(val)}
                 </span>
               </div>

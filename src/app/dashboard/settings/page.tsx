@@ -69,10 +69,10 @@ export default function SettingsPage() {
 
   if (loading) return (
     <div className="space-y-4 max-w-3xl">
-      <div className="h-8 w-64 bg-white/[0.04] rounded animate-pulse" />
+      <div className="h-8 w-64 bg-slate-50 rounded animate-pulse" />
       <div className="space-y-4">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="h-32 bg-[#111128] border border-white/[0.06] rounded-2xl animate-pulse" />
+          <div key={i} className="h-32 bg-white border border-slate-200 rounded-2xl animate-pulse" />
         ))}
       </div>
     </div>
@@ -83,20 +83,20 @@ export default function SettingsPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-[22px] font-black text-white tracking-tight leading-none">Configuration</h1>
-        <p className="text-[11px] text-white/30 mt-2 flex items-center gap-2">
-          <Settings className="w-3.5 h-3.5 text-[#C41230]/50" />
+        <h1 className="text-[22px] font-black text-slate-900 tracking-tight leading-none">Configuration</h1>
+        <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
+          <Settings className="w-3.5 h-3.5 text-red-600/50" />
           Control Revenue Brain behavior — changes take effect immediately
         </p>
       </div>
 
       {/* Execution Mode */}
-      <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-4">
           <div className="w-7 h-7 rounded-lg bg-blue-500/15 flex items-center justify-center">
             <Activity className="w-3.5 h-3.5 text-blue-400" />
           </div>
-          <h2 className="text-[12px] font-bold text-white/70">Execution Mode</h2>
+          <h2 className="text-[12px] font-bold text-slate-700">Execution Mode</h2>
           <span className={`ml-auto text-[10px] px-2 py-1 rounded-md font-bold ${
             executionMode === 'LIVE' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20' :
             executionMode === 'SHADOW' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' :
@@ -116,11 +116,11 @@ export default function SettingsPage() {
                   ? mode === 'LIVE' ? 'bg-emerald-500/15 border-emerald-500/25 text-emerald-400' :
                     mode === 'SHADOW' ? 'bg-amber-500/15 border-amber-500/25 text-amber-400' :
                     'bg-blue-500/15 border-blue-500/25 text-blue-400'
-                  : 'bg-white/[0.03] border-white/[0.06] text-white/30 hover:bg-white/[0.06] hover:text-white/50'
+                  : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100 hover:text-slate-500'
               }`}
             >
               <div className="text-[16px] font-black mb-1">{mode === 'SHADOW' ? 'Shadow' : mode === 'CONTROLLED' ? 'Controlled' : 'Live'}</div>
-              <div className="text-[10px] text-white/25 leading-tight">{modeDescriptions[mode]}</div>
+              <div className="text-[10px] text-slate-300 leading-tight">{modeDescriptions[mode]}</div>
             </button>
           ))}
         </div>
@@ -128,10 +128,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Traffic Rollout */}
-      <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-4">
           <Zap className="w-4 h-4 text-amber-400" />
-          <h2 className="text-[12px] font-bold text-white/70">Traffic Rollout</h2>
+          <h2 className="text-[12px] font-bold text-slate-700">Traffic Rollout</h2>
         </div>
         <div className="flex items-center gap-4 mb-3">
           <input
@@ -144,30 +144,30 @@ export default function SettingsPage() {
             onMouseUp={(e) => handleSave('traffic_rollout', parseInt((e.target as HTMLInputElement).value))}
             className="flex-1 accent-[#C41230]"
           />
-          <span className="text-[18px] font-black text-white w-16 text-right font-mono">{trafficRollout}%</span>
+          <span className="text-[18px] font-black text-slate-900 w-16 text-right font-mono">{trafficRollout}%</span>
         </div>
-        <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-[#C41230] to-[#FF6B7A] rounded-full transition-all"
+        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-red-500 to-[#FF6B7A] rounded-full transition-all"
             style={{ width: `${trafficRollout}%` }} />
         </div>
-        <p className="text-[11px] text-white/25 mt-2">Percentage of eligible traffic receiving Revenue Brain treatment</p>
+        <p className="text-[11px] text-slate-300 mt-2">Percentage of eligible traffic receiving Revenue Brain treatment</p>
         <SaveIndicator state={saveStates['traffic_rollout']} />
       </div>
 
       {/* Feature Flags */}
-      <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-4">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <h2 className="text-[12px] font-bold text-white/70">Feature Flags</h2>
+          <h2 className="text-[12px] font-bold text-slate-700">Feature Flags</h2>
         </div>
         <div className="space-y-3">
           {Object.entries(featureFlags).map(([flag, enabled]) => (
-            <div key={flag} className="flex items-center justify-between p-3 bg-white/[0.03] rounded-xl border border-white/[0.04]">
+            <div key={flag} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
               <div>
-                <div className="text-[12px] font-semibold text-white/60 capitalize">
+                <div className="text-[12px] font-semibold text-slate-600 capitalize">
                   {flag.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
                 </div>
-                <div className="text-[10px] text-white/25 mt-0.5">{flagDescriptions[flag] ?? flag}</div>
+                <div className="text-[10px] text-slate-300 mt-0.5">{flagDescriptions[flag] ?? flag}</div>
               </div>
               <div className="flex items-center gap-3">
                 <SaveIndicator state={saveStates[flag] ?? 'idle'} />
@@ -177,8 +177,8 @@ export default function SettingsPage() {
                   aria-label={`Toggle ${flag}`}
                 >
                   {enabled
-                    ? <ToggleRight className="w-8 h-8 text-[#C41230]" />
-                    : <ToggleLeft className="w-8 h-8 text-white/20" />}
+                    ? <ToggleRight className="w-8 h-8 text-red-600" />
+                    : <ToggleLeft className="w-8 h-8 text-slate-300" />}
                 </button>
               </div>
             </div>
@@ -187,15 +187,15 @@ export default function SettingsPage() {
       </div>
 
       {/* Decision Thresholds */}
-      <div className="bg-[#111128] border border-white/[0.06] rounded-2xl p-5">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-4">
           <BarChart3 className="w-4 h-4 text-purple-400" />
-          <h2 className="text-[12px] font-bold text-white/70">Decision Thresholds</h2>
+          <h2 className="text-[12px] font-bold text-slate-700">Decision Thresholds</h2>
         </div>
         <div className="space-y-3">
           {Object.entries(thresholds).map(([key, value]) => (
-            <div key={key} className="flex items-center gap-4 p-3 bg-white/[0.03] rounded-xl border border-white/[0.04]">
-              <div className="w-56 text-[12px] text-white/50 capitalize flex-shrink-0">
+            <div key={key} className="flex items-center gap-4 p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="w-56 text-[12px] text-slate-500 capitalize flex-shrink-0">
                 {thresholdLabels[key] ?? key.replace(/_/g, ' ')}
               </div>
               <div className="flex items-center gap-2 flex-1">
@@ -215,7 +215,7 @@ export default function SettingsPage() {
                   onMouseUp={(e) => handleSave('decision_thresholds', { ...thresholds, [key]: parseInt((e.target as HTMLInputElement).value) })}
                   className="flex-1 accent-[#C41230]"
                 />
-                <span className="text-[13px] font-mono font-bold text-white/60 w-10 text-right">{value}</span>
+                <span className="text-[13px] font-mono font-bold text-slate-600 w-10 text-right">{value}</span>
               </div>
               <SaveIndicator state={saveStates[key] ?? 'idle'} />
             </div>
@@ -228,7 +228,7 @@ export default function SettingsPage() {
 
 function SaveIndicator({ state }: { state?: SaveState }) {
   if (state === 'idle' || state === undefined) return null;
-  if (state === 'saving') return <span className="text-[11px] text-white/25 animate-pulse flex items-center gap-1"><Clock className="w-3 h-3" />Saving…</span>;
+  if (state === 'saving') return <span className="text-[11px] text-slate-300 animate-pulse flex items-center gap-1"><Clock className="w-3 h-3" />Saving…</span>;
   if (state === 'saved') return (
     <span className="flex items-center gap-1 text-[11px] text-emerald-400">
       <CheckCircle className="w-3.5 h-3.5" /> Saved

@@ -90,7 +90,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
             <div>
               <div className="text-[15px] font-bold text-white leading-tight tracking-tight">Revenue Intelligence</div>
-              <div className="text-[10px] text-white/30 font-medium tracking-wide">by Rectoverso</div>
+              <div className="text-[10px] text-white/50 font-medium tracking-wide">by Rectoverso</div>
             </div>
           </div>
 
@@ -115,7 +115,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Nav section label */}
         <div className="px-5 pt-4 pb-2 flex-shrink-0">
-          <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">
+          <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/35">
             Navigation
           </span>
         </div>
@@ -147,23 +147,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <div className={`relative flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                       isActive
                         ? 'bg-[#C41230]/20'
-                        : 'bg-white/[0.04] group-hover:bg-white/[0.07]'
+                        : 'bg-white/[0.04] group-hover:bg-white/[0.08]'
                     }`}>
                       <Icon
                         className={`w-4 h-4 transition-colors ${
-                          isActive ? 'text-[#FF6B7A]' : 'text-white/35 group-hover:text-white/55'
+                          isActive ? 'text-[#FF6B7A]' : 'text-white/50 group-hover:text-white/75'
                         }`}
                       />
                     </div>
                     {/* Text */}
                     <div className="flex-1 min-w-0">
                       <div className={`text-[13px] font-semibold leading-tight transition-colors ${
-                        isActive ? 'text-white' : 'text-white/45 group-hover:text-white/75'
+                        isActive ? 'text-white' : 'text-white/60 group-hover:text-white/85'
                       }`}>
                         {item.label}
                       </div>
                       <div className={`text-[10px] mt-0.5 transition-colors ${
-                        isActive ? 'text-white/35' : 'text-white/20 group-hover:text-white/30'
+                        isActive ? 'text-white/40' : 'text-white/30 group-hover:text-white/50'
                       }`}>
                         {item.desc}
                       </div>
@@ -187,7 +187,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="w-3 h-3 text-emerald-400/70" />
-              <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wider">Today's Uplift</span>
+              <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">Today's Uplift</span>
             </div>
             <div className="text-[18px] font-black text-white font-mono tracking-tight">+Rp 2.3M</div>
             <div className="text-[10px] text-emerald-400/70 mt-0.5">↑ 12% vs yesterday</div>
@@ -212,8 +212,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="px-5 py-4 flex-shrink-0 border-t border-white/[0.05]">
           <div className="flex items-center gap-2">
             <Sparkles className="w-3 h-3 text-[#C41230]/60" />
-            <span className="text-[10px] text-white/20">Shadow Mode MVP</span>
-            <span className="ml-auto flex items-center gap-1 text-[10px] text-white/15">
+            <span className="text-[10px] text-white/35">Shadow Mode MVP</span>
+            <span className="ml-auto flex items-center gap-1 text-[10px] text-white/25">
               <ShieldCheck className="w-3 h-3" />
               SSL active
             </span>
