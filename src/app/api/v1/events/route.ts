@@ -147,13 +147,20 @@ async function processEvent(event: IngestEvent): Promise<void> {
     // Build update payload — start with last_seen_at
     const updatePayload: Record<string, unknown> = { last_seen_at: new Date().toISOString() };
 
-    // Capture name/email on register, login, or newsletter_signup events
+    // Capture name/email/phone on register, login, or newsletter_signup events
     const personalEvents = ['register', 'login', 'newsletter_signup', 'subscription_success'];
     if (personalEvents.includes(event.event)) {
-      const name = (event.properties?.name as string | undefined) ?? (event.properties?.user_name as string | undefined);
-      const email = (event.properties?.email as string | undefined) ?? (event.properties?.user_email as string | undefined);
+      const name = (event.properties?.name as string | undefined)
+        ?? (event.properties?.user_name as string | undefined)
+        ?? (event.properties?.full_name as string | undefined);
+      const email = (event.properties?.email as string | undefined)
+        ?? (event.properties?.user_email as string | undefined);
+      const phone = (event.properties?.phone as string | undefined)
+        ?? (event.properties?.phone_number as string | undefined)
+        ?? (event.properties?.no_hp as string | undefined);
       if (name) updatePayload.name = name;
       if (email) updatePayload.email = email;
+      if (phone) updatePayload.phone = phone;
       // If email is captured, upgrade identity status
       if (email && resolvedReaderId) {
         const { data: existing } = await supabaseAdmin

@@ -118,6 +118,7 @@ export default function ReaderDetailPage() {
     external_user_id: string | null;
     name: string | null;
     email: string | null;
+    phone: string | null;
     subscription_status: string;
     identity_status: string;
     last_seen_at: string;
@@ -125,6 +126,9 @@ export default function ReaderDetailPage() {
   };
   const features = reader.features;
   const topics = (reader.topic_affinity ?? []).sort((a, b) => b.score - a.score);
+
+  const isKnown = reader.identity_status === 'REGISTERED' || reader.identity_status === 'KNOWN';
+  const displayName = reader.name ?? reader.email ?? reader.anonymous_id ? `Anon #${reader.anonymous_id!.slice(-6)}` : 'Reader Tidak Dikenal';
 
   const actionLabels: Record<string, string> = {
     ALLOW_FREE: 'Free Access',
@@ -146,9 +150,7 @@ export default function ReaderDetailPage() {
           <ArrowLeft className="w-4 h-4 text-slate-600" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            {reader.name ?? reader.email ?? 'Reader Profile'}
-          </h1>
+          <h1 className="text-2xl font-bold text-slate-900">{displayName}</h1>
           <p className="text-sm text-slate-500 font-mono">{id?.substring(0, 16)}…</p>
         </div>
       </div>
@@ -163,31 +165,74 @@ export default function ReaderDetailPage() {
                 <User className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <div className="text-sm font-bold text-slate-900">
-                  {reader.name ?? reader.email ?? reader.external_user_id ?? reader.anonymous_id ??
-                    `Reader ${id?.substring(0, 8)}`}
+                <div className="text-sm font-bold text-slate-900">{displayName}</div>
+                <div className={`text-xs font-medium ${isKnown ? 'text-blue-600' : 'text-slate-400'}`}>
+                  {isKnown ? 'Known Reader' : 'Anonim'}
                 </div>
-                {reader.email && (
-                  <div className="text-xs text-slate-500">{reader.email}</div>
-                )}
-                {reader.anonymous_id && !reader.name && !reader.email && (
-                  <div className="text-xs text-slate-400">Anon #{reader.anonymous_id.slice(-6)}</div>
-                )}
               </div>
             </div>
+
+            {/* Contact Info */}
+            {isKnown && (reader.email || reader.phone) && (
+              <div className="space-y-2 mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <div className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2">Informasi Kontak</div>
+                {reader.name && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-blue-500 uppercase tracking-wide font-semibold">Nama</div>
+                      <div className="text-sm font-semibold text-slate-900">{reader.name}</div>
+                    </div>
+                  </div>
+                )}
+                {reader.email && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-blue-500 uppercase tracking-wide font-semibold">Email</div>
+                      <div className="text-sm font-medium text-slate-800">{reader.email}</div>
+                    </div>
+                  </div>
+                )}
+                {reader.phone && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-blue-500 uppercase tracking-wide font-semibold">No. HP</div>
+                      <div className="text-sm font-medium text-slate-800">{reader.phone}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Identity Status</span>
-                <span className="font-medium capitalize">{String(reader.identity_status ?? '').toLowerCase()}</span>
+                <span className="text-slate-500">Status Identitas</span>
+                <span className="font-medium capitalize">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${
+                    isKnown
+                      ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                      : 'bg-slate-50 text-slate-500 border border-slate-100'
+                  }`}>
+                    {String(reader.identity_status ?? '').toLowerCase()}
+                  </span>
+                </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Subscription</span>
+                <span className="text-slate-500">Berlangganan</span>
                 <span className={`font-medium ${reader.subscription_status === 'ACTIVE' ? 'text-emerald-600' : reader.subscription_status === 'EXPIRED' ? 'text-red-600' : 'text-slate-600'}`}>
                   {String(reader.subscription_status ?? '').toLowerCase()}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Last Seen</span>
+                <span className="text-slate-500">Terakhir Aktif</span>
                 <span className="font-medium">{timeAgo(String(reader.last_seen_at ?? ''))}</span>
               </div>
             </div>
