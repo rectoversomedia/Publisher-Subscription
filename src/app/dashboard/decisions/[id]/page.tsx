@@ -52,37 +52,37 @@ function fmt(value: number): string {
 }
 
 const ACTION_LABELS: Record<string, { label: string; color: string }> = {
-  ALLOW_FREE: { label: 'Free Access', color: 'bg-slate-100 text-slate-600' },
-  SHOW_REGISTRATION: { label: 'Registration Wall', color: 'bg-blue-500/15 text-blue-400' },
-  SHOW_NEWSLETTER_GATE: { label: 'Newsletter Gate', color: 'bg-purple-500/15 text-purple-400' },
-  SHOW_MONTHLY: { label: 'Monthly Subscription', color: 'bg-emerald-500/15 text-emerald-400' },
-  SHOW_ANNUAL: { label: 'Annual Subscription', color: 'bg-emerald-500/10 text-emerald-300' },
-  SHOW_TRIAL: { label: 'Free Trial', color: 'bg-amber-500/15 text-amber-400' },
-  SHOW_SAVE_OFFER: { label: 'Save Offer', color: 'bg-red-50 text-red-500' },
-  SHOW_WINBACK: { label: 'Winback Offer', color: 'bg-orange-500/15 text-orange-400' },
-  NO_ACTION: { label: 'No Action', color: 'bg-slate-50 text-slate-400' },
+  ALLOW_FREE: { label: 'Akses Gratis', color: 'bg-slate-100 text-slate-600' },
+  SHOW_REGISTRATION: { label: 'Dinding Registrasi', color: 'bg-blue-500/15 text-blue-400' },
+  SHOW_NEWSLETTER_GATE: { label: 'Gerbang Newsletter', color: 'bg-purple-500/15 text-purple-400' },
+  SHOW_MONTHLY: { label: 'Langganan Bulanan', color: 'bg-emerald-500/15 text-emerald-400' },
+  SHOW_ANNUAL: { label: 'Langganan Tahunan', color: 'bg-emerald-500/10 text-emerald-300' },
+  SHOW_TRIAL: { label: 'Coba Gratis', color: 'bg-amber-500/15 text-amber-400' },
+  SHOW_SAVE_OFFER: { label: 'Tawar Selamatkan', color: 'bg-red-50 text-red-500' },
+  SHOW_WINBACK: { label: 'Tawar Kembali', color: 'bg-orange-500/15 text-orange-400' },
+  NO_ACTION: { label: 'Tidak Ada Aksi', color: 'bg-slate-50 text-slate-400' },
 };
 
 const REASON_LABELS: Record<string, string> = {
-  HIGH_PROPENSITY: 'High subscription propensity',
-  MEDIUM_PROPENSITY: 'Medium subscription propensity',
-  LOW_PROPENSITY: 'Low subscription propensity',
-  NEW_READER: 'New reader — no history',
-  RETURNING_READER: 'Returning reader',
-  ACTIVE_SUBSCRIBER: 'Active subscriber',
-  HIGH_CHURN_RISK: 'High churn risk signals',
-  LOW_CHURN_RISK: 'Low churn risk',
-  INVESTIGATIVE_CONTENT: 'Consuming investigative journalism',
-  LOW_PRICE_SENSITIVITY: 'Low price sensitivity',
-  HIGH_PRICE_SENSITIVITY: 'High price sensitivity',
-  HIGH_ENGAGEMENT: 'High engagement signals',
-  LOW_ENGAGEMENT_7D: 'Low engagement (7 days)',
-  HIGH_CONTENT_LOYALTY: 'High content loyalty',
-  REGISTERED_READER: 'Registered reader',
-  ANONYMOUS_READER: 'Anonymous reader',
-  FORMER_SUBSCRIBER: 'Former subscriber',
-  RE_ENGAGEMENT: 'Re-engagement candidate',
-  WINBACK_CANDIDATE: 'Winback candidate',
+  HIGH_PROPENSITY: 'Propensity langganan tinggi',
+  MEDIUM_PROPENSITY: 'Propensity langganan sedang',
+  LOW_PROPENSITY: 'Propensity langganan rendah',
+  NEW_READER: 'Pembaca baru — belum ada history',
+  RETURNING_READER: 'Pembaca kembali',
+  ACTIVE_SUBSCRIBER: 'Subscriber aktif',
+  HIGH_CHURN_RISK: 'Signal risiko churn tinggi',
+  LOW_CHURN_RISK: 'Risiko churn rendah',
+  INVESTIGATIVE_CONTENT: 'Membaca jurnalisme investigasi',
+  LOW_PRICE_SENSITIVITY: 'Kurang sensitif harga',
+  HIGH_PRICE_SENSITIVITY: 'Sangat sensitif harga',
+  HIGH_ENGAGEMENT: 'Signal engagement tinggi',
+  LOW_ENGAGEMENT_7D: 'Engagement rendah (7 hari)',
+  HIGH_CONTENT_LOYALTY: 'Loyalitas konten tinggi',
+  REGISTERED_READER: 'Pembaca terdaftar',
+  ANONYMOUS_READER: 'Pembaca anonim',
+  FORMER_SUBSCRIBER: 'Mantan subscriber',
+  RE_ENGAGEMENT: 'Kandidat re-engagement',
+  WINBACK_CANDIDATE: 'Kandidat winback',
 };
 
 export default function DecisionDetailPage() {
@@ -120,8 +120,8 @@ export default function DecisionDetailPage() {
       .catch(() => { setError('Failed to load'); setLoading(false); });
   }, [id]);
 
-  if (loading) return <div className="py-20 text-center text-slate-400">Loading decision…</div>;
-  if (error || !decision) return <div className="py-20 text-center text-slate-400">{error ?? 'Decision not found'}</div>;
+  if (loading) return <div className="py-20 text-center text-slate-400">Memuat keputusan…</div>;
+  if (error || !decision) return <div className="py-20 text-center text-slate-400">{error ?? 'Keputusan tidak ditemukan'}</div>;
 
   const action = ACTION_LABELS[decision.selected_action] ?? { label: decision.selected_action, color: 'bg-slate-100 text-slate-600' };
 
@@ -133,7 +133,7 @@ export default function DecisionDetailPage() {
           <ArrowLeft className="w-4 h-4 text-slate-500" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Decision Detail</h1>
+          <h1 className="text-2xl font-bold text-slate-800">Detail Keputusan</h1>
           <p className="text-xs text-slate-400 font-mono">{id}</p>
         </div>
       </div>
@@ -155,7 +155,7 @@ export default function DecisionDetailPage() {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <div className="text-xs text-slate-400 mb-1">Confidence</div>
+            <div className="text-xs text-slate-400 mb-1">Tingkat Kepercayaan</div>
             <div className="flex items-center gap-2">
               <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div
@@ -167,17 +167,17 @@ export default function DecisionDetailPage() {
             </div>
           </div>
           <div>
-            <div className="text-xs text-slate-400 mb-1">Execution Mode</div>
+            <div className="text-xs text-slate-400 mb-1">Mode Eksekusi</div>
             <span className={`text-sm font-medium ${decision.execution_mode === 'LIVE' ? 'text-emerald-400' : 'text-amber-400'}`}>
               {decision.execution_mode}
             </span>
           </div>
           <div>
-            <div className="text-xs text-slate-400 mb-1">Decision Version</div>
+            <div className="text-xs text-slate-400 mb-1">Versi Keputusan</div>
             <span className="text-sm font-medium text-slate-600">{decision.decision_version ?? '—'}</span>
           </div>
           <div>
-            <div className="text-xs text-slate-400 mb-1">Expected Value</div>
+            <div className="text-xs text-slate-400 mb-1">Nilai Estimasi</div>
             <span className="text-sm font-medium text-slate-600">
               {decision.expected_value != null ? fmt(decision.expected_value) : '—'}
             </span>
@@ -185,11 +185,11 @@ export default function DecisionDetailPage() {
         </div>
       </div>
 
-      {/* Reason Codes */}
+      {/* Kode Alasan */}
       <div className="bg-white border border-slate-200 rounded-xl p-6">
         <h2 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
           <Activity className="w-4 h-4" />
-          Reason Codes
+          Kode Alasan
         </h2>
         <div className="flex flex-wrap gap-2">
           {(decision.reason_codes ?? []).map((code) => (
@@ -199,7 +199,7 @@ export default function DecisionDetailPage() {
             </span>
           ))}
           {(!decision.reason_codes || decision.reason_codes.length === 0) && (
-            <span className="text-xs text-slate-400">No reason codes recorded</span>
+            <span className="text-xs text-slate-400">Tidak ada kode alasan tercatat</span>
           )}
         </div>
       </div>
@@ -209,7 +209,7 @@ export default function DecisionDetailPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <h2 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
-            Lifecycle Stage & Metering
+            Tahap Siklus Hidup & Meter
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Lifecycle Stage */}
@@ -225,7 +225,7 @@ export default function DecisionDetailPage() {
                 <Zap className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-xs text-slate-400">Lifecycle Stage</div>
+                <div className="text-xs text-slate-400">Tahap Siklus</div>
                 <div className="text-sm font-bold text-slate-800">
                   {decision.reader_features.lifecycle_stage ?? 'Unknown'}
                 </div>
@@ -285,11 +285,11 @@ export default function DecisionDetailPage() {
         </div>
       )}
 
-      {/* Business Explanation */}
+      {/* Penjelasan Bisnis */}
       <div className="bg-gradient-to-br from-[#111128] to-[#0D0D1F] rounded-xl border border-slate-300 p-6 text-slate-900">
         <div className="flex items-center gap-2 mb-5">
           <Brain className="w-5 h-5 text-blue-400" />
-          <h2 className="font-semibold text-slate-900">Business Explanation</h2>
+          <h2 className="font-semibold text-slate-900">Penjelasan Bisnis</h2>
         </div>
 
         {/* Summary */}
@@ -326,12 +326,12 @@ export default function DecisionDetailPage() {
           </p>
         </div>
 
-        {/* Why Now + What to Say */}
+        {/* Why Now + Apa yang Harus Di katakan */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <div className="bg-slate-50 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <Zap className="w-4 h-4 text-amber-400" />
-              <div className="text-xs text-slate-400 uppercase tracking-wide font-semibold">Why Now?</div>
+              <div className="text-xs text-slate-400 uppercase tracking-wide font-semibold">Kenapa Sekarang?</div>
             </div>
             <p className="text-sm text-slate-800 leading-relaxed">
               {decision.reason_codes?.includes('METER_EXHAUSTED') && (
@@ -358,7 +358,7 @@ export default function DecisionDetailPage() {
           <div className="bg-slate-50 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="w-4 h-4 text-emerald-400" />
-              <div className="text-xs text-slate-400 uppercase tracking-wide font-semibold">What to Say</div>
+              <div className="text-xs text-slate-400 uppercase tracking-wide font-semibold">Apa yang Harus Di katakan</div>
             </div>
             <p className="text-sm text-slate-800 leading-relaxed italic">
               {decision.selected_action === 'SHOW_MONTHLY' && (
@@ -395,12 +395,12 @@ export default function DecisionDetailPage() {
           </div>
         </div>
 
-        {/* Risk Alert */}
+        {/* Peringatan Risiko */}
         {decision.reason_codes?.includes('HIGH_CHURN_RISK') || (decision.reader_features?.churn_risk ?? 0) >= 70 ? (
           <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 rounded-xl p-4">
             <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
             <div>
-              <div className="text-sm font-semibold text-red-300 mb-1">Risk Alert</div>
+              <div className="text-sm font-semibold text-red-300 mb-1">Peringatan Risiko</div>
               <p className="text-sm text-red-200/80 leading-relaxed">
                 {decision.selected_action === 'NO_ACTION' ? (
                   `CRITICAL: Subscriber aktif dengan churn risk ${decision.reader_features?.churn_risk}% TIDAK diintervensi. Tanpa save offer, churn dalam 14 hari sangat mungkin terjadi.`
@@ -420,15 +420,15 @@ export default function DecisionDetailPage() {
         )}
       </div>
 
-      {/* Reader & Experiment */}
+      {/* Pembaca & Experiment */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Reader */}
+        {/* Pembaca */}
         {decision.readers && (
           <Link href={`/dashboard/readers/${decision.reader_id}`} className="bg-white border border-slate-200 rounded-xl p-5 hover:border-blue-200 transition-colors">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-slate-400" />
-                <h3 className="font-semibold text-slate-800 text-sm">Reader</h3>
+                <h3 className="font-semibold text-slate-800 text-sm">Pembaca</h3>
               </div>
               <ChevronRight className="w-4 h-4 text-slate-300" />
             </div>
@@ -457,7 +457,7 @@ export default function DecisionDetailPage() {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <FlaskConical className="w-4 h-4 text-slate-400" />
-                <h3 className="font-semibold text-slate-800 text-sm">Experiment Assignment</h3>
+                <h3 className="font-semibold text-slate-800 text-sm">Assignment Eksperimen</h3>
               </div>
               <ChevronRight className="w-4 h-4 text-slate-300" />
             </div>
@@ -465,27 +465,27 @@ export default function DecisionDetailPage() {
           </Link>
         )}
 
-        {/* Technical Details */}
+        {/* Detail Teknis */}
         <div className="bg-white border border-slate-200 rounded-xl p-5">
-          <h3 className="font-semibold text-slate-800 text-sm mb-3">Technical Details</h3>
+          <h3 className="font-semibold text-slate-800 text-sm mb-3">Detail Teknis</h3>
           <div className="space-y-1.5 text-xs">
             <div className="flex justify-between">
-              <span className="text-slate-400">Decision ID</span>
+              <span className="text-slate-400">ID Keputusan</span>
               <span className="font-mono text-slate-500">{decision.id.substring(0, 8)}…</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Reader ID</span>
+              <span className="text-slate-400">Pembaca ID</span>
               <span className="font-mono text-slate-500">{decision.reader_id.substring(0, 8)}…</span>
             </div>
             {decision.latency_ms != null && (
               <div className="flex justify-between">
-                <span className="text-slate-400">Latency</span>
+                <span className="text-slate-400">Latensi</span>
                 <span className="font-medium text-slate-600">{decision.latency_ms}ms</span>
               </div>
             )}
             {decision.selected_offer_id && (
               <div className="flex justify-between">
-                <span className="text-slate-400">Offer ID</span>
+                <span className="text-slate-400">ID Offer</span>
                 <span className="font-mono text-slate-500">{String(decision.selected_offer_id).substring(0, 8)}…</span>
               </div>
             )}

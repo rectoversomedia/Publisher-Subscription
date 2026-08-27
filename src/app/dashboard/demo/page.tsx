@@ -86,14 +86,14 @@ const ACTION_CONFIG: Record<string, { bg: string; text: string; border: string }
 };
 
 const ACTION_LABELS: Record<string, string> = {
-  ALLOW_FREE: 'Free Access', SHOW_SOFT_PAYWALL: 'Soft Paywall',
-  SHOW_MONTHLY: 'Monthly Subscription', SHOW_SAVE_OFFER: 'Save Offer',
-  NO_ACTION: 'Subscribed ✓',
+  ALLOW_FREE: 'Akses Gratis', SHOW_SOFT_PAYWALL: 'Soft Paywall',
+  SHOW_MONTHLY: 'Langganan Bulanan', SHOW_SAVE_OFFER: 'Tawar Selamatkan',
+  NO_ACTION: 'Sudah Subscribe ✓',
 };
 
 const DEMO_ARTICLE = {
   title: 'Investigasi: compounds Korupsi dalam Proyek Infrastruktur Negara',
-  category: 'Investigasi', author: 'Tim Investigasi Tempo', readTime: '12 min', isPremium: true,
+  category: 'Investigasi', author: 'Tim Investigasi Tempo', readTime: '12 menit', isPremium: true,
 };
 
 function MeterDisplay({ current, limit }: { current: number; limit: number }) {
@@ -161,8 +161,8 @@ export default function DemoPage() {
       {/* Timeline */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[12px] font-bold text-slate-700">6-Hari Subscription Journey</h2>
-          <span className="text-[10px] text-slate-300">Revenue Brain decisions</span>
+          <h2 className="text-[12px] font-bold text-slate-700">Perjalanan 6-Hari Menuju Langganan</h2>
+          <span className="text-[10px] text-slate-300">Keputusan Revenue Brain</span>
         </div>
         <div className="flex items-center gap-2 overflow-x-auto pb-1">
           {JOURNEY_STEPS.map((s, i) => {
@@ -186,7 +186,7 @@ export default function DemoPage() {
                 }`}>
                   {isDone ? <CheckCircle className="w-4 h-4" /> : i + 1}
                 </div>
-                <span className="text-[10px] text-slate-400">Day {s.day}</span>
+                <span className="text-[10px] text-slate-400">Hari {s.day}</span>
                 <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${sLc.bg} ${sLc.text}`}>
                   {s.lifecycleStage}
                 </span>
@@ -208,7 +208,7 @@ export default function DemoPage() {
                   <Clock className={`w-4 h-4 ${isLast ? 'text-emerald-400' : 'text-red-500'}`} />
                 </div>
                 <div>
-                  <div className="text-[10px] text-slate-300">Day {step.day}</div>
+                  <div className="text-[10px] text-slate-300">Hari {step.day}</div>
                   <div className="text-[13px] font-bold text-slate-900">{step.label}</div>
                 </div>
               </div>
@@ -258,12 +258,12 @@ export default function DemoPage() {
           <div className="flex gap-2">
             {!playing && !isLast && (
               <button onClick={playJourney} className="flex-1 flex items-center justify-center gap-2 py-3 bg-red-600 text-slate-900 rounded-xl text-[13px] font-bold hover:bg-[#B01028] transition-colors shadow-lg shadow-red-900/20">
-                <Play className="w-4 h-4" /> Play Journey
+                <Play className="w-4 h-4" /> Mainkan
               </button>
             )}
             {playing && (
               <button onClick={pauseJourney} className="flex-1 flex items-center justify-center gap-2 py-3 bg-amber-500 text-slate-900 rounded-xl text-[13px] font-bold hover:bg-amber-600 transition-colors">
-                <Pause className="w-4 h-4" /> Pause
+                <Pause className="w-4 h-4" /> Jeda
               </button>
             )}
             <button onClick={resetJourney} className="flex items-center justify-center gap-1.5 py-3 px-4 border border-slate-300 rounded-xl text-[12px] text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-all">
@@ -274,12 +274,12 @@ export default function DemoPage() {
             <button onClick={() => { if (activeStep > 0) setActiveStep(prev => prev - 1); }}
               disabled={activeStep === 0}
               className="flex-1 flex items-center justify-center gap-1 py-2 border border-slate-200 rounded-xl text-[12px] text-slate-400 hover:text-slate-600 hover:bg-slate-50 disabled:opacity-20 disabled:cursor-not-allowed transition-all">
-              ← Previous
+              ← Sebelumnya
             </button>
             <button onClick={() => { if (!isLast) setActiveStep(prev => prev + 1); }}
               disabled={isLast}
               className="flex-1 flex items-center justify-center gap-1 py-2 border border-slate-200 rounded-xl text-[12px] text-slate-400 hover:text-slate-600 hover:bg-slate-50 disabled:opacity-20 disabled:cursor-not-allowed transition-all">
-              Next →
+              Selanjutnya →
             </button>
           </div>
         </div>
@@ -354,11 +354,11 @@ export default function DemoPage() {
             )}
           </div>
 
-          {/* Event Log */}
+          {/* Log Event */}
           <div className="bg-white border border-slate-200 rounded-2xl p-5">
             <h3 className="text-[11px] font-bold text-slate-500 mb-3 flex items-center gap-2">
               <Zap className="w-3.5 h-3.5 text-blue-400" />
-              Event Log — Day {step.day}
+              Log Event — Hari {step.day}
             </h3>
             <div className="space-y-1.5">
               {step.events.map((event, i) => {
@@ -386,7 +386,7 @@ export default function DemoPage() {
                   ['Attribution Source', 'Investigative Content'],
                   ['Revenue', 'Rp 64.000/bulan'],
                   ['Lifecycle', 'SUBSCRIBED'],
-                  ['Days to Convert', '6 days'],
+                  ['Hari untuk Konversi', '6 hari'],
                 ].map(([label, value]) => (
                   <div key={String(label)} className="bg-slate-50 rounded-xl p-3 border border-slate-200">
                     <div className="text-[9px] text-emerald-400/60 uppercase tracking-widest mb-1">{label}</div>
